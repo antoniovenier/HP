@@ -742,13 +742,16 @@ Get-Content pedido.json -Encoding UTF8
   8. `valores_citados`.
   9. `publicar_em` (prazo).
 
-**Passo 16 — Conferir as travas de conteúdo [BLOQUEIA].** Pare e mande para `99_erros` (passo 62) se qualquer uma for verdade:
-- `canal` = `futebol` **e** (`audio.tratamento` = `dublagem` **ou** `toque_hp.modo` = `voz`) → futebol **nunca** tem narração sintética.
-- `canal` = `gta` **e** (`audio.tratamento` = `dublagem` **ou** `toque_hp.modo` = `voz`) → a voz sintética só é permitida em Destinos, Receitas, Carros e Filmes.
-- `audio.tratamento` = `dublagem` **e** `origem` ≠ `proprio` → dublagem só em vídeo próprio (manual 05).
-- `fonte.criador_arroba` **e** `fonte.criador_nome` vazios → sem crédito não sai.
-- `observacoes` fala em "vazamento", "leak", "vazou" no GTA → volta ao Curador.
-- Motivo a escrever no histórico, exemplo: `legendador: BLOQUEADO — futebol com toque_hp.modo=voz (regra: nunca narração sintética no futebol)`.
+**Passo 16 — Conferir as travas de conteúdo [BLOQUEIA].**
+- **Pedido com voz onde a voz é proibida** — `canal` = `futebol` ou `gta` com `audio.tratamento` = `dublagem` ou `toque_hp.modo` = `voz`; ou `dublagem` com `origem` ≠ `proprio`:
+  - o item **não para** por isso: o Tradutor (manual 05) faz **legenda** no lugar da dublagem e o Narrador (manual 06) **rebaixa** o Toque HP para `texto`. Os dois escrevem o motivo;
+  - o Legendador **confere**, antes de gerar a legenda (passo 41), que nesses casos **não existe** `dublagem.wav` nem `toque_hp.wav` na pasta, e que `traducao.json → decisao.modo` = `legenda` e `toque_hp.json → modo` = `texto`/`nenhum`;
+  - se existir arquivo de voz nesses canais → **pare** e mande para `99_erros` (passo 62), motivo `voz sintética em canal/vídeo proibido`.
+- **Sem crédito** — `fonte.criador_arroba` **e** `fonte.criador_nome` vazios → pare, `99_erros` (sem crédito não sai).
+- **Vazamento** — `observacoes` fala em "vazamento", "leak", "vazou" no GTA → pare, volta ao Curador (`99_erros` com o motivo).
+- Exemplos de linha no histórico:
+  - `legendador: pedido com toque_hp.modo=voz no futebol — conferido: Narrador rebaixou para texto; sem toque_hp.wav`
+  - `legendador: BLOQUEADO — sem crédito (fonte.criador_arroba e criador_nome vazios)`
 
 **Passo 17 — Conferir o vídeo cru.**
 ```powershell
@@ -921,7 +924,7 @@ Test-Path traducao.json
 Test-Path toque_hp.json
 ```
 - `False` → o Narrador (manual 06) ainda não terminou. Espere.
-- `True` → confira: `modo` (`voz` ou `texto`), `abertura.texto_tela` (≤ 2 linhas de ≤ 20 caracteres), `fecho.texto_tela`, e os tempos (`abertura.inicio` = 0,00 e `abertura.fim` ≤ 2,00).
+- `True` → confira: `modo` (`voz`, `misto`, `texto` ou `nenhum`), `abertura.texto_tela` (≤ 2 linhas de ≤ 20 caracteres), `fecho.texto_tela`, e os tempos (`abertura.inicio` = 0,00 e `abertura.fim` ≤ 2,00).
 
 **Passo 40 — Conferir se tudo combina.**
 - Os `id` dos segmentos da tradução batem com os da transcrição? (Mesmo número de segmentos.)
@@ -970,7 +973,7 @@ Test-Path toque_hp.json
 
 **Passo 45 — Pôr as falas do Toque HP (se houver).**
 - **Abertura (pergunta)**: estilo `Pergunta`, de 0:00:00.00 até o `abertura.fim` do `toque_hp.json` (no máximo 0:00:02.00), texto `abertura.texto_tela`, com `\N` na quebra.
-- **Trecho narrado** (só quando `modo` = `voz`): vira legenda normal (estilo `HP`, com karaokê), nos tempos do `toque_hp.json`.
+- **Trecho narrado** (só nos modos `voz` e `misto`): vira legenda normal (estilo `HP`, com karaokê sobre o `toque_hp.wav`), nos tempos do `toque_hp.json`. No modo `misto`, a abertura é só escrita (a fala do vídeo começa antes de 2,10 s).
 - **Fecho (pergunta final)**: estilo `Pergunta`, nos tempos do `fecho` (normalmente os últimos 2 a 3 s do vídeo).
 - Enquanto a pergunta de abertura está na tela (topo), a legenda de fala continua normal (embaixo). Nunca duas perguntas ao mesmo tempo.
 - Exemplos por canal (tudo vem do manual 06; aqui só confira os limites):
@@ -1134,7 +1137,7 @@ Test-Path "$esteira\04_edicao\$(Split-Path $item -Leaf)"
 ## 4. Regras que nunca se quebram
 
 1. **[BLOQUEIA] Crédito do criador sempre.** Todo vídeo com imagem de terceiro sai com "Vídeo: @criador" na tela do começo ao fim, igual ao `pedido.json`. Sem crédito, não sai.
-2. **[BLOQUEIA] Futebol nunca tem narração sintética.** Nem dublagem, nem Toque HP com voz. A legenda do futebol é sempre da fala original (ou tradução dela, em texto). Se o pedido vier com voz no futebol, o item para.
+2. **[BLOQUEIA] Futebol nunca tem narração sintética.** Nem dublagem, nem Toque HP com voz. A legenda do futebol é sempre da fala original (ou tradução dela, em texto). Se o pedido vier com voz no futebol, a voz é trocada por legenda/texto (manuais 05 e 06); se aparecer arquivo de voz sintética num item de futebol, o item para.
 3. **[BLOQUEIA] Voz sintética só em Destinos, Receitas, Carros e Filmes, e só em vídeo próprio.** GTA e Futebol: nunca. Na legenda, isso aparece assim: só existe karaokê "de dublagem" nesses 4 canais.
 4. **[BLOQUEIA] Nada de vazamento do GTA 6.** Se a fala cita material vazado, o item volta ao Curador. A legenda nunca escreve informação de vazamento, nem "dizem que vazou".
 5. **[BLOQUEIA] Futebol sem imagem nem áudio de transmissão de TV.** Se ouvir narrador de emissora, para.
@@ -1522,7 +1525,7 @@ Uma entrega do Legendador (feita à mão, pelo Claude ou pelo app) só é aceita
 |---|---|---|
 | T1 | GTA, material oficial em inglês, Toque HP em texto | Legenda traduzida sem karaokê, "GTA 6", "Vice City" em rosa, pergunta de 0 a ≤ 2 s, crédito @rockstargames |
 | T2 | Futebol, gol em vídeo oficial do clube com placar embaixo | Legenda em `meio`, sem voz sintética, crédito do clube, "Arrascaeta" certo |
-| T3 | Futebol com pedido de Toque HP `voz` | Bloqueado; item em `99_erros` com motivo escrito |
+| T3 | Futebol com pedido de Toque HP `voz` | Toque rebaixado para `texto` pelo Narrador; legenda só com a pergunta escrita; nenhum `toque_hp.wav` na pasta; motivo no histórico (se existir `toque_hp.wav` → `99_erros`) |
 | T4 | Filmes, entrevista em inglês | Título brasileiro do filme; nomes certos; legenda traduzida |
 | T5 | Receitas, criador brasileiro com ingredientes escritos na tela | Karaokê laranja; legenda fora da área dos ingredientes; "muçarela"; números em algarismo |
 | T6 | Carros, review com preço | Aviso "Valores aproximados…"; `km/h` e `cv`; azul |

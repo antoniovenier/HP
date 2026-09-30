@@ -993,3 +993,253 @@ Add-Content -Path historico.log -Encoding UTF8 -Value "$(Get-Date -Format 'yyyy-
 - Atenção: se o problema for **só da voz**, rebaixe para modo **`texto`** (abertura e fecho escritos) em vez de travar o item — e anote o motivo.
 
 **Passo 58 — Problema que se repete: ticket.** `scripts\tickets.py` (existente; veja o `--help`), área do app. Ex.: "voz lê perguntas sem entonação", "banco de perguntas sem números do Analista há 2 semanas". Nada de senha, token ou dado pessoal.
+
+---
+
+## 4. Regras que nunca se quebram
+
+1. **[BLOQUEIA] Futebol nunca tem narração sintética.** Toque HP no futebol é só escrito; o áudio original do clube fica intacto.
+2. **[BLOQUEIA] Voz sintética só em Destinos, Receitas, Carros e Filmes, e só em vídeo próprio.** GTA: só escrito.
+3. **[BLOQUEIA] Nunca clonar voz** e nunca usar outra voz além da Piper pt-BR gratuita já instalada, **pelo `scripts\dublar.py`**. Nada de efeito para "mudar" a voz (eco, grave, agudo, robô).
+4. **[BLOQUEIA] Nada de vazamento do GTA 6** — nem em pergunta, nem em contexto, nem "dizem que…".
+5. **[BLOQUEIA] Só fato verdadeiro com fonte anotada.** Sem fonte, sem trecho. Rumor não vira fato, nem disfarçado de pergunta.
+6. **[BLOQUEIA] Valor citado leva "Valores aproximados…".**
+7. **[BLOQUEIA] Nunca voz sintética por cima de pessoa real falando** na tela, nem por cima de outra fala (sobreposição = 0,0 s).
+8. **Abertura: pergunta no quadro 1, terminando em até 2,00 s.** Se não cabe falada, fica escrita.
+9. **Fecho: pergunta de verdade, sem isca** ("Comenta SIM", "Curte se…", "Marca 3 amigos", "Compartilha se…" são proibidos).
+10. **Nunca Toque HP em tragédia, morte, acidente, violência real, doença grave, criança como assunto, política ou religião.**
+11. **Nunca spoiler** de filme/série com menos de 30 dias de estreia no Brasil.
+12. **Nunca promessa de saúde** (Receitas), **nunca incentivo a risco** (Carros, Destinos), **nunca ofensa** a time, torcida, árbitro ou grupo (Futebol).
+13. **O modo só pode descer** (voz → misto → texto → nenhum), nunca subir além do que o pedido e as regras permitem.
+14. **Crédito do criador sempre** (quem põe é o Legendador; o Toque nunca tapa o crédito).
+15. **Trabalho pesado (gerar voz, montar, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+16. **Nada no disco C:.**
+17. **Nunca alterar arquivo de outro cargo**; nunca renomear a pasta; nunca apagar linha do `historico.log`.
+18. **O mesmo modelo de pergunta não se repete no mesmo canal em 7 dias.**
+19. **Marcar `voz_sintetica: true`** para o Publicador (manual 10) quando o Toque tiver voz.
+20. **Nada de token, senha ou dado pessoal** em arquivo, log ou ticket.
+21. **Nada passa para o app sem 7 dias de modo sombra** com qualidade idêntica comprovada.
+
+---
+
+## 5. Critérios de qualidade com nota
+
+**Como funciona:** o Revisor (manual 09) dá nota de 0 a 10 em cada critério. Em modo `texto`, **N4, N6, N7 e N8 não se aplicam** (não entram na média). Em modo `nenhum`, só N9 se aplica (a decisão de não usar tem que estar certa). As notas entram na média geral do vídeo com as dos outros cargos.
+- Média **≥ 9** Excelente · **7 a 8,9** Bom → aprovado · **5 a 6,9** Médio → volta para a etapa do critério de menor nota (se for um destes: `03_legenda_dublagem`, para o Narrador) · **< 5** Razoável → volta ao Curador · máximo **2 voltas**.
+- **[BLOQUEIA]** com nota 0 = o item não sai, qualquer que seja a média.
+
+| Cód. | Critério | Como medir | Nota 10 | Nota 7 | Nota 5 | Nota 0 | Volta para |
+|---|---|---|---|---|---|---|---|
+| N1 | Gancho da abertura | Quadro de 0,5 s + tempos do `toque_hp.json` | Pergunta **específica**, visível desde 0,00 s, acaba em ≤ 2,00 s | Específica, mas acaba entre 2,0 e 2,5 s; ou um pouco genérica | Genérica ("Você sabia?"), ou aparece depois de 0,5 s | Ausente quando pedida, não é pergunta, ou promete o que o vídeo não mostra | 03 (Narrador) |
+| N2 | Limites de texto | Passo 38 (caracteres) | Tela ≤ 20/linha; voz abertura ≤ 28, fecho ≤ 40; trecho 50–160 | 1 limite estourado em até 10% | 2 limites estourados, ou 1 acima de 10% | Texto cortado, fora da tela, ou 3 linhas | 03 (Narrador) |
+| N3 | Verdade e fonte [BLOQUEIA] | `fonte_do_fato` + conferência | Tudo verificável, fonte oficial anotada | Fato certo, fonte fraca (só a imagem) | Fato secundário impreciso (arredondamento que engana) | Fato falso, rumor, vazamento, ou sem fonte | 03 (Narrador); vazamento → Curador |
+| N4 | Trecho narrado | Prévia + tempos | Um fato útil, alinhado à imagem (± 1 s), neutro, 4–12 s | Alinhado ± 2 s, ou 1 adjetivo exagerado | Fato pouco útil ou desalinhado | Opinião/propaganda, por cima de fala, ou mais de 12 s | 03 (Narrador) |
+| N5 | Fecho | Tela/voz nos últimos 3 s | Pergunta real nos últimos 2–3 s + no máximo 1 convite neutro | Pergunta boa, mas fora da janela (começa em −3,5 s) ou 2 convites | Pergunta vaga ("O que acharam?") | Isca de engajamento, ofensiva, ou ausente quando pedida | 03 (Narrador) |
+| N6 | Voz | Ouvir as falas | Neutra, pronúncia certa, sobe na pergunta, velocidade 0,95–1,10 | Pergunta "reta", ou 1 palavra secundária estranha | Nome próprio mal pronunciado | Efeito na voz, outra voz, cortes/estalos, velocidade fora de 0,95–1,10 | 03 (Narrador) |
+| N7 | Tempos e sobreposição | `voz.medicao` | Abertura falada começa em ≤ 0,15 s; desvio ≤ 200 ms; sobreposição 0,0 s | Desvio 200–300 ms | Abertura falada começa entre 0,3 e 0,5 s | Sobreposição com outra fala > 0,3 s | 03 (Narrador) |
+| N8 | Mistura e volume | `ebur128` no `mix_toque.wav` | −14 ± 0,5 LUFS, pico ≤ −1,5 dBTP | ± 1 LUFS, pico ≤ −1,0 | ± 2 LUFS | Fora de ± 2, pico > −1,0, ou voz inaudível | 03 (Narrador) |
+| N9 | Regras de uso [BLOQUEIA] | Modo x tabela da seção 1.7 | Modo certo e motivo escrito | (não existe meio-termo) | (não existe meio-termo) | Voz em Futebol/GTA, voz em vídeo não próprio, voz sobre pessoa real, ou Toque em tema proibido | 03 (Narrador) para refazer em `texto`/`nenhum` |
+| N10 | Adequação ao canal e à marca | Tabela do passo 36 | Tom do canal, termos certos, nada proibido | Tom um pouco fora | Termo errado do canal (título em inglês, unidade estrangeira) | Spoiler de estreia, promessa de saúde, incentivo a risco, ofensa | 03 (Narrador) |
+| N11 | "Valores aproximados…" [BLOQUEIA] | Procurar dinheiro na abertura, trecho e fecho | Todo valor com aviso (ou não há valor) | (não existe meio-termo) | (não existe meio-termo) | Valor sem aviso | 03 (Narrador/Legendador) |
+
+**Exemplo (modo voz):** N1=10, N2=10, N3=10, N4=7, N5=10, N6=7, N7=10, N8=10, N9=10, N10=10, N11=10 → 104 ÷ 11 = **9,5 → Excelente**.
+**Exemplo (modo texto, GTA):** N1=7 (um pouco genérica), N2=10, N3=10, N5=10, N9=10, N10=10, N11=10 → 67 ÷ 7 = **9,6 → Excelente**.
+**Exemplo de volta:** N1=5, N5=5, N4=5, resto 7 → 15 + 56 = 71 ÷ 11 = **6,5 → Médio** → volta para `03_legenda_dublagem` (o de menor nota é do Narrador), com `refazer.json`.
+
+---
+
+## 6. Erros comuns e o que fazer
+
+| Sintoma | Causa provável | Solução |
+|---|---|---|
+| Abertura falada passa de 2 s | Texto da voz longo, ou número por extenso ("cento e noventa mil reais") | Voz mais curta que a tela ("Você pagaria isso nele?"); máximo 28 caracteres |
+| Abertura aparece depois de 0,5 s | Tempo da tela copiado da voz, ou o Editor pôs algo antes | Tela sempre em 0,00 s; se o Editor pôs cartão antes (Futebol), a abertura vai **no cartão** |
+| Pergunta genérica ("Você sabia?", "Olha isso!") | Pressa, ou banco de perguntas sem modelo bom | Pergunta com substantivo do vídeo; usar os 7 tipos da seção 2.12 |
+| Abertura promete o que o vídeo não mostra | Pergunta de "número" sem o número no vídeo | Passo 28: trocar a pergunta ou incluir o valor no trecho (com aviso) |
+| Fecho com "Comenta SIM" / "Marca 3 amigos" | Hábito de isca | Proibido; trocar por pergunta real + 1 convite neutro |
+| Toque com voz no Futebol ou no GTA | Pedido errado ou regra esquecida | [BLOQUEIA] — refazer em modo `texto`; avisar o Pauteiro |
+| Voz do Toque por cima da fala original/dublada | Trecho escolhido sem conferir `trechos_sem_fala` e a dublagem | Passos 21 e 48; mover o trecho ou encurtar |
+| Trecho fala de algo que não está na tela | Tempo escolhido sem olhar a imagem | Passo 31: alinhar com a imagem (± 1 s) |
+| Trecho com opinião ou exagero ("o melhor do mundo") | Tom de propaganda | Trocar por fato com fonte |
+| Fato sem fonte | Pressa | Sem fonte, sem trecho (`trecho.usar = false`) |
+| Pergunta lida "reta" pela voz | Limitação da voz sintética | Passo 44 (texto mais curto, começar com "Você/Qual/Já"); nunca efeito |
+| Nome estrangeiro mal pronunciado | Regra de leitura do português | `pronuncia.txt` e gerar de novo |
+| Volume do Toque diferente da dublagem | Mistura feita separada | Com dublagem, usar o comando de 3 entradas do passo 49 (vozes somadas) |
+| `mix_toque.wav` a −15,2 LUFS | `loudnorm` de uma passada em vídeo curto | Passo 51 (`volume=`) |
+| `montar_faixa.py` diz `unrecognized arguments: --tipo` | Versão antiga do roteiro | Copiar a versão da seção 8.7 do manual 05 |
+| Linha da pergunta com 21+ caracteres | Pergunta longa | Reescrever; a caixa da cor do canal soma 18 px de cada lado |
+| Mesmo modelo de pergunta 2 vezes na semana | Não conferiu o histórico | Passo 24 (procurar `modelo_banco` nos itens dos últimos 7 dias) |
+| Spoiler num vídeo de Filmes | Não conferiu a data de estreia | Nada do final/virada com menos de 30 dias; trocar a pergunta |
+| Pergunta de Futebol que vira briga ("Juiz ladrão?") | Provocação ofensiva | Trocar por opinião saudável ("Foi pênalti ou não foi?") |
+| Toque em vídeo de acidente | Não checou o tema | Modo `nenhum` (passo 17) |
+| `TravaOcupada` | Horário proibido ou outro pesado rodando | Esperar; nunca apagar o `pesado.lock` |
+| `dublar.py` falha | Voz/modelo ou opção errada | Teste do manual 05 (passo 7); se persistir, modo `texto` + ticket |
+
+---
+
+## 7. O que o app faz sozinho x o que o Claude decide
+
+**Meta:** o app decidir o modo, achar os espaços, escolher o modelo de pergunta no banco (pelos números do Analista), conferir limites e proibidos, gerar a voz, encaixar, misturar e medir. O Claude escreve só o que é linguagem e fato: a pergunta quando nenhum modelo serve, o trecho narrado e a checagem da fonte.
+
+| Passo(s) | Tarefa | App sozinho | Claude decide | Observação |
+|---|---|---|---|---|
+| 8–14 | Horário, fila, pedido, tempos, volta | 100% | 0% | |
+| 15–16, 18, 20–22 | Decidir o modo e achar espaços | 100% | 0% | Regras fixas + `trechos_sem_fala` |
+| 17 | Tema sensível (modo `nenhum`) | 30% | 70% | App procura palavras (acidente, morte…) na transcrição e no pedido; o julgamento é do Claude |
+| 19 | Pessoa real falando na tela | 40% | 60% | Olhar 3–5 quadros |
+| 23 | Achar "a coisa mais interessante" | 0% | 100% | |
+| 24 | Escolher modelo no banco | 90% | 10% | Pelo `comentarios_por_mil` (manual 11) e a regra dos 7 dias |
+| 25–28 | Escrever/ajustar a abertura | 50% | 50% | Com modelo do banco, o app preenche `{prato}`, `{lugar}`; sem modelo, Claude escreve |
+| 29–32 | Trecho narrado e fonte | 10% | 90% | App só mede tamanho e tempo; o fato e a fonte são do Claude |
+| 33–34 | Fecho | 70% | 30% | Banco de fechos por canal |
+| 35–38 | Proibidos, canal, JSON, limites | 95% | 5% | Listas e números fixos |
+| 39–48 | Gerar voz, medir, pronúncia, velocidade, montar, sobreposição | 95% | 5% | Claude só ouve se o app marcar algo |
+| 49–53 | Mistura, volume, prévia | 90% | 10% | Escuta final até o fim da sombra |
+| 54–58 | Entregar, erros, ticket | 95% | 5% | |
+| **Total (modo voz)** | | **≈ 70%** | **≈ 30%** | Maior parte do Claude: trecho narrado e fonte |
+| **Total (modo texto)** | | **≈ 75%** | **≈ 25%** | Com banco maduro (3 meses), meta 85% / 15% |
+
+**Como o app fica cada vez mais independente:**
+1. O **Analista (manual 11)** grava toda semana, em cada modelo do banco, `usos`, `comentarios_por_mil` e `retencao_3s` (retenção nos 3 primeiros segundos) — tirados das métricas por API (etapa 6).
+2. O app passa a escolher sozinho o melhor modelo que combine com o tema do pedido.
+3. Modelos com resultado ruim por 3 semanas seguidas ficam `"ativo": false`.
+4. Trechos narrados bons e que se repetem (ex.: "clara em neve deixa o bolo fofo") viram frases prontas por tema.
+
+---
+
+## 8. Ferramentas existentes que já fazem cada passo
+
+### 8.1 Tabela rápida
+| Passo | Ferramenta | Situação |
+|---|---|---|
+| 12–13 (tempos, espaços) | `transcricao.json` (manual 04) e `traducao.json` (manual 05) lidos pelo PowerShell | (existente o PowerShell; os arquivos vêm dos outros cargos) |
+| 24 (banco de perguntas) | `config\perguntas_<canal>.json` | (a criar) |
+| 35 (proibidos) | `config\toque_proibidos.txt` | (a criar) |
+| 40–45 (voz) | **`scripts\dublar.py`** + voz **Piper pt-BR** instalada | (existente) |
+| 41, 50 (medir) | **ffmpeg** (`Duration`, `ebur128`) | (existente) |
+| 45 (velocidade) | ffmpeg `atempo` | (existente) |
+| 47 (montar faixa) | `montar_faixa.py --tipo toque` (texto no manual 05, seção 8.7) | (provisório) |
+| 49 (mistura) | ffmpeg `loudnorm`, `sidechaincompress`, `amix` | (existente) |
+| Texto na tela | Legendador (manual 04), estilo `Pergunta` | (existente no processo do Claude; no app, a criar) |
+| Caixa de texto do Futebol (modo gol) | `scripts\posts_futebol.py legenda_video` | (existente) |
+| Cartão de 2 s do Futebol | `reel_futebol.py` (módulo G) | (a criar) |
+| Números por modelo de pergunta | Métricas por API (etapa 6) + Analista (manual 11) | (a criar) |
+| Trava e horário | `hpbase.TravaPesada` | (existente) |
+| JSON e histórico | `hpbase.escrever_json`, `hpbase.anexar_linha` | (existente) |
+| Módulo narrador da esteira | etapa 3 do app | (a criar) |
+| Comparação com o feito pelo Claude | `qa_paridade` | (a criar — módulo D) |
+| Tickets | `scripts\tickets.py` | (existente) |
+
+### 8.2 `scripts\dublar.py` e a voz Piper (explicado para leigo)
+O `dublar.py` é o script da HP que transforma texto em fala usando a **Piper**, um programa gratuito que roda no PC e "lê em voz alta" com uma voz sintética em português (arquivo `.onnx` já instalado). A voz não é de ninguém — por isso é a única permitida (regra "nunca clonar voz"). "Voz neutra", no Toque HP, quer dizer: **essa voz, no padrão, sem nenhum efeito**, velocidade normal. Detalhes e opções: manual 05, seções 8.2 e 8.3.
+
+### 8.3 ffmpeg (os pedaços usados aqui)
+- `-i arquivo` → abre; `Duration` na resposta → duração.
+- `ebur128=peak=true` → mede o volume percebido (LUFS) e o pico.
+- `atempo=1.08` → fala 8% mais rápida sem mudar o tom.
+- `adelay` / `amix` / `apad` / `atrim` (dentro do `montar_faixa.py`) → põem cada fala no seu segundo.
+- `loudnorm` → nivela o volume; `sidechaincompress` → abaixa o som original enquanto a voz fala.
+- `-map 0:v -map 1:a -c:v copy` → junta o vídeo do bruto com a trilha nova, sem refazer a imagem (prévia rápida).
+
+### 8.4 O banco de perguntas (a criar) — o "cérebro" que tira o Claude do caminho
+Um arquivo por canal com modelos de abertura e fecho, cada um com os números de resultado. O app escolhe o melhor que ainda não foi usado na semana e preenche as lacunas (`{prato}`, `{lugar}`, `{opcao_a}`). Quanto mais números o Analista (manual 11) grava, menos o Claude precisa escrever.
+
+### 8.5 PowerShell (os comandos deste manual)
+- `Get-Content arquivo -Raw -Encoding UTF8 | ConvertFrom-Json` → lê um JSON e deixa usar os campos (`$t.abertura.texto_tela`).
+- `"texto".Length` → conta caracteres.
+- `Test-Path` → o arquivo existe? (`True`/`False`).
+- `Add-Content -Encoding UTF8` → acrescenta uma linha no `historico.log`.
+- `Invoke-Item` → abre o arquivo no programa padrão (vídeo, áudio, pasta).
+
+---
+
+## 9. Testes de aceitação
+
+Para aceitar uma entrega: **todos** os testes que se aplicam ao modo. Para o app assumir: **7 dias seguidos de modo sombra** passando em tudo, com o `qa_paridade` (a criar) comparando com o feito pelo Claude.
+
+### 9.1 Regras
+1. **0** item de Futebol ou GTA com voz no Toque (100% em modo `texto` ou `nenhum`).
+2. **0** item com voz no Toque fora de `origem: "proprio"` ou com `voz_sintetica_permitida` ≠ `true`.
+3. **0** Toque em tema proibido (tragédia, morte, acidente, violência real, criança como assunto, política, religião) — conferir em 20 itens de teste com 3 sensíveis: os 3 em `nenhum`.
+4. **0** ocorrência da lista `toque_proibidos.txt` nos textos (tela e voz).
+5. **100%** dos trechos narrados com `fonte_do_fato` preenchida; **0** fato falso em 10 itens conferidos por gente.
+6. **0** item do GTA com qualquer menção a vazamento.
+7. **100%** dos valores em dinheiro com aviso "Valores aproximados…".
+8. `modo` nunca "acima" do `modo_pedido` (0 casos).
+9. **0** trabalho pesado registrado entre 18:00 e 22:29.
+
+### 9.2 Abertura
+10. Tela aparece em **0,00 s** (tolerância 1 quadro = 33 ms) e some em **≤ 2,00 s**.
+11. Voz (quando falada) começa em **≤ 0,15 s** e termina em **≤ 2,00 s**.
+12. Texto da tela: **≤ 2 linhas** de **≤ 20 caracteres**; termina com "?".
+13. Texto da voz: **≤ 28 caracteres**.
+14. **100%** das aberturas com pelo menos 1 substantivo do vídeo (conferido em 20 itens).
+
+### 9.3 Trecho narrado
+15. Duração de fala entre **4 e 12 s**; texto da voz entre **50 e 160 caracteres**.
+16. Começa **≥ 3,0 s**; termina **≥ 1,0 s** antes do fecho.
+17. Alinhado à imagem de que fala: diferença **≤ 1 s** (conferido em 10 itens).
+18. **0** adjetivo da lista de exagero ("incrível", "surreal", "inacreditável").
+
+### 9.4 Fecho
+19. Começa entre **duração − 3,0 s** e **duração − 2,0 s**; voz termina **≤ duração − 0,2 s**.
+20. Tela **≤ 2 linhas de 20**; voz **≤ 40 caracteres**; termina com "?" (a pergunta) e tem **no máximo 1** convite neutro.
+21. **0** isca de engajamento.
+
+### 9.5 Voz, tempos e mistura (modos `voz` e `misto`)
+22. Velocidade de cada fala entre **0,95 e 1,10**.
+23. Desvio de início de cada fala **≤ ± 200 ms** (medido pelo `montar_faixa.py`).
+24. Sobreposição com outra fala (original ou dublada): **0,0 s**.
+25. `toque_hp.wav`: 48 000 Hz, mono, duração = bruto **± 0,02 s**.
+26. `mix_toque.wav`: 48 000 Hz, estéreo, **−14 LUFS ± 1** (meta ± 0,5), pico **≤ −1,5 dBTP**.
+27. Com dublagem: volume da voz do Toque e da dublagem com diferença **≤ 1 LU** (as duas passam pelo mesmo nivelamento no passo 49).
+28. **0** efeito aplicado na voz (só `atempo` dentro de 0,95–1,10).
+
+### 9.6 Registro e desempenho
+29. `toque_hp.json` válido, com `modo`, `motivo_modo`, `tipo_pergunta`, `modelo_banco`, `checagem.resultado = "ok"`.
+30. `historico.log` com pelo menos 2 linhas `[03] narrador:` com números.
+31. O mesmo `modelo_banco` não aparece 2 vezes no mesmo canal em 7 dias.
+32. Gerar as 3 falas + montar + misturar (vídeo de 30 s): **≤ 2 min** no PC do Antônio.
+33. Paridade de 7 dias: nota média N1–N11 do app **≥ média do Claude − 0,2**; **0** item do app com N3, N9 ou N11 em 0.
+
+### 9.7 Casos de teste obrigatórios
+| # | Caso | O que tem que acontecer |
+|---|---|---|
+| H1 | GTA, material oficial | Modo `texto`; abertura em 0,00–≤ 2,00 s; fecho nos últimos 3 s; zero voz; zero vazamento |
+| H2 | Futebol, gol oficial com cartão de 2 s | Modo `texto`; abertura no cartão; não tapa placar; áudio original intacto |
+| H3 | Futebol com pedido de Toque `voz` | Rebaixado para `texto`, motivo "futebol: nunca narração sintética" |
+| H4 | Receitas, vídeo próprio sem fala | Modo `voz` completo; −14 LUFS; sobreposição 0,0 s |
+| H5 | Carros, vídeo próprio com preço na abertura | Tela com o valor + aviso; voz curta ≤ 28 caracteres; trecho com "segundo a montadora" |
+| H6 | Destinos, vídeo próprio dublado (fala em 0,52 s) | Modo `misto`: abertura só escrita; fecho falado no espaço livre; mistura de 3 entradas |
+| H7 | Filmes, trailer oficial (não é vídeo próprio) | Modo `texto`; sem spoiler; título brasileiro |
+| H8 | Vídeo sobre acidente real | Modo `nenhum`, com motivo |
+| H9 | Vídeo de 5 s | Modo `nenhum` (ou só fecho), com motivo |
+| H10 | Volta do Revisor por N1 | Só a abertura refeita (tela e voz); `refazer_1_feito.json` criado |
+
+---
+
+## Glossário
+
+| Palavra | O que quer dizer |
+|---|---|
+| **Abertura** | A pergunta que aparece no primeiro quadro do vídeo e some em até 2 s. |
+| **Banco de perguntas** | Arquivo por canal com modelos de pergunta que já funcionaram, com os números de resultado. |
+| **Comentários por mil (`comentarios_por_mil`)** | Quantos comentários o vídeo teve a cada 1.000 visualizações. Mede se a pergunta puxa conversa. |
+| **Convite neutro** | Frase curta depois da pergunta do fecho: "Comenta aí", "Conta aí", "Salva pra depois". |
+| **Fecho** | A pergunta dos últimos 2 a 3 s, para a pessoa responder nos comentários. |
+| **Fonte do fato** | De onde veio a informação do trecho narrado (material oficial, site oficial, a própria imagem). |
+| **Gancho** | O que faz a pessoa parar de rolar nos primeiros segundos. |
+| **Isca de engajamento** | Pedido artificial de curtida/comentário/marcação ("Comenta SIM", "Marca 3 amigos"). As redes rebaixam; proibido na HP. |
+| **LUFS** | Medida de volume "percebido". As redes usam cerca de −14 LUFS. |
+| **Mistura (mix)** | Juntar o som original (abaixado) e as vozes num arquivo só, no volume certo. |
+| **Modo** | Como o Toque entra: `voz`, `misto`, `texto` ou `nenhum`. |
+| **Piper** | Programa gratuito, instalado no PC, que lê texto com voz sintética em português. |
+| **Quadro** | Cada "foto" do vídeo; a 30 quadros por segundo, 1 quadro dura 33 ms. |
+| **Retenção nos 3 s (`retencao_3s`)** | Quantas pessoas (de 0 a 1) continuam assistindo depois dos 3 primeiros segundos. |
+| **Sobreposição** | Duas vozes falando ao mesmo tempo. No Toque, tem que ser zero. |
+| **Spoiler** | Contar o final ou uma virada de filme/série. |
+| **Toque HP** | Abertura com pergunta + trecho narrado + fecho com pergunta: a marca da HP em cada vídeo. |
+| **Trecho narrado** | 1 a 3 frases com um fato, faladas com a voz neutra num pedaço sem fala do vídeo. |
+| **Vídeo próprio** | Vídeo montado pela HP com material que pode usar, cuja narração é da HP (`origem: "proprio"`, marcado pelo Curador). |
+| **Voz neutra** | A voz Piper padrão, sem efeito nenhum, em velocidade normal. |
+| **`dublar.py`** | O script da HP que gera a voz. A única porta permitida. |
