@@ -8,6 +8,7 @@ Gera em H:\\HypadoLocal\\pagina_links\\:
   fundos\\<canal>_1600x400.jpg   faixa (fundo de seção)
   fundos\\<canal>_1080x1080.jpg  quadrado (fundo de item / bloco com imagem)
   botoes\\<canal>_botao.png      botão 1000x200 na cor do canal, com o nome
+  cartoes\\<canal>_cartao.jpg    faixa clarinha com o botão já em cima (1 imagem com link)
   previa.html                    como fica no celular, para conferir antes
 
 Fundo: com foto do canal (fotos\\<canal>.jpg|png|webp) a foto é clareada
@@ -148,8 +149,8 @@ def carregar_cores(caminho: str | Path | None = None) -> list[dict]:
                 f"(mínimo {CONTRASTE_MINIMO}:1). Sugestão: {melhor} "
                 f"({contraste(c['cor'], melhor):.2f}:1)")
         if "contraste" in c and abs(float(c["contraste"]) - calc) > 0.01:
-            raise ErroContraste(f"{c['nome']}: 'contraste' anotado {c['contraste']} "
-                                f"não bate com o calculado {calc}")
+            raise ErroContraste(f"{c['nome']}: 'contraste' anotado {c['contraste']} não bate com o "
+                                f"calculado {calc}: troque o número para {calc} (ou apague o campo)")
         c["contraste_calculado"] = calc
         c["cor_borda"] = cor_borda(c["cor"])
     return canais
@@ -318,6 +319,14 @@ def gerar_botao(canal: dict, texto: str | None = None, tamanho: tuple[int, int] 
     return img.resize(tamanho, Image.Resampling.LANCZOS)
 
 
+def gerar_cartao(faixa: Image.Image, botao: Image.Image) -> Image.Image:
+    """Faixa clarinha com o botão no meio: vira 1 imagem só, com link, no Google Sites."""
+    cartao = faixa.convert("RGBA")
+    cartao.alpha_composite(botao.convert("RGBA"), ((cartao.width - botao.width) // 2,
+                                                   (cartao.height - botao.height) // 2))
+    return cartao.convert("RGB")
+
+
 # --------------------------------------------------------------------------
 # tudo junto
 # --------------------------------------------------------------------------
@@ -384,15 +393,19 @@ def gerar_tudo(saida: str | Path | None = None, pasta_fotos: str | Path | None =
                 "faixa": str(base / "fundos" / f"{c['slug']}_1600x400.jpg"),
                 "quadrado": str(base / "fundos" / f"{c['slug']}_1080x1080.jpg"),
                 "botao": str(base / "botoes" / f"{c['slug']}_botao.png"),
+                "cartao": str(base / "cartoes" / f"{c['slug']}_cartao.jpg"),
                 "contraste": c["contraste_calculado"]}
         if not simular:
-            garantir(base / "fundos")
-            garantir(base / "botoes")
+            for sub in ("fundos", "botoes", "cartoes"):
+                garantir(base / sub)
+            imgs = {}
             for (w, h), chave in zip(TAMANHOS_FUNDO, ("faixa", "quadrado")):
-                img = gerar_fundo(c, (w, h), foto)
+                imgs[chave] = img = gerar_fundo(c, (w, h), foto)
                 img.save(item[chave], "JPEG", quality=90, optimize=True, progressive=True)
                 item[f"luminancia_{chave}"] = round(luminancia_media(img), 1)
-            gerar_botao(c).save(item["botao"], "PNG", optimize=True)
+            botao = gerar_botao(c)
+            botao.save(item["botao"], "PNG", optimize=True)
+            gerar_cartao(imgs["faixa"], botao).save(item["cartao"], "JPEG", quality=92, optimize=True)
         res["canais"][c["slug"]] = item
         log.info("%s %s: foto=%s contraste=%.2f", "simular" if simular else "gerado",
                  c["slug"], "sim" if foto else "não", c["contraste_calculado"])
