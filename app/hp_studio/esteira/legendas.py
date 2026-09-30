@@ -99,7 +99,9 @@ def deslocar(falas: list[Fala], inicio: float, duracao: float) -> list[Fala]:
 
 
 def _esc_ass(t: str) -> str:
-    return t.replace("\\", "\\\\").replace("{", "(").replace("}", ")") \
+    # no ASS, "{...}" é comando de estilo e "\\N" é quebra de linha: o texto da
+    # legenda nunca pode trazer comando escondido
+    return t.replace("\\", "\u29f5").replace("{", "(").replace("}", ")") \
             .replace("\n", "\\N")
 
 

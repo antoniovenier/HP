@@ -293,7 +293,7 @@ A Lucia conhece cada rua de Leonida.
 
 4
 00:00:26,600 --> 00:00:29,500
-Vai jogar no dia 19/11? Comenta aí.
+Vai jogar em 19/11? Comenta aí.
 ```
 Regras do SRT:
 - Numeração começa em 1 e vai de 1 em 1, sem pular.
@@ -320,7 +320,7 @@ YCbCr Matrix: TV.709
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: HP,Montserrat ExtraBold,72,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,6,2,2,80,160,560,1
-Style: Pergunta,Montserrat ExtraBold,80,&H00FFFFFF,&H00FFFFFF,&H00882EFF,&H00000000,-1,0,0,0,100,100,0,0,3,18,0,8,80,160,330,1
+Style: Pergunta,Montserrat ExtraBold,72,&H00FFFFFF,&H00FFFFFF,&H00882EFF,&H00000000,-1,0,0,0,100,100,0,0,3,18,0,8,80,160,330,1
 Style: Credito,Montserrat SemiBold,40,&H26FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,3,1,7,80,160,240,1
 Style: Aviso,Montserrat SemiBold,38,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,3,1,2,80,160,490,1
 
@@ -332,7 +332,7 @@ Dialogue: 0,0:00:00.41,0:00:02.01,HP,,0,0,0,,Bem-vindo de volta
 Dialogue: 0,0:00:02.01,0:00:02.98,HP,,0,0,0,,a {\c&H00882EFF&}Vice City{\r}
 Dialogue: 0,0:00:03.41,0:00:04.50,HP,,0,0,0,,A {\c&H00882EFF&}Lucia{\r} conhece
 Dialogue: 0,0:00:04.50,0:00:05.87,HP,,0,0,0,,cada rua de {\c&H00882EFF&}Leonida{\r}
-Dialogue: 1,0:00:26.60,0:00:29.50,Pergunta,,0,0,0,,Vai jogar no dia 19/11?\NComenta aí
+Dialogue: 1,0:00:26.60,0:00:29.50,Pergunta,,0,0,0,,Vai jogar em 19/11?\NComenta aí
 ```
 
 Como ler uma linha `Dialogue` (para leigo):
@@ -503,7 +503,7 @@ Exemplo de `estilos_legenda.json` (a criar) — o app lê daqui em vez de ter co
   "fonte_texto": "Montserrat ExtraBold",
   "fonte_apoio": "Montserrat SemiBold",
   "tamanho_texto": 72,
-  "tamanho_pergunta": 80,
+  "tamanho_pergunta": 72,
   "tamanho_credito": 40,
   "tamanho_aviso": 38,
   "contorno": 6,
@@ -536,7 +536,7 @@ Esta tabela é **a** regra. Quem programar o app usa estes números; quem revisa
 | Contorno | Preto, 6 px; sombra 2 px preta a 50% | Lê até em fundo branco (neve, prato, céu) |
 | Cor de destaque | A cor do canal (tabela abaixo) | Identidade de cada perfil |
 | Palavras por bloco | **2 a 4** (nunca 1 sozinha, a não ser palavra final de frase ou exclamação: "Golaço!") | Leitura em "tiros" rápidos, ritmo de reels |
-| Caracteres por linha | **Máximo 22** (contando espaços) **e** no máximo 840 px de largura medida | Cabe entre as margens com a fonte 72 |
+| Caracteres por linha | **Máximo 22** (contando espaços) **e** no máximo 840 px de largura medida (medido com a Montserrat ExtraBold 72: "cada rua de Leonida" = 777 px; "fogem pela Vice City" = 794 px; "Mistura a farinha com" = 835 px — no limite) | Cabe entre as margens com a fonte 72; letras largas (m, W) estouram antes dos 22, por isso vale a medida em px |
 | Linhas por bloco | **Máximo 2**; o normal é 1 | Mais que isso tapa o vídeo |
 | Pirâmide | Com 2 linhas, a de baixo igual ou maior que a de cima, quando der | Leitura mais natural |
 | Tempo mínimo na tela | 0,50 s por bloco (exceção: última palavra de frase muito rápida, 0,35 s) | Dá tempo de ler |
@@ -559,7 +559,7 @@ Esta tabela é **a** regra. Quem programar o app usa estes números; quem revisa
 | Zona segura | Nada escrito nos 220 px de cima, nos 480 px de baixo, nos 80 px da esquerda e nos 160 px da direita | Ali ficam os botões e textos do aplicativo |
 | Crédito | "Vídeo: @criador", Montserrat SemiBold 40 px, branco 85%, canto de cima à esquerda, 240 px do topo, **do começo ao fim do vídeo** | Regra da empresa: crédito sempre |
 | Aviso de valores | "Valores aproximados…", Montserrat SemiBold 38 px, logo abaixo da legenda, durante todo bloco que tem valor e mais 2 s | Regra da empresa |
-| Pergunta do Toque HP | Estilo `Pergunta`: 80 px, texto branco numa caixa da cor do canal, topo (330 px) | Destaca o gancho (manual 06) |
+| Pergunta do Toque HP | Estilo `Pergunta`: 72 px, texto branco numa caixa da cor do canal, topo (330 px); **no máximo 20 caracteres por linha** (a caixa soma 18 px de cada lado) | Destaca o gancho (manual 06) |
 | Codificação | UTF-8 | Acentos certos |
 
 **Cores por canal** (a cor oficial de cada canal é a que está em `scripts\posts_canais.py`/`scripts\estaticos.py`; se forem diferentes destas, **vale a do script** e esta tabela e o `estilos_legenda.json` devem ser corrigidos no mesmo dia):
@@ -976,12 +976,12 @@ Test-Path toque_hp.json
 - Exemplos por canal (tudo vem do manual 06; aqui só confira os limites):
 | Canal | Abertura (na tela) | Fecho (na tela) | Modo |
 |---|---|---|---|
-| GTA | "Você reconheceria\Nessa cidade à noite?" | "Vai jogar no dia 19/11?\NComenta aí" | texto |
-| Futebol | "Foi pênalti\Nou não foi?" | "Quem acertou o placar?\NComenta aí" | texto |
+| GTA | "Você reconheceria\Nessa cidade à noite?" | "Vai jogar em 19/11?\NComenta aí" | texto |
+| Futebol | "Foi pênalti\Nou não foi?" | "Acertou o placar?\NComenta aí" | texto |
 | Filmes | "Você viu esse\Ndetalhe no filme?" | "Qual cena te pegou?\NComenta aí" | voz ou texto |
 | Receitas | "Já fez pão\Nsem sovar?" | "Faria hoje?\NSalva pra depois" | voz ou texto |
 | Carros | "Você pagaria\Nisso num carro?" | "Compraria ou não?\NComenta aí" | voz ou texto |
-| Destinos | "Conhece a praia\Nmais azul do Brasil?" | "Iria ou passaria?\NMarca quem vai junto" | voz ou texto |
+| Destinos | "Conhece a praia\Nmais azul do Brasil?" | "Iria ou passaria?\NConta aí" | voz ou texto |
 
 **Passo 46 — Pôr o crédito do criador [BLOQUEIA se faltar].**
 - Estilo `Credito`, do **primeiro ao último** segundo do vídeo, camada 2 (por cima de tudo).

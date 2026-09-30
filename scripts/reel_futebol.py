@@ -169,15 +169,19 @@ def montar(roteiro, saida=None, simular: bool = False, legenda_auto: bool = Fals
 
 
 def gerar_exemplos(destino=None, agora: datetime | None = None, trava: bool = True,
-                   dur_clipe: float = 8.0, modos=MODOS_EXEMPLO) -> list[dict]:
-    """Os 4 modelos (gol, noticia, debate, estatistica) com mídia sintética."""
+                   dur_clipe: float = 8.0, modos=MODOS_EXEMPLO, curto: bool = False) -> list[dict]:
+    """Os 4 modelos (gol, noticia, debate, estatistica) com mídia sintética.
+
+    curto=True: clipe de 2 s e durações mínimas (conferência rápida/testes)."""
+    if curto:
+        dur_clipe = min(dur_clipe, 2.0)
     destino = garantir(Path(destino) if destino else pasta_modelos())
     ctx = TravaPesada("reel_futebol", agora=agora) if trava else nullcontext()
     resultados = []
     with ctx:
         midia = gerar_midia_sintetica(destino / "midia_sintetica", dur_clipe)
         for modo in modos:
-            r = roteiro_modelo(modo, midia)
+            r = roteiro_modelo(modo, midia, curto)
             arq = destino / f"MODELO_{modo}.json"
             escrever_json(arq, r)
             resultados.append(montar(arq, saida=destino / f"MODELO_{modo}.mp4", trava=False))
@@ -205,7 +209,7 @@ def executar(trabalho: dict) -> dict:
     acao = trabalho.get("acao", "montar")
     try:
         if acao == "exemplos":
-            res = gerar_exemplos(trabalho.get("destino"))
+            res = gerar_exemplos(trabalho.get("destino"), curto=bool(trabalho.get("curto")))
             return {"ok": True, "resultados": res}
         if acao == "validar":
             erros, avisos = validar(trabalho["roteiro"], bool(trabalho.get("legenda_auto")),
@@ -250,6 +254,8 @@ def _parser() -> argparse.ArgumentParser:
     e = sub.add_parser("exemplos", help="gera os 4 modelos (gol, noticia, debate, estatistica) "
                                         "com mídia sintética em HypadoLocal\\canais\\futebol\\modelos_reel")
     e.add_argument("--destino", help="outra pasta para os modelos")
+    e.add_argument("--curto", action="store_true",
+                   help="versão curta (clipe de 2 s, fotos de 1 s) só para conferir rápido")
     q = sub.add_parser("esquema", help="imprime um roteiro de exemplo do formato")
     q.add_argument("modo", nargs="?", choices=MODOS, help="formato (sem nada = todos)")
     return p
@@ -299,7 +305,7 @@ def main(argv=None) -> int:
                       f"render {res['tempo_render_s']:.1f}s)")
             return 0
         if args.comando == "exemplos":
-            for res in gerar_exemplos(args.destino):
+            for res in gerar_exemplos(args.destino, curto=args.curto):
                 print(f"OK: {res['saida']} ({res['duracao_planejada']:.1f}s, render "
                       f"{res['tempo_render_s']:.1f}s, {res['lufs_saida']} LUFS)")
             return 0

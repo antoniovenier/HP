@@ -819,7 +819,7 @@ body{margin:0;background:var(--fundo);color:var(--texto);font:15px/1.5 system-ui
         itemTrilho("coracao", "12,4 mil") + itemTrilho("balao", "318") + itemTrilho("salvar", "1.024") +
         itemTrilho("compartilhar", "96") + "<span class=\"pc-tr\">" + icone("disco", "pc-gira") + "</span>",
       yt: itemTrilho("gostei", "12 mil") + "<span class=\"pc-tr\">" + icone("gostei", "pc-inv") + "<small>Não gostei</small></span>" +
-        itemTrilho("balao", "318") + itemTrilho("compartilhar", "Compartilhar") + itemTrilho("pontos", ""),
+        itemTrilho("balao", "318") + itemTrilho("compartilhar", "Compart.") + itemTrilho("pontos", ""),
       fb: itemTrilho("gostei", "1,2 mil") + itemTrilho("balao", "318") + itemTrilho("compartilhar", "96") +
         itemTrilho("pontos", "")
     }[e] || "";
@@ -930,7 +930,7 @@ body{margin:0;background:var(--fundo);color:var(--texto);font:15px/1.5 system-ui
       "<div><dt>Formato</dt><dd>" + esc(proporcaoDe(post, r, chaveRede)) + " · " + esc(r.tamanho) + "</dd></div>";
     if (r.limite > 0) {
       h += "<div><dt>" + nome + " visível</dt><dd>~" + r.limite + " caracteres" +
-        (r.linhas ? " / " + r.linhas + " linha" + (r.linhas > 1 ? "s" : "") : "") +
+        (r.linhas ? " (ou " + r.linhas + " linha" + (r.linhas > 1 ? "s" : "") + " do texto)" : "") +
         (r.mais ? " antes do \"" + esc(r.reticencias.trim() + " " + r.mais) + "\"" : "") + "</dd></div>";
       var a = r.campo === "titulo" ? "o" : "a";   /* o título / a legenda */
       var sit = !c.total ? "<b class=\"pc-alerta\">vazi" + a + "</b>"
@@ -955,7 +955,7 @@ body{margin:0;background:var(--fundo);color:var(--texto);font:15px/1.5 system-ui
       h += "<div><dt>Interface cobre</dt><dd>" + partes.join(" · ") + "</dd></div>";
     }
     h += "<div><dt>Capa</dt><dd data-pc-corte>" + (temMidia(post) ? "conferindo…" : "sem capa (post só de texto)") + "</dd></div></dl>";
-    if (info.origem === "titulo_no_lugar") {
+    if (info.origem === "titulo_no_lugar" && r.limite > 0) {
       h += "<p class=\"pc-aviso\">Sem legenda nos dados: a prévia está usando o título no lugar.</p>";
     }
     if (r.dica) h += "<p class=\"pc-dica\">" + esc(r.dica) + "</p>";

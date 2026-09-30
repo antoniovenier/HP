@@ -594,11 +594,29 @@ def plano_resultado(r: dict, estilo: dict, saida: Path) -> Plano:
     camp = (texto_ajustado(str(r["campeonato"]), estilo, LARG_UTIL, 2, 42, 30, cor_txt="texto2")
             if r.get("campeonato") else None)
     venc = "mandante" if m["gols"] > v["gols"] else "visitante" if v["gols"] > m["gols"] else None
-    placar = linha_placar(m, v, estilo, 230, venc)
+    placar = linha_placar(m, v, estilo, 250, venc)
     rodape_txt = " · ".join(str(x) for x in (r.get("estadio"), r.get("data")) if x)
     rodape = (texto_ajustado(rodape_txt, estilo, LARG_UTIL, 1, 36, 24, cor_txt="texto2")
               if rodape_txt else None)
-    y = y_cab + 30
+    y_ini = y_cab + 30
+    y_lim = ZONA_Y1 - 16 - (rodape.height + 20 if rodape else 0)
+    gols = r.get("gols") or []
+    pad = 26
+    colw = (LARG_UTIL - 2 * pad) // 2 - 10
+    por_lado = max([sum(1 for g in gols if str(g["time"]).lower() == lado)
+                    for lado in ("mandante", "visitante")] + [0])
+    fixo_h = fim.height + 16 + (camp.height if camp else 0) + 40 + placar.height
+    tam = 50
+    while tam > 26 and fixo_h + 46 + por_lado * (tam * 1.2 + 14) + 2 * pad > y_lim - y_ini:
+        tam -= 4
+    linhas_gol = [(g, _linha_gol(g, estilo, tam, colw, str(g["time"]).lower() == "visitante"))
+                  for g in gols]
+    alt_lado = {lado: sum(img.height + 14 for g, img in linhas_gol
+                          if str(g["time"]).lower() == lado) - 14
+                for lado in ("mandante", "visitante")}
+    caixa_h = (max(alt_lado.values()) + 2 * pad) if linhas_gol else 0
+    total = fixo_h + (46 + caixa_h if caixa_h else 0)
+    y = y_ini + max(0, (y_lim - y_ini - total) // 2)
     fixos = topo + [Sprite(fim, (LARGURA - fim.width) // 2, y)]
     y += fim.height + 16
     if camp:
@@ -607,23 +625,21 @@ def plano_resultado(r: dict, estilo: dict, saida: Path) -> Plano:
     y += 40
     fixos.append(Sprite(placar, MARGEM, y))
     y += placar.height + 46
-    y_lim = ZONA_Y1 - 16 - (rodape.height + 16 if rodape else 0)
     if rodape:
-        fixos.append(Sprite(rodape, (LARGURA - rodape.width) // 2, y_lim + 16))
-    gols = r.get("gols") or []
-    colw = LARG_UTIL // 2 - 10
-    tam = 42
-    por_lado = max([sum(1 for g in gols if g["time"] == lado) for lado in ("mandante", "visitante")] + [1])
-    while tam > 26 and por_lado * (tam * 1.2 + 14) > y_lim - y:
-        tam -= 4
-    ys = {"mandante": y, "visitante": y}
+        fixos.append(Sprite(rodape, (LARGURA - rodape.width) // 2, y_lim + 20))
     gol_sprites = []
-    for g in gols:
-        lado = str(g["time"]).lower()
-        img = _linha_gol(g, estilo, tam, colw, direita=(lado == "visitante"))
-        x = MARGEM if lado == "mandante" else LARGURA - MARGEM - colw
-        gol_sprites.append(Sprite(img, x, ys[lado]))
-        ys[lado] += img.height + 14
+    if caixa_h:
+        cx_img = Image.new("RGBA", (LARG_UTIL, caixa_h), (0, 0, 0, 0))
+        ImageDraw.Draw(cx_img).rounded_rectangle(
+            (0, 0, LARG_UTIL - 1, caixa_h - 1), 28,
+            fill=rgba(estilo["cores"]["caixa"], int(255 * 0.38)))
+        fixos.append(Sprite(cx_img, MARGEM, y))
+        ys = {"mandante": y + pad, "visitante": y + pad}
+        for g, img in linhas_gol:
+            lado = str(g["time"]).lower()
+            x = MARGEM + pad if lado == "mandante" else LARGURA - MARGEM - pad - colw
+            gol_sprites.append(Sprite(img, x, ys[lado]))
+            ys[lado] += img.height + 14
     extra = _extra(r, estilo)
     conferir_zona(fixos + gol_sprites + extra, "resultado")
     base = _preguicoso(lambda: colar(fundo_marca(estilo), fixos))
@@ -728,7 +744,7 @@ def plano_tabela(r: dict, estilo: dict, saida: Path) -> Plano:
     if passo < 30:
         raise ErroReel("tabela: linhas demais para a tela (use 'top' menor)")
     alt = passo - max(4, passo // 12)
-    fs = max(18, int(alt * 0.46))
+    fs = max(18, int(alt * 0.5))
     fb, fnrm = fonte(fs, True, estilo), fonte(fs, False, estilo)
     larg_nome = x_cols[0] - col_w + 20 - 92
     linhas_sp = []

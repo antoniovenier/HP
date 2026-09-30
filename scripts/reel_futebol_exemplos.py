@@ -219,9 +219,19 @@ def gerar_midia_sintetica(pasta: Path, dur_clipe: float = 8.0) -> dict:
             "musica": f"{rel}/musicas_livres/trilha_SINTETICA.wav"}
 
 
-def roteiro_modelo(modo: str, midia: dict) -> dict:
-    """Roteiro de exemplo + avisos de MODELO (arquivo e marca d'água)."""
+CURTO = {"duracao_por_foto": 1.0, "duracao_recorte": 1.0, "duracao_final": 1.0,
+         "duracao": 2.0, "duracao_contagem": 1.0}
+
+
+def roteiro_modelo(modo: str, midia: dict, curto: bool = False) -> dict:
+    """Roteiro de exemplo + avisos de MODELO (arquivo e marca d'água).
+
+    curto=True encolhe as durações (só para conferência rápida/testes)."""
     r = roteiro_exemplo(modo, midia)
+    if curto:
+        for k, v in CURTO.items():
+            if k in r:
+                r[k] = v
     r = {"_aviso": AVISO_MODELO, **r}
     r["id"] = f"MODELO_{modo}"
     r["marca_dagua"] = MARCA_MODELO

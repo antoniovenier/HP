@@ -1116,7 +1116,7 @@ $d | ConvertTo-Json -Depth 6 | Set-Content "$item\design.json" -Encoding UTF8
 Get-Content "$item\design.json" -Encoding UTF8 | Select-Object -First 12
 ```
 - **Confira:** o `-Depth 6` é obrigatório (sem ele o PowerShell 5.1 corta a lista `pecas` e grava lixo — erro E14).
-- **Deve aparecer:** o começo do JSON com `"status": "pronto"`. (O PowerShell 5.1 grava acentos como `\u00e1` dentro do JSON; está certo, o app lê normal.)
+- **Deve aparecer:** o começo do JSON com `"status": "pronto"`. (O PowerShell 5.1 pode trocar alguns sinais, como o apóstrofo `'`, por códigos do tipo `\u0027` dentro do JSON, e grava o arquivo com uma marca invisível no começo (BOM); está certo, o app lê normal.)
 
 #### Passo 54 — Anotar no `historico.log`
 - **Rode:**

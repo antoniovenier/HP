@@ -215,7 +215,10 @@ class TrabalhoRevisao(Trabalho):
         estado = ler_estado(item)
         decisoes = [n for n in (ARQ_REFAZER, ARQ_APROVADO) if (item / n).exists()]
         if len(decisoes) == 2:
-            historico(item, f"[{REVISAO}] aprovado.json e refazer.json juntos: vale o refazer")
+            historico(item, f"[{REVISAO}] aprovado.json e refazer.json juntos: vale o "
+                            f"refazer (o aprovado.json foi arquivado)")
+            self._arquivar(item, ARQ_APROVADO, estado["voltas"] + 1, "ignorado_")
+            decisoes = [ARQ_REFAZER]
         for nome in decisoes[:1]:
             arq = item / nome
             bruto = arq.read_bytes()
@@ -234,14 +237,14 @@ class TrabalhoRevisao(Trabalho):
                                       f"aguardando aprovado.json ou refazer.json")
         return Resultado.aguardar("aguardando aprovado.json ou refazer.json")
 
-    def _arquivar(self, item: Path, nome: str, rodada: int) -> None:
+    def _arquivar(self, item: Path, nome: str, rodada: int, prefixo: str = "") -> None:
         arq = Path(item) / nome
         if arq.exists():
             destino = garantir(Path(item) / "revisao" / "decisoes")
-            alvo = destino / f"rodada_{rodada}_{nome}"
+            alvo = destino / f"rodada_{rodada}_{prefixo}{nome}"
             n = 2
             while alvo.exists():
-                alvo = destino / f"rodada_{rodada}_{n}_{nome}"
+                alvo = destino / f"rodada_{rodada}_{n}_{prefixo}{nome}"
                 n += 1
             os.replace(arq, alvo)
 

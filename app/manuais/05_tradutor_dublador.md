@@ -916,7 +916,7 @@ Move-Item -Force "$item\dublagem\seg_003_rapido.wav" "$item\dublagem\seg_003.wav
 
 **Passo 52 — Rodar o roteiro de montagem.**
 ```powershell
-& $py "$prov\montar_faixa.py" --item $item
+& $py "$prov\montar_faixa.py" --item $item --tipo dublagem
 ```
 - Deve aparecer: `OK: 4 falas; desvio max 38 ms; 0 fora do limite de 200 ms`.
 - O roteiro grava `dublagem.wav` (48 kHz, mono, com a duração exata do vídeo), mede onde cada fala começou de verdade e anota em `traducao.json → dublagem.medicao` e no `historico.log`.
@@ -1201,17 +1201,19 @@ Não é o Tradutor que roda, mas ele depende disso: o Legendador (manual 04) usa
 Existem tradutores gratuitos que rodam no PC sem internet (por exemplo, o Argos Translate). **Não estão instalados e não fazem parte do processo hoje.** Podem ser avaliados no futuro só para fazer um **rascunho** que o Claude corrige (economia de token), e só depois de 7 dias de sombra provando que a nota T1/T2 não cai. Até lá: tradução = Claude.
 
 ### 8.7 Roteiro provisório de montagem da faixa (`H:\HypadoLocal\app\provisorio\montar_faixa.py`)
-Usado no passo 52. Lê `traducao.json → dublagem.segmentos` (`inicio_planejado` e `arquivo` de cada fala) e `duracao_s`, monta `dublagem.wav` (48 kHz, mono, duração exata), mede o início real de cada fala (`silencedetect`) e grava o desvio. Copie exatamente (salvar em UTF-8):
+Usado no passo 52 (e também pelo Narrador, manual 06, com `--tipo toque`). Com `--tipo dublagem`, lê `traducao.json → dublagem.segmentos` (`inicio_planejado` e `arquivo` de cada fala) e `duracao_s`, monta `dublagem.wav` (48 kHz, mono, duração exata), mede o início real de cada fala (`silencedetect`) e grava o desvio. Copie exatamente (salvar em UTF-8):
 ```python
-"""montar_faixa.py - PROVISORIO (manual 05, Tradutor e dublador).
+"""montar_faixa.py - PROVISORIO (manuais 05 Tradutor e dublador e 06 Narrador).
 
-Junta as falas dubladas (um .wav por segmento, gerados pelo scripts\\dublar.py)
-numa faixa unica do tamanho do bruto (dublagem.wav, 48 kHz mono), cada fala
-no seu tempo, e mede onde cada fala comecou de verdade (desvio em ms).
-Vale ate o modulo tradutor da etapa 3 do app existir.
+Junta as falas geradas pelo scripts\\dublar.py (um .wav por fala) numa faixa
+unica do tamanho do bruto (48 kHz mono), cada fala no seu tempo, e mede onde
+cada fala comecou de verdade (desvio em ms).
+  --tipo dublagem : le traducao.json  (dublagem.segmentos) -> dublagem.wav
+  --tipo toque    : le toque_hp.json  (voz.falas)          -> toque_hp.wav
+Vale ate os modulos da etapa 3 do app existirem.
 
 Uso (PowerShell):
-  & $py H:\\HypadoLocal\\app\\provisorio\\montar_faixa.py --item <pasta>
+  & $py H:\\HypadoLocal\\app\\provisorio\\montar_faixa.py --item <pasta> --tipo dublagem
 """
 import argparse
 import re
@@ -1263,19 +1265,29 @@ def comparar(planejados, medidos):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Monta a faixa dublagem.wav de um item (manual 05).")
+    ap = argparse.ArgumentParser(
+        description="Monta a faixa de voz de um item: dublagem.wav (manual 05) ou toque_hp.wav (manual 06).")
     ap.add_argument("--item", required=True, help="pasta do item na esteira")
+    ap.add_argument("--tipo", choices=["dublagem", "toque"], default="dublagem",
+                    help="dublagem (traducao.json) ou toque (toque_hp.json)")
     a = ap.parse_args()
     from hpbase import (TravaPesada, rodar, achar_ffmpeg, ler_json, escrever_json,
                         anexar_linha)
     item = Path(a.item)
-    trad = ler_json(item / "traducao.json")
-    dub = trad["dublagem"]
+    if a.tipo == "dublagem":
+        arq_json, saida, cargo = item / "traducao.json", item / "dublagem.wav", "tradutor"
+        trad = ler_json(arq_json)
+        dub = trad["dublagem"]
+        lista = dub["segmentos"]
+    else:
+        arq_json, saida, cargo = item / "toque_hp.json", item / "toque_hp.wav", "narrador"
+        trad = ler_json(arq_json)
+        dub = trad["voz"]
+        lista = [f for f in dub["falas"] if f.get("arquivo")]
     segs = [{"id": s["id"], "inicio": s["inicio_planejado"],
-             "arquivo": str(item / s["arquivo"])} for s in dub["segmentos"]]
+             "arquivo": str(item / s["arquivo"])} for s in lista]
     ff = achar_ffmpeg()
-    saida = item / "dublagem.wav"
-    with TravaPesada("tradutor:montar_faixa"):
+    with TravaPesada(f"{cargo}:montar_faixa"):
         r = rodar(montar_comando(ff, segs, trad["duracao_s"], saida), timeout=600)
         if r.returncode != 0:
             print(r.stderr.decode("utf-8", "replace")[-800:])
@@ -1285,16 +1297,16 @@ def main():
     medidos = inicios_de_fala(r2.stderr.decode("utf-8", "replace"))
     desvios = comparar([s["inicio"] for s in segs], medidos)
     ruins = 0
-    for s, d in zip(dub["segmentos"], desvios):
+    for s, d in zip(lista, desvios):
         s["desvio_inicio_ms"] = d
         if d is None or abs(d) > LIMITE_DESVIO_MS:
             ruins += 1
     dub["medicao"] = {"segmentos": len(segs), "fora_do_limite": ruins,
                       "limite_ms": LIMITE_DESVIO_MS,
                       "desvio_max_ms": max((abs(d) for d in desvios if d is not None), default=None)}
-    escrever_json(item / "traducao.json", trad)
+    escrever_json(arq_json, trad)
     anexar_linha(item / "historico.log",
-                 f"[03] tradutor: dublagem.wav montada ({len(segs)} falas, "
+                 f"[03] {cargo}: {saida.name} montada ({len(segs)} falas, "
                  f"desvio max {dub['medicao']['desvio_max_ms']} ms, {ruins} fora do limite)")
     print(f"OK: {len(segs)} falas; desvio max {dub['medicao']['desvio_max_ms']} ms; "
           f"{ruins} fora do limite de {LIMITE_DESVIO_MS} ms")

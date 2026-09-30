@@ -78,14 +78,16 @@ class Esteira:
         bloqueio = None
         if janela_proibida(self.agora()):
             bloqueio = "janela proibida (18h-22h30): trabalho pesado espera, inclusive P0"
-        feitos: set[tuple[str, str]] = set()
+        # (item, etapa) -> voltas: cada item passa 1 vez por etapa no ciclo; depois
+        # de uma volta da revisão pode passar de novo (as voltas são limitadas)
+        feitos: dict[tuple[str, str], int] = {}
         n = 0
         while max_trabalhos is None or n < max_trabalhos:
             prox = self._proximo(feitos)
             if prox is None:
                 break
             etapa, item = prox
-            feitos.add((item.name, etapa))
+            feitos[(item.name, etapa)] = ler_estado(item)["voltas"]
             pesado = self.trabalhos[etapa].eh_pesado(item)
             if pesado and bloqueio:
                 resumo["adiados_pesado"].append(f"{etapa}/{item.name}")
@@ -113,13 +115,16 @@ class Esteira:
                           len(resumo["erros"]), len(resumo["adiados_pesado"]))
         return resumo
 
-    def _proximo(self, feitos: set) -> tuple[str, Path] | None:
+    def _proximo(self, feitos: dict) -> tuple[str, Path] | None:
         melhor = None
         for etapa in ETAPAS:
             trab = self.trabalhos[etapa]
             idx = indice_etapa(etapa)
             for item in listar(self.cfg.pasta(etapa)):
-                if (item.name, etapa) in feitos or not trab.acionavel(item):
+                ja = feitos.get((item.name, etapa))
+                if ja is not None and ja == ler_estado(item)["voltas"]:
+                    continue
+                if not trab.acionavel(item):
                     continue
                 chave = chave_ordem(item.name, idx)
                 if melhor is None or chave < melhor[0]:
