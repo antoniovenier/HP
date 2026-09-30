@@ -225,16 +225,23 @@ Repare: a lâmina 6 cita **R$ 18**, então ela **tem que** levar o rodapé "Valo
 {
   "titulo_capa": "ROCKSTAR SOLTA NOVIDADE NA QUINTA?",
   "subtitulo_capa": "o que dá pra esperar",
-  "credito": {"rotulo": "Vídeo", "autor": "@criadorexemplo"},
+  "credito": {
+    "rotulo": "Vídeo",
+    "nome": "Criador Exemplo",
+    "por_rede": {"instagram": "@criadorexemplo", "facebook": "Criador Exemplo", "tiktok": "@criadorexemplo", "youtube": "@CriadorExemplo", "threads": "@criadorexemplo"}
+  },
   "valores_aproximados": false,
+  "texto_valores": null,
   "status": "pronto"
 }
 ```
 
+(É só um pedaço do `post.json`; o arquivo completo está no manual 08, seção 2.4.)
+
 - `titulo_capa`: o texto grande da capa. Já vem no tamanho certo (até 36 caracteres, até 6 palavras, cabendo em 3 linhas de até 18). Maiúsculas ou não é decisão do molde do canal (tabela 2.9).
 - `subtitulo_capa`: opcional, linha menor embaixo do título (até 28 caracteres).
-- `credito`: vai na capa **só** quando a capa usa imagem de terceiro que não aparece com crédito no próprio vídeo (normalmente o crédito já está queimado no vídeo pelo Editor — então na capa é opcional). Em lâmina de carrossel com foto de terceiro, o crédito é **obrigatório** em cada lâmina.
-- `valores_aproximados`: `true` quando o post cita valor. Se a arte mostra valor, o rodapé é obrigatório.
+- `credito`: na arte vai sempre o rótulo + o @ **do Instagram** (`credito.rotulo` + `credito.por_rede.instagram`, ex.: "Vídeo: @criadorexemplo"), porque a mesma imagem vai para todas as redes. Vai na capa **só** quando a capa usa imagem de terceiro que não aparece com crédito no próprio vídeo (normalmente o crédito já está queimado no vídeo pelo Editor — então na capa é opcional). Em lâmina de carrossel com foto de terceiro, o crédito é **obrigatório** em cada lâmina.
+- `valores_aproximados` e `texto_valores`: `true` quando o post cita valor; `texto_valores` traz a frase exata do aviso ("Valores aproximados, pesquisados em set/2026. Podem mudar."). Se a arte mostra valor, o rodapé é obrigatório e usa essa mesma frase.
 
 ### 2.7 Tamanhos, formatos e pesos de cada peça (saídas)
 
@@ -615,11 +622,12 @@ Use esta tabela:
 #### Passo 12 — Ver se é trabalho novo ou uma volta do Revisor
 - **Rode:**
 ```powershell
-Get-ChildItem $item -Filter "refazer*.json" | Select-Object Name
-Test-Path "$item\design.json"
+$ref = Get-ChildItem $item -Filter "refazer*.json" | Sort-Object LastWriteTime | Select-Object -Last 1
+$ref | Select-Object Name, LastWriteTime
+if (Test-Path "$item\design.json") { (Get-Item "$item\design.json").LastWriteTime } else { "sem design.json" }
 ```
-- **Confira:** se existe `refazer.json`, o item **voltou** da revisão: vá direto para a Parte H (passo 56). Não refaça tudo do zero.
-- **Deve aparecer (trabalho novo):** nenhuma linha no primeiro comando e `False` no segundo.
+- **Confira:** se aparece um arquivo de volta (`refazer.json`, ou `refazer_1_feito.json` / `refazer_2_feito.json` quando um cargo anterior — manuais 04 e 05 — já renomeou) **mais novo** que o seu `design.json`, o item **voltou** da revisão e você ainda não refez: vá direto para a Parte H (passo 56). Não refaça tudo do zero. Se o arquivo de volta é **mais velho** que o `design.json`, você já refez nesta volta.
+- **Deve aparecer (trabalho novo):** nenhuma linha de arquivo de volta e `sem design.json`.
 
 #### Passo 13 — Ler o título que o Redator escreveu (só reel, story e pin)
 - **Rode:**
@@ -1141,14 +1149,14 @@ Get-ChildItem "$E\05_revisao" -Directory | Select-Object Name
 ### Parte H — Quando o Revisor devolve
 
 #### Passo 56 — Ler o que o Revisor pediu
-- **Rode:**
+- **Rode** (usa o `$ref` do passo 12):
 ```powershell
-$r = Get-Content "$item\refazer.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$r = Get-Content $ref.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
 $r.classe; $r.media; $r.criterio_menor; $r.motivo
-$r.o_que_refazer | Format-List
+$r.o_que_refazer | Where-Object { $_.cargo -eq "designer" } | Format-List
 $r.voltas
 ```
-- **Confira:** `o_que_refazer` diz **exatamente** que peça refazer e como (ex.: `peca: "capa.jpg"`, `instrucao: "título encosta na faixa de baixo; subir para y 420–1000"`). Refaça **só** isso.
+- **Confira:** `o_que_refazer` diz **exatamente** que peça refazer e como (ex.: `peca: "capa.jpg"`, `instrucao: "título encosta na faixa de baixo; subir para y 420–1000"`). Refaça **só** as ações com `cargo: "designer"`. Se não aparecer nenhuma, não há nada para você nesta volta: não mexa nas peças.
 - **Deve aparecer:** por exemplo `Médio`, `6.6`, `capa`, o motivo, a lista e `1` (primeira volta).
 - **Atenção:** se `voltas` já é `2`, esta é a **última chance** — na próxima reprovação o item é descartado (manual 09). Capriche.
 
@@ -1172,7 +1180,7 @@ $d | ConvertTo-Json -Depth 6 | Set-Content "$item\design.json" -Encoding UTF8
 Add-Content "$item\historico.log" ("{0} [designer] refeito v{1} a pedido do revisor: {2}" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), $d.versao, $r.criterio_menor) -Encoding UTF8
 ```
 - **Deve aparecer:** nenhum erro. Com o app ligado, ele devolve o item para `05_revisao` sozinho; sem o app, faça o passo 55.
-- **Não apague** o `refazer.json`: o app renomeia para `refazer_volta1.json` (ou `_volta2`) quando o item volta à revisão, para o Revisor saber quantas voltas já houve.
+- **Não apague** o `refazer.json` e **não renomeie**: o app renomeia para `refazer_volta1.json` (ou `_volta2`) quando o item volta à revisão, para o Revisor saber quantas voltas já houve. (Os manuais 04 e 05 mandam o Legendador e o Tradutor renomear para `refazer_1_feito.json`; os dois nomes valem e o Revisor conta os dois.)
 
 ---
 
@@ -1237,7 +1245,7 @@ Cada peça recebe nota de 0 a 10 em cada critério. A nota do Designer no item �
 | D1 | **Medida e formato** | passo 23/37/48/51 (System.Drawing) + extensão do arquivo | tamanho exato, JPG sRGB, nome padrão | tamanho exato, mas nome fora do padrão corrigido na hora | proporção certa com tamanho diferente (ex.: 720x1280) | proporção errada, PNG, ou arquivo corrompido |
 | D2 | **Zona segura** | passo 25/40/44/51 (drawbox) | 100% do texto dentro, com folga ≥ 20 px | texto encosta na borda da zona sem entrar no vermelho | até 1 elemento secundário (crédito, @) dentro do vermelho | título ou número principal dentro do vermelho (coberto pelo app da rede) |
 | D3 | **Contraste e legibilidade** | passo 24 (fórmula) + passo 26 (grade 360x480) | contraste ≥ 7 e lido em 1 s na miniatura | contraste 4,5–6,9 e lido na miniatura | contraste 3,0–4,4 em texto não gigante | contraste < 3 ou ilegível na miniatura |
-| D4 | **Ortografia da arte** | passo 27 (leitura em voz alta, letra por letra, contra o `post.json`/`pedido.json`) | 0 erro, texto idêntico | — (não existe meio-termo: 1 vírgula a menos em texto corrido = 7) | 1 acento errado em texto corrido | qualquer erro no título, em nome próprio, em número ou em placar |
+| D4 | **Ortografia da arte** | passo 27 (leitura em voz alta, letra por letra, contra o `post.json`/`pedido.json`) | 0 erro, texto idêntico | 1 vírgula faltando em texto corrido | 1 acento errado em texto corrido | qualquer erro no título, em nome próprio, em número ou em placar |
 | D5 | **Identidade do canal** | comparar com a tabela 2.9 (cores, fonte, selo, caixa) | cores, fontes, selo e caixa exatamente do molde | 1 detalhe fora (ex.: selo 10 px maior) | cor ou fonte de outro canal | parece de outro perfil / sem identidade nenhuma |
 | D6 | **Hierarquia (o olho lê na ordem certa)** | olhar a miniatura por 1 s e dizer o que leu primeiro | título → herói da imagem → resto | título e imagem disputam atenção | o olho vai primeiro para um detalhe secundário | não dá para saber qual é o assunto |
 | D7 | **Escolha da imagem/quadro** | passo 19 (nítido, herói, sem legenda) | nítida, herói claro, expressão forte, sem legenda por baixo | nítida mas sem emoção | levemente borrada ou com legenda aparecendo por baixo do título | borrada, preta, transição, ou imagem proibida |
@@ -1255,7 +1263,7 @@ Cada peça recebe nota de 0 a 10 em cada critério. A nota do Designer no item �
 **Como calcular a nota do Designer no item:**
 1. Dê a nota de cada critério que se aplica (D10 só em carrossel; D13 só em capa).
 2. Some e divida pela quantidade de critérios que se aplicaram.
-3. Exemplo (capa do GTA): D1 10, D2 10, D3 10, D4 10, D5 10, D6 9, D7 9, D8 não se aplica (sem imagem de terceiro fora do vídeo), D9 não se aplica, D11 10, D12 10, D13 10, D14 10, D15 10 → soma 128 ÷ 13 critérios = **9,85 (Excelente)**.
+3. Exemplo (capa do GTA): D1 10, D2 10, D3 10, D4 10, D5 10, D6 9, D7 9, D8 não se aplica (sem imagem de terceiro fora do vídeo), D9 não se aplica, D10 não se aplica (só carrossel), D11 10, D12 10, D13 10, D14 10, D15 10 → soma 118 ÷ 12 critérios = **9,83 (Excelente)**.
 
 ---
 

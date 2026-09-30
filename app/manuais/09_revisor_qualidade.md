@@ -1861,7 +1861,7 @@ $v = [ordered]@{
   o_que_refazer=@(if ($veredito -eq "refazer") { $acoes }); travas=@($travas); medidas=$medidas
   quadros=$quadros; textos_conferidos=@("post.json","legenda.srt","capa.jpg","design.json")
   revisor="claude"; versao_manual="09 v1.0"; modo="valendo"; data=$agoraIso; revisado_em=$agoraIso
-  duracao_revisao_s=[int]((Get-Date) - $inicio).TotalSeconds
+  duracao_revisao_s=$(if ($inicio) { [int]((Get-Date) - $inicio).TotalSeconds } else { 0 })
   anteriores=@(Get-ChildItem $item -Filter "refazer_*.json" | Where-Object { $_.Name -match '^refazer_(volta\d|\d_feito)\.json$' } | ForEach-Object Name); observacoes=""
 }
 $arquivo = @{ aprovado="aprovado.json"; refazer="refazer.json"; descartar="descartado.json" }[$veredito]

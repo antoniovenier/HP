@@ -409,12 +409,16 @@ Proibidas em qualquer canal: hashtag do Flow Games ou de pessoas ligadas a ele; 
 
 ### 2.10 Exemplo de `enquete` (story das 16h do GTA)
 
+Trecho do `post.json` de um item `story_enquete` (o resto do arquivo segue o modelo da seção 2.4):
+
 ```json
-"enquete": {
-  "pergunta": "Vai comprar no dia 19/11?",
-  "opcoes": ["Sim, no dia 🔥", "Vou esperar"],
-  "pergunta_longa": "VAI COMPRAR O GTA 6 NO DIA DO LANÇAMENTO?",
-  "destaque": "Enquetes"
+{
+  "enquete": {
+    "pergunta": "Vai comprar no dia 19/11?",
+    "opcoes": ["Sim, no dia 🔥", "Vou esperar"],
+    "pergunta_longa": "VAI COMPRAR O GTA 6 NO DIA DO LANÇAMENTO?",
+    "destaque": "Enquetes"
+  }
 }
 ```
 
@@ -526,9 +530,14 @@ Get-ChildItem $item | Select-Object Name, Length
 - **Deve aparecer:** `True` e a lista de arquivos da pasta.
 
 #### Passo 8 — Ver se é volta do Revisor
-- **Rode:** `Test-Path "$item\refazer.json"`
-- **Confira:** `True` = o item voltou. Vá para a Parte O (passo 59). Não reescreva tudo.
-- **Deve aparecer (trabalho novo):** `False`.
+- **Rode:**
+```powershell
+$ref = Get-ChildItem $item -Filter "refazer*.json" | Sort-Object LastWriteTime | Select-Object -Last 1
+$ref | Select-Object Name, LastWriteTime
+if (Test-Path "$item\post.json") { (Get-Item "$item\post.json").LastWriteTime } else { "sem post.json" }
+```
+- **Confira:** um arquivo de volta (`refazer.json`, ou `refazer_1_feito.json`/`refazer_2_feito.json` quando o Legendador ou o Tradutor — manuais 04 e 05 — já renomearam) **mais novo** que o `post.json` = o item voltou e você ainda não corrigiu. Vá para a Parte O (passo 59). Não reescreva tudo.
+- **Deve aparecer (trabalho novo):** nenhuma linha de arquivo de volta e `sem post.json`.
 
 #### Passo 9 — Ler o pedido
 - **Rode:**
@@ -1116,13 +1125,13 @@ Get-Content "$item\historico.log" -Encoding UTF8 -Tail 2
 #### Passo 59 — Ler o que o Revisor pediu e guardar a versão antiga
 - **Rode:**
 ```powershell
-$r = Get-Content "$item\refazer.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$r = Get-Content $ref.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
 $r.classe; $r.media; $r.criterio_menor; $r.cargo_destino; $r.motivo
-$r.o_que_refazer | Format-List
+$r.o_que_refazer | Where-Object { $_.cargo -eq "redator" } | Format-List
 $r.voltas
 Copy-Item "$item\post.json" "$item\post_v$((Get-Content "$item\post.json" -Raw -Encoding UTF8 | ConvertFrom-Json).versao).json"
 ```
-- **Confira:** se `cargo_destino` é `redator`. Se for outro cargo (ex.: `legendador`), não é com você — não mexa.
+- **Confira:** as ações com `cargo: "redator"` são as suas. Se não aparecer nenhuma (o item voltou por causa de outro cargo, ex.: `legendador`), não é com você — não mexa no `post.json`.
 - **Deve aparecer:** a classe (ex.: `Médio`), a média, o critério de menor nota (ex.: `texto_post`), o motivo e o que refazer; e uma cópia `post_v1.json` na pasta.
 - **Atenção:** se `voltas` é `2`, é a **última chance**: na próxima reprovação o item é descartado (manual 09).
 
@@ -1133,7 +1142,7 @@ Copy-Item "$item\post.json" "$item\post_v$((Get-Content "$item\post.json" -Raw -
 ```powershell
 Add-Content "$item\historico.log" ("{0} [redator] post.json v{1} refeito a pedido do revisor ({2})" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), (Get-Content "$item\post.json" -Raw -Encoding UTF8 | ConvertFrom-Json).versao, $r.criterio_menor) -Encoding UTF8
 ```
-- **Deve aparecer:** nenhum erro. Com o app, o item volta sozinho para `05_revisao` (e o app renomeia `refazer.json` para `refazer_volta1.json`). **Não apague** o `refazer.json`.
+- **Deve aparecer:** nenhum erro. Com o app, o item volta sozinho para `05_revisao` (e o app renomeia `refazer.json` para `refazer_volta1.json`). **Não apague nem renomeie** o arquivo de volta (os manuais 04 e 05 usam o nome `refazer_1_feito.json`; os dois valem).
 
 ---
 
