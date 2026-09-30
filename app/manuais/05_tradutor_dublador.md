@@ -601,7 +601,7 @@ $dic = "G:\Meu Drive\Hypado\06 Projeto\app\dicionarios"
 ```
 - Deve aparecer: a lista de opções do script (em português).
 - Anote no Bloco de Notas, **com os nomes exatos que aparecerem**: (a) como passar o **texto** de uma fala; (b) como dizer o **arquivo de saída**; (c) se existe opção de **velocidade** (no Piper ela se chama "length scale": número **menor** que 1 = fala **mais rápida**); (d) onde fica o **modelo de voz** pt-BR.
-- Esses nomes vão para o `config\voz.json` (passo 9). **Este manual não inventa os nomes dos parâmetros do `dublar.py`**: nos exemplos abaixo eles aparecem como `<opção-do-texto>`, `<opção-da-saída>` e `<opção-da-velocidade>` — troque pelos que o `--help` mostrou.
+- Esses nomes vão para o `config\voz.json` (passo 9). **Este manual não inventa os nomes dos parâmetros do `dublar.py`**: nos exemplos abaixo eles aparecem como `OPCAO_TEXTO`, `OPCAO_SAIDA` e `OPCAO_VELOCIDADE` — troque pelos nomes exatos que o `--help` mostrou (senão o comando dá erro).
 - Se o `--help` mostrar que o `dublar.py` só dubla o vídeo inteiro de uma vez (sem aceitar uma fala por vez), use-o assim mesmo só se ele respeitar os tempos de cada frase; se não respeitar, abra ticket pedindo a opção "uma fala por arquivo" (a criar) e, até lá, faça **legenda** em vez de dublagem.
 
 **Passo 5 — Conferir se o ffmpeg tem os filtros de áudio usados aqui.**
@@ -621,7 +621,7 @@ Get-ChildItem "H:\HypadoLocal\ferramentas" -Recurse -Filter "pt_BR*.onnx" -Error
 **Passo 7 — Gerar a frase de teste.**
 ```powershell
 $t = "H:\HypadoLocal\app\teste_voz"; New-Item -ItemType Directory -Force $t | Out-Null; Set-Location $t
-& $py $dublar <opção-do-texto> "A Trilha Azul liga Monterosso a Riomaggiore: uns doze quilômetros." <opção-da-saída> "$t\teste.wav"
+& $py $dublar OPCAO_TEXTO "A Trilha Azul liga Monterosso a Riomaggiore: uns doze quilômetros." OPCAO_SAIDA "$t\teste.wav"
 Invoke-Item "$t\teste.wav"
 ```
 - Deve aparecer: o arquivo `teste.wav` e, ao abrir, a voz lendo a frase.
@@ -807,3 +807,595 @@ notepad "$dic\glossario_destinos.txt"; notepad "$dic\nomes_destinos.txt"
 Add-Content -Path historico.log -Encoding UTF8 -Value "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:sszzz') [03] tradutor: tradução ok (4 segmentos, 3 conversões, 1 valor → aviso) — só legenda; com o Legendador"
 ```
 - Vá para o passo 60. (Os passos 39 a 59 são só de dublagem.)
+
+### Fase E — Preparar o texto da voz (só dublagem)
+
+**Passo 39 — Escrever o "texto para a voz" de cada segmento (campo `voz`).**
+- Parte da `legenda`, mas troca tudo o que a voz lê mal, usando a `pronuncia.txt`:
+| Legenda (tela) | Voz (falada) |
+|---|---|
+| "uns 12 km" | "uns doze quilômetros" |
+| "€ 15 (≈ R$ 95)" | "quinze euros" (a conversão fica só na tela) |
+| "180 °C" | "cento e oitenta graus" |
+| "De 0 a 96 km/h em 3,2 s" | "De zero a noventa e seis quilômetros por hora em três vírgula dois segundos" |
+| "500 hp (≈ 507 cv)" | "quinhentos cavalos de potência" |
+| "SUV 4x4" | "ésse u vê quatro por quatro" |
+| "19/11" | "dezenove de novembro" |
+| "20h" | "oito da noite" |
+- Termine cada fala com ponto (a voz faz a pausa final certa). Vírgula onde uma pessoa respiraria.
+
+**Passo 40 — Calcular a janela de cada fala.**
+- **Janela** = início da próxima fala − 0,15 s − início desta fala. Para a última: fim do vídeo − 0,30 s − início dela (ou o início do fecho do Toque HP, se o Narrador for usar voz no fim).
+- Exemplo (Cinque Terre):
+| Fala | Início | Início da próxima | Janela |
+|---|---|---|---|
+| 1 | 0,52 | 4,60 | 4,60 − 0,15 − 0,52 = **3,93 s** |
+| 2 | 4,60 | 9,80 | **5,05 s** |
+| 3 | 9,80 | 13,00 | **3,05 s** |
+| 4 | 13,00 | fecho do Toque HP em 18,50 | 18,50 − 0,15 − 13,00 = **5,35 s** |
+
+**Passo 41 — Estimar quanto cada fala vai durar.**
+- **Duração estimada** = caracteres do texto da voz ÷ `cps_medido`.
+- Ex.: fala 3 "O ingresso custa cerca de quinze euros por dia." = 47 caracteres ÷ 14 = **3,36 s** > janela de 3,05 s → estouro de 10%.
+- Regra: estouro **até 15%** → resolve com velocidade (passo 49). **Mais de 15%** → enxugar (passo 42). Mesmo com estouro pequeno, **prefira enxugar** se der sem perder informação (a voz no normal soa melhor).
+
+**Passo 42 — Enxugar a fala que não cabe [CLAUDE].**
+- Ex.: "O ingresso custa cerca de quinze euros por dia." (47) → "Ingresso: cerca de quinze euros por dia." (40 caracteres → 2,86 s ≤ 3,05 s). Cabe.
+- Técnicas: tirar artigo e verbo de ligação quando fica natural ("O ingresso custa" → "Ingresso:"); trocar palavra longa por curta ("aproximadamente" → "uns"); tirar enfeite.
+- **Nunca** tirar número, nome, negação ou a informação principal.
+- Mudou a voz? Veja se a legenda deve mudar junto (o texto da tela e o da voz têm que dizer a mesma coisa; a legenda pode ter a conversão em reais a mais).
+
+**Passo 43 — Combinar com o Toque HP (manual 06).**
+- Se o pedido tem `toque_hp.modo` = `voz`:
+  - A pergunta de abertura falada ocupa **0,00 a 2,00 s**. Se a primeira fala dublada começa **antes de 2,10 s**, a abertura fica **só escrita** (o Narrador decide; você só avisa).
+  - O fecho falado ocupa os últimos 2 a 3 s. A última fala dublada tem que terminar antes dele (a janela do passo 40 já considera isso).
+- Escreva em `traducao.json → para_o_narrador` onde há espaço livre de voz (ex.: "Espaço livre de voz para o fecho: de 18,30 s a 21,50 s").
+
+### Fase F — Gerar a voz [APP]
+
+**Passo 44 — Conferir horário e trava** (a partir daqui é trabalho pesado).
+```powershell
+Get-Date -Format "HH:mm"; if (Test-Path "H:\HypadoLocal\app\pesado.lock") { Get-Content "H:\HypadoLocal\app\pesado.lock" } else { "livre" }
+```
+- Tem que estar **fora** de 18:00–22:29 e aparecer `livre`. Senão, espere (nunca apague o `pesado.lock`).
+
+**Passo 45 — Gerar uma fala por arquivo com o `dublar.py`.**
+```powershell
+New-Item -ItemType Directory -Force "$item\dublagem" | Out-Null
+$td = Get-Content traducao.json -Raw -Encoding UTF8 | ConvertFrom-Json
+foreach ($s in $td.segmentos) {
+  $saida = "$item\dublagem\seg_{0:D3}.wav" -f [int]$s.id
+  & $py $dublar OPCAO_TEXTO $s.voz OPCAO_SAIDA $saida
+}
+Get-ChildItem "$item\dublagem" | Select-Object Name, Length
+```
+- (Troque `OPCAO_TEXTO` e `OPCAO_SAIDA` pelos nomes exatos que o `--help` mostrou no passo 4.)
+- Deve aparecer: `seg_001.wav`, `seg_002.wav`… um por segmento, cada um com dezenas ou centenas de KB.
+- Se algum não aparecer ou tiver 0 bytes: rode de novo só aquele; se falhar 2 vezes, veja a seção 6.
+
+**Passo 46 — Medir a duração de cada fala gerada.**
+```powershell
+Get-ChildItem "$item\dublagem\seg_*.wav" | ForEach-Object {
+  $d = (& $ff -hide_banner -i $_.FullName 2>&1 | Select-String "Duration: ([\d:.]+)").Matches[0].Groups[1].Value
+  "{0}  {1}" -f $_.Name, $d
+}
+```
+- Deve aparecer: cada arquivo com a duração (ex.: `seg_003.wav  00:00:02.91`).
+- Compare com a janela (passo 40): `seg_003` = 2,91 s ≤ 3,05 s → **cabe**.
+
+**Passo 47 — Ouvir cada fala (com fone, se possível).**
+```powershell
+Invoke-Item "$item\dublagem\seg_001.wav"
+```
+- Conferir: (1) a voz leu **exatamente** o texto; (2) pronunciou certo nomes e números; (3) não cortou o começo nem o fim; (4) sem chiado, estalo ou "robô engasgado"; (5) a entonação da pergunta sobe no fim (quando é pergunta).
+
+**Passo 48 — Corrigir pronúncia errada.**
+- A voz leu "Riomaggiore" como "Rio-ma-gió-re" esquisito? Escreva na `pronuncia.txt` como deve soar (ex.: `Riomaggiore = Riomadjôre`) e gere de novo **só aquela fala** (passo 45 com um único segmento).
+- Atenção: a correção de pronúncia muda **só o texto da voz**, nunca a legenda (na tela continua "Riomaggiore").
+
+**Passo 49 — Ajustar a velocidade da fala que ainda não coube (até 15%).**
+- Velocidade necessária = duração real ÷ janela. Ex.: 3,36 ÷ 3,05 = **1,10** (10% mais rápida). Permitido: de 0,85 a 1,15.
+- Jeito 1 (preferido, se o `dublar.py` tiver opção de velocidade): gere de novo com a opção de velocidade. No Piper, "length scale" = 1 ÷ velocidade → 1 ÷ 1,10 = **0,91**.
+- Jeito 2 (se não tiver): acelere o arquivo pronto com o ffmpeg, sem mudar o tom da voz:
+```powershell
+& $ff -hide_banner -loglevel error -y -i "$item\dublagem\seg_003.wav" -af "atempo=1.10" "$item\dublagem\seg_003_rapido.wav"
+Move-Item -Force "$item\dublagem\seg_003_rapido.wav" "$item\dublagem\seg_003.wav"
+```
+- Deve aparecer: nada (sem erro). Meça de novo (passo 46).
+- Precisou de mais de 1,15? **Não force.** Volte ao passo 42 e enxugue o texto.
+
+**Passo 50 — Anotar as medidas no `traducao.json`.**
+- Para cada fala, no bloco `dublagem.segmentos`: `arquivo`, `texto_voz`, `caracteres`, `inicio_planejado`, `janela_s`, `duracao_estimada_s`, `duracao_real_s`, `velocidade` (modelo da seção 2.6).
+- Confira o JSON (comando do passo 37) → `JSON OK`.
+
+### Fase G — Montar a faixa da dublagem [APP]
+
+**Passo 51 — Definir onde cada fala começa.**
+- `inicio_planejado` = `inicio` do segmento original (a voz em português entra junto com a original, que é abaixada).
+- Exceção: se a pergunta de abertura do Toque HP for **falada**, nenhuma fala dublada começa antes de 2,10 s (passo 43).
+
+**Passo 52 — Rodar o roteiro de montagem.**
+```powershell
+& $py "$prov\montar_faixa.py" --item $item
+```
+- Deve aparecer: `OK: 4 falas; desvio max 38 ms; 0 fora do limite de 200 ms`.
+- O roteiro grava `dublagem.wav` (48 kHz, mono, com a duração exata do vídeo), mede onde cada fala começou de verdade e anota em `traducao.json → dublagem.medicao` e no `historico.log`.
+- `TravaOcupada` → horário proibido ou outro pesado rodando: espere.
+
+**Passo 53 — Conferir a faixa montada.**
+```powershell
+& $ff -hide_banner -i dublagem.wav 2>&1 | Select-String "Duration|Stream"
+& $ff -hide_banner -i bruto.mp4 2>&1 | Select-String "Duration"
+```
+- Deve aparecer: `48000 Hz, mono` e a **mesma duração** nos dois (diferença ≤ 0,02 s).
+- `fora do limite` maior que 0: alguma fala começou mais de 200 ms fora do lugar — normalmente porque o arquivo da fala tem silêncio no começo. Veja a seção 6.
+
+### Fase H — Mixar com o original abaixado e medir o volume [APP]
+
+**Passo 54 — Fazer a mistura (original baixinho + voz) já no volume final.**
+```powershell
+& $ff -hide_banner -loglevel error -y -i bruto.mp4 -i dublagem.wav -filter_complex "[0:a]aresample=48000,loudnorm=I=-20:TP=-2:LRA=11,aresample=48000[orig];[1:a]aresample=48000,loudnorm=I=-16:TP=-2:LRA=11,aresample=48000,asplit=2[voz][sc];[orig][sc]sidechaincompress=threshold=0.05:ratio=4:attack=15:release=450[fundo];[fundo][voz]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[a]" -map "[a]" -ac 2 -c:a pcm_s16le mix_dublado.wav
+```
+- O que esse comando faz, em português:
+  1. `[orig]`: pega o som original e deixa em −20 LUFS (volume padrão, baixo).
+  2. `[voz]`: pega a dublagem e deixa em −16 LUFS (4 pontos acima do original).
+  3. `sidechaincompress`: **enquanto a voz fala, o original abaixa sozinho** (cerca de 10 dB); nas pausas, volta.
+  4. `amix`: junta os dois.
+  5. `loudnorm=I=-14`: deixa o resultado no volume padrão das redes (−14 LUFS), sem estourar (pico −1,5).
+- Deve aparecer: nada (sem erro) e o arquivo `mix_dublado.wav`.
+- Se aparecer erro com `normalize`: o ffmpeg é antigo; tire `:normalize=0` e ponha `,volume=2` logo depois do `amix=...first` (e avise para atualizar o ffmpeg).
+
+**Passo 55 — Medir o volume final.**
+```powershell
+& $ff -hide_banner -nostats -i mix_dublado.wav -af ebur128=peak=true -f null - 2>&1 | Select-String "^\s+I:|^\s+Peak:"
+```
+- Deve aparecer: `I: -14.x LUFS` e `Peak: -x.x dBFS`.
+- Aceito: **I entre −15,0 e −13,0**; **Peak ≤ −1,5**.
+
+**Passo 56 — Acertar o volume se ficou fora do alvo (ou para cravar em −14).**
+- Correção = −14 − I medido. Ex.: I = −14,9 → correção **+0,9 dB**.
+```powershell
+& $ff -hide_banner -loglevel error -y -i mix_dublado.wav -af "volume=0.9dB" -c:a pcm_s16le mix_ajustado.wav
+& $ff -hide_banner -nostats -i mix_ajustado.wav -af ebur128=peak=true -f null - 2>&1 | Select-String "^\s+I:|^\s+Peak:"
+```
+- Deve aparecer: `I: -14.0 LUFS`. Se o Peak continuar ≤ −1,5: `Move-Item -Force mix_ajustado.wav mix_dublado.wav`.
+- Se o Peak passar de −1,5 depois de subir o volume: não suba; refaça o passo 54 (o `loudnorm` segura o pico) e aceite o I que der entre −15 e −13.
+
+**Passo 57 — Medir se a voz está bem acima do fundo (12 a 20 LU).**
+```powershell
+& $ff -hide_banner -loglevel error -y -i bruto.mp4 -i dublagem.wav -filter_complex "[0:a]aresample=48000,loudnorm=I=-20:TP=-2:LRA=11,aresample=48000[orig];[1:a]aresample=48000,loudnorm=I=-16:TP=-2:LRA=11,aresample=48000,asplit=2[sc][vozout];[orig][sc]sidechaincompress=threshold=0.05:ratio=4:attack=15:release=450[fundo]" -map "[fundo]" fundo_abaixado.wav -map "[vozout]" voz_nivelada.wav
+```
+- Agora meça os dois **no trecho da fala mais longa** (ex.: fala 2, de 4,60 s, durando 4,6 s):
+```powershell
+foreach ($f in "fundo_abaixado.wav", "voz_nivelada.wav") { $f; & $ff -hide_banner -nostats -ss 4.6 -t 4.6 -i $f -af ebur128 -f null - 2>&1 | Select-String "^\s+I:" }
+```
+- Deve aparecer: dois números, ex.: fundo `I: -29.9 LUFS` e voz `I: -15.5 LUFS` → diferença **14,4 LU**. Aceito: **12 a 20**.
+- Menos de 12 (voz "brigando" com o fundo): use `ratio=6` no passo 54 e refaça. Mais de 20 (o original sumiu): use `ratio=3`. Anote o que usou em `dublagem.mixagem`.
+- Depois apague os dois arquivos de medição: `Remove-Item fundo_abaixado.wav, voz_nivelada.wav`.
+
+**Passo 58 — Fazer a prévia com vídeo.**
+```powershell
+& $ff -hide_banner -loglevel error -y -i bruto.mp4 -i mix_dublado.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 160k -shortest previa_dublagem.mp4
+Invoke-Item previa_dublagem.mp4
+```
+
+**Passo 59 — Assistir à prévia e conferir.**
+- [ ] Cada fala entra junto com a imagem certa (a voz fala do azeite quando aparece o azeite).
+- [ ] Nenhuma fala por cima da outra; nenhuma cortada.
+- [ ] O som original aparece baixinho por trás e volta nas pausas (o clima do vídeo continua).
+- [ ] Nenhuma voz sintética em cima de pessoa real falando na tela.
+- [ ] Volume confortável: nem precisa aumentar, nem assusta.
+- [ ] Ouça também no **alto-falante do celular** (mande o arquivo para você mesmo pelo Drive — nunca pelo WhatsApp da HP): a voz continua clara?
+- Algum "não"? Volte ao passo que resolve (encaixe → 49–52; mistura → 54–57; pronúncia → 48).
+
+### Fase I — Entregar
+
+**Passo 60 — Escrever no histórico o resultado com números.**
+```powershell
+Add-Content -Path historico.log -Encoding UTF8 -Value "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:sszzz') [03] tradutor: mix_dublado.wav ok (-14,0 LUFS, pico -2,1 dBTP, voz 14,4 LU acima do fundo; desvio máx. 38 ms; velocidade 1,00 a 1,10)"
+```
+- (Para item só de legenda, a linha do passo 38 já basta.)
+
+**Passo 61 — Limpar o que é temporário.**
+- Apague: `mix_ajustado.wav` (se sobrou), `fundo_abaixado.wav`, `voz_nivelada.wav`.
+- **Mantenha** até o item ser postado: `traducao.json`, `dublagem\`, `dublagem.wav`, `mix_dublado.wav`, `previa_dublagem.mp4` (o Revisor pode pedir ajuste de uma fala só). O app apaga `dublagem\` e a prévia depois da postagem.
+- Se era volta do Revisor: `Rename-Item refazer.json refazer_1_feito.json`.
+
+**Passo 62 — Passar para o Legendador e o Narrador.**
+- Não é preciso mandar mensagem: eles veem o `traducao.json` na pasta. Confira que os campos `para_o_legendador` e `para_o_narrador` estão preenchidos.
+- Quem move a pasta para `04_edicao` é o app (ou o Legendador, no passo 61 do manual 04), quando os três cargos terminarem.
+
+**Passo 63 — Deu errado: `99_erros`.** Crie `erro.json` (UTF-8) e mova a pasta:
+```json
+{
+  "etapa": "03_legenda_dublagem",
+  "cargo": "tradutor",
+  "quando": "2026-09-30T10:50:00-03:00",
+  "motivo": "dublar.py não gera arquivo (erro ao carregar o modelo de voz)",
+  "passo": 45,
+  "o_que_tentou": "2 tentativas; --help funciona; teste do passo 7 também falha",
+  "precisa_de": "conferir instalação da voz Piper; enquanto isso, o item pode sair só com legenda"
+}
+```
+```powershell
+Set-Location $esteira; Move-Item $item "$esteira\99_erros\"
+```
+- Atenção: se o problema é **só da voz**, a alternativa mais rápida é **legenda** (mude `decisao.modo` para `legenda`, escreva o motivo) em vez de travar o item. Só mande para `99_erros` se nem a legenda der.
+
+**Passo 64 — Problema que se repete: ticket.** Com `scripts\tickets.py` (existente; veja `& $py "$scripts\tickets.py" --help`), área do app. Exemplos: "dublar.py sem opção de uma fala por arquivo", "voz lendo números errado", "ffmpeg sem sidechaincompress". Nunca ponha senha, token ou dado pessoal no ticket.
+
+---
+
+## 4. Regras que nunca se quebram
+
+1. **[BLOQUEIA] Nunca clonar voz.** Nem do Antônio, nem de famoso, nem do narrador original, nem "uma voz parecida com a de fulano". Nunca treinar voz nova a partir de gravação de ninguém.
+2. **[BLOQUEIA] Voz sintética só a Piper pt-BR gratuita já instalada, e só pelo `scripts\dublar.py`.** Nada de voz paga, voz de site, voz de aplicativo, ou modelo novo sem ordem do Antônio.
+3. **[BLOQUEIA] Dublagem só em Destinos, Receitas, Carros e Filmes, e só em vídeo próprio** (`origem: "proprio"`, decidido pelo Curador).
+4. **[BLOQUEIA] Futebol nunca tem narração sintética.** Vídeo de futebol vai **sempre com o áudio original** e, se estrangeiro, com legenda traduzida.
+5. **[BLOQUEIA] GTA nunca tem voz sintética.** Legenda traduzida sempre. E nada de vazamento: se a fala original trouxer informação vazada, o item volta ao Curador.
+6. **[BLOQUEIA] Nunca pôr voz sintética em cima de pessoa real falando na tela** (entrevista, depoimento, apresentador). Pessoa real = legenda.
+7. **[BLOQUEIA] Valor citado leva "Valores aproximados…".** E cotação só a que vier no pedido — nunca inventada.
+8. **Nunca inventar informação** que não está no original; nunca "melhorar" o fato. Tradução é fiel ao sentido.
+9. **Nunca trocar negação** (o erro mais grave): "não" tem que continuar "não".
+10. **O áudio original nunca é apagado** — na dublagem ele fica por baixo (abaixado), e volta nas pausas.
+11. **Velocidade da voz só entre 0,85 e 1,15.** Não coube? Enxuga o texto.
+12. **Nenhuma fala dublada por cima de outra.** Janela = até o início da próxima menos 0,15 s.
+13. **Volume final −14 LUFS ± 1 e pico ≤ −1,5 dBTP.**
+14. **Crédito do criador sempre** (quem põe na tela é o Legendador; o Tradutor nunca tira o crédito nem traduz o @).
+15. **Na dúvida entre legendar e dublar: legenda.**
+16. **Trabalho pesado (gerar voz, montar faixa, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+17. **Nada no disco C:**; tudo no H: (áudio, temporários) ou G: (glossários, configuração).
+18. **Nunca alterar** `pedido.json`, `bruto.mp4`, `transcricao.json` ou arquivos de outro cargo; nunca renomear a pasta do item.
+19. **Nunca apagar linha do `historico.log`.**
+20. **Nada de token, senha ou dado pessoal** em arquivo, log ou ticket.
+21. **Marcar `voz_sintetica: true`** para o Publicador (manual 10) quando houver dublagem.
+22. **Nada passa para o app sem 7 dias de modo sombra** com qualidade idêntica comprovada por números.
+
+---
+
+## 5. Critérios de qualidade com nota
+
+**Como funciona:** o Revisor (manual 09) dá nota de 0 a 10 em cada critério. Em item **só de legenda**, os critérios T6, T7, T8 e T9 **não se aplicam** (não entram na média). As notas entram na média geral do vídeo junto com as dos outros cargos.
+- Média **≥ 9** = Excelente → aprovado · **7 a 8,9** = Bom → aprovado · **5 a 6,9** = Médio → volta para a etapa do critério de menor nota (se for um destes, `03_legenda_dublagem`, para o Tradutor) · **< 5** = Razoável → volta ao Curador · máximo **2 voltas**.
+- **[BLOQUEIA]** com nota 0 = o item não sai, qualquer que seja a média.
+
+| Cód. | Critério | Como medir | Nota 10 | Nota 7 | Nota 5 | Nota 0 | Volta para |
+|---|---|---|---|---|---|---|---|
+| T1 | Sentido fiel | Comparar cada segmento com o original (campo `literal` ajuda) | 0 erro de sentido | 1 nuance perdida, sem mudar fato | 1 fato secundário errado ou omitido | Fato principal errado, negação invertida ou informação inventada | 03 (Tradutor) |
+| T2 | Naturalidade (pt-BR) | Ler em voz alta | Soa como brasileiro falando | 1 a 2 frases duras | 3+ frases com cara de tradução | Literal a ponto de ficar sem sentido ("trocador de jogo") | 03 (Tradutor) |
+| T3 | Adaptação (unidades, moedas, títulos, estações, datas) | Procurar °F, cup, oz, mph, mpg, lb, datas em inglês, título original | 100% adaptado | 1 arredondamento esquisito (176,7 °C) | 1 unidade estrangeira sem conversão | Conversão que muda o fato (0–60 mph virou "0 a 100 km/h"; forno em °F) | 03 (Tradutor) |
+| T4 | Nomes, títulos e termos do canal | Dicionário de nomes + glossário + título oficial no Brasil | Todos certos | 1 acento faltando em nome secundário | 1 termo fora do glossário ou título secundário errado | Nome principal ou título do filme errado | 03 (Tradutor) |
+| T5 | Cabimento | Legenda: CPS de cada segmento (≤ 17). Voz: duração ≤ janela | Tudo dentro | 1 a 2 segmentos com CPS 17–20, ou voz até 5% além da janela sem sobrepor | 3+ segmentos fora, ou voz 5–15% além | CPS > 25, fala cortada ou sobreposta | 03 (Tradutor) |
+| T6 | Sincronia da dublagem | `dublagem.medicao.desvio_max_ms` + prévia | Todas as falas ≤ 200 ms e 0 sobreposição | 1 fala entre 200 e 300 ms | 2+ falas entre 200 e 400 ms | Fala > 400 ms fora, falas sobrepostas, ou falando de algo que não está na imagem | 03 (Tradutor) |
+| T7 | Qualidade da voz | Ouvir todas as falas | Clara, pronúncia certa, velocidade 0,85–1,15 | 1 palavra secundária mal pronunciada | 2–3 palavras ou 1 nome mal pronunciado | Voz cortada, estalando, "engasgada", ou velocidade fora de 0,85–1,15 | 03 (Tradutor) |
+| T8 | Mixagem voz x fundo | Passo 57 (diferença em LU nos trechos falados) | 12 a 20 LU | 10–12 ou 20–24 LU | 8–10 ou mais de 24 LU | Menos de 8 LU (voz brigando), ou original sumiu por completo, ou original acima da voz | 03 (Tradutor) |
+| T9 | Volume final (loudness) | `ebur128` no `mix_dublado.wav` (e no `final.mp4`, pelo Editor) | −14 ± 0,5 LUFS e pico ≤ −1,5 dBTP | −14 ± 1 e pico ≤ −1,0 | −14 ± 2 | Fora de ± 2 ou pico > −1,0 (estourando) | 03 (Tradutor) ou 04 (Editor, se o erro surgiu na música) |
+| T10 | Regras de voz [BLOQUEIA] | Decisão x tabela da seção 1.6 | Decisão certa e registrada | (não existe meio-termo) | (não existe meio-termo) | Voz em Futebol/GTA, em vídeo não próprio, sobre pessoa real, ou outra voz / voz clonada | 03 (Tradutor), para refazer como legenda; se o erro veio do pedido, avisar o Curador (01) |
+| T11 | "Valores aproximados…" [BLOQUEIA] | Todo segmento com dinheiro tem `"valor": true` | Todos marcados (ou não há valor) | (não existe meio-termo) | (não existe meio-termo) | Valor sem marcação, ou cotação inventada | 03 (Tradutor) |
+
+**Exemplo (item dublado):** T1=10, T2=10, T3=10, T4=10, T5=7, T6=10, T7=7, T8=10, T9=10, T10=10, T11=10 → 104 ÷ 11 = **9,5 → Excelente**.
+**Exemplo (item só de legenda):** T1=10, T2=7, T3=5, T4=10, T5=10, T10=10, T11=10 → 62 ÷ 7 = **8,9 → Bom** (aprovado). Se T3 fosse 0 ("0 a 100 km/h" errado): 57 ÷ 7 = 8,1 — aprovado pela média, **mas** este manual recomenda ao Revisor tratar conversão que muda o fato como erro público: **nota 0 em T1 ou T3 devolve para 03, mesmo com média ≥ 7**.
+
+---
+
+## 6. Erros comuns e o que fazer
+
+| Sintoma | Causa provável | Solução |
+|---|---|---|
+| Tradução "robótica" ("Nós vamos entrar direto nisso") | Tradução ao pé da letra | Passo 26: traduzir pelo sentido; ler em voz alta |
+| "0 a 100 km/h" num carro americano | Converteu 0–60 mph para o número "redondo" brasileiro | 0–60 mph = **0 a 96 km/h**; nunca 0 a 100 |
+| Forno em °F na legenda | Esqueceu a conversão | Tabela da seção 2.11: 350 °F → 180 °C |
+| Título do filme em inglês | Não conferiu o título brasileiro | Pôster oficial brasileiro; glossário de Filmes |
+| Voz lê "km/h" como "ká-ême-barra-agá" | Texto da voz com símbolo | Passo 39: por extenso pela `pronuncia.txt` |
+| Voz lê número em inglês ou esquisito ("3.2") | Ponto decimal | Escrever "três vírgula dois" no texto da voz |
+| Nome estrangeiro pronunciado errado | A voz lê com regra do português | `pronuncia.txt` com a grafia "como soa" (só no texto da voz) |
+| Fala dublada não cabe na janela | Português mais comprido que o original | Passo 42 (enxugar); velocidade até 1,15 (passo 49) |
+| Duas falas dubladas se atropelam | Janela calculada sem a margem de 0,15 s, ou velocidade não aplicada | Refazer passos 40–41 e 49; `montar_faixa.py` de novo |
+| `fora do limite` > 0 no `montar_faixa.py` | O `.wav` da fala tem silêncio no começo (a voz começa depois do planejado) | Cortar o silêncio do começo: `& $ff -y -i seg.wav -af "silenceremove=start_periods=1:start_threshold=-45dB" seg_limpo.wav` e remontar |
+| `dublar.py` não gera arquivo | Modelo de voz não encontrado, caminho com acento, ou opção errada | Rodar o teste do passo 7; conferir as opções no `--help`; se persistir: legenda + ticket |
+| `dublar.py` só aceita o vídeo inteiro | Script feito para outro uso | Ticket pedindo "uma fala por arquivo" (a criar); até lá, legenda |
+| Voz some ou fica muito baixa na mistura | Ordem das entradas trocada no `sidechaincompress` (a voz foi abaixada no lugar do fundo) | A ordem é `[orig][sc]sidechaincompress` (primeiro o que abaixa, depois o que manda) |
+| O original some por completo | Abaixamento forte demais (`ratio` alto) | `ratio=3` no passo 54; conferir no passo 57 (12 a 20 LU) |
+| Voz "brigando" com o original | Abaixamento fraco | `ratio=6`; conferir no passo 57 |
+| Volume final −16 ou −12 LUFS | `loudnorm` de uma passada em vídeo curto errou | Passo 56 (correção com `volume=`) |
+| Pico acima de −1,5 dBTP | Correção de volume empurrou o pico | Não subir o volume; refazer o passo 54 e aceitar I entre −15 e −13 |
+| Erro "Option normalize not found" | ffmpeg antigo | Tirar `:normalize=0` e pôr `,volume=2` depois do `amix`; ticket para atualizar |
+| `dublagem.wav` com duração diferente do vídeo | Duração errada no `traducao.json` | Copiar `duracao_s` da transcrição e remontar (o roteiro corta/completa no tamanho exato) |
+| Chiado ou "clique" no início de cada fala | Corte seco do arquivo | Gerar de novo; se persistir, `afade=t=in:d=0.02` no começo da fala |
+| Pessoa falando na tela com voz sintética por cima | Não conferiu a condição 4 | [BLOQUEIA] — refazer como legenda |
+| Pedido de futebol com `tratamento: dublagem` | Erro do pedido | Não dublar; legenda + histórico com o motivo; avisar o Pauteiro |
+| Cotação "chutada" | Pedido sem `cotacao` | Nunca inventar: deixar a moeda original + aviso |
+| Idioma errado (vídeo em espanhol tratado como português de Portugal) | Detecção de idioma | Conferir `idioma_detectado`; pt-PT → legenda em pt-BR adaptando palavras ("autocarro" → "ônibus") |
+| `TravaOcupada` | Horário proibido ou outro pesado rodando | Esperar; nunca apagar o `pesado.lock` |
+| Revisor devolveu 2 vezes | Problema no material ou na ferramenta | Não tentar a 3ª: `99_erros` + ticket |
+
+---
+
+## 7. O que o app faz sozinho x o que o Claude decide
+
+**Meta:** o app fazer toda a parte mecânica (decidir pela tabela, conversões, pronúncia, gerar voz, encaixar, mixar, medir). O Claude fica com o que é linguagem (traduzir pelo sentido, enxugar, gírias, piadas).
+
+| Passo(s) | Tarefa | App sozinho | Claude decide | Observação |
+|---|---|---|---|---|
+| 11–16 | Horário, fila, pedido, transcrição, volta | 100% | 0% | Regras fixas |
+| 17–18, 21 | Condições 1, 2, 3 e 6 da decisão | 100% | 0% | Campos do pedido |
+| 19 | Condição 4: pessoa real falando na tela? | 40% | 60% | O app pode sugerir pelo `narracao_em_off` do pedido; confirmação é visual (Claude olha 3–5 quadros) |
+| 20 | Condição 5: cabe no tempo? (estimativa) | 100% | 0% | Conta com `cps_medido` |
+| 23–26 | Traduzir pelo sentido | 0% | 100% | Parte mais cara em token; um dia pode haver rascunho offline (seção 8.6) |
+| 27, 31 | Unidades, datas, estações | 90% | 10% | Tabela `conversoes.json`; Claude confere o contexto (ex.: "aro 20" não converte) |
+| 28 | Moeda e aviso | 95% | 5% | Cotação vem do pedido; marcação automática de `valor` por símbolo |
+| 29 | Nomes e títulos | 80% | 20% | Dicionários e glossários; nome novo = Claude |
+| 30 | Gírias, piadas | 10% | 90% | Glossário cobre as frequentes |
+| 32 | Caber na legenda (CPS) | 70% | 30% | App mede e aponta; Claude enxuga |
+| 33–35 | Conferir números, reler, "tradução de volta" | 30% | 70% | App compara números do original com os da tradução |
+| 36–38 | Gravar JSON, validar, histórico | 100% | 0% | |
+| 39 | Texto da voz (por extenso) | 95% | 5% | `pronuncia.txt` + número por extenso automático |
+| 40–41 | Janela e duração estimada | 100% | 0% | |
+| 42 | Enxugar fala que não cabe | 0% | 100% | Julgamento de linguagem |
+| 43 | Combinar com Toque HP | 100% | 0% | Regra fixa (2,10 s; fecho) |
+| 44–50 | Gerar voz, medir, pronúncia, velocidade | 90% | 10% | Claude só ouve fala que o app marcar (ex.: palavra fora do dicionário) |
+| 51–53 | Montar faixa e medir desvio | 100% | 0% | `montar_faixa.py` (provisório) → módulo (a criar) |
+| 54–57 | Mixar e medir LUFS e voz x fundo | 100% | 0% | Números fixos |
+| 58–59 | Prévia e escuta | 60% | 40% | App mede tudo; escuta final é humana/Claude até o fim da sombra |
+| 60–64 | Entregar, erros, ticket | 90% | 10% | |
+| **Total (item dublado)** | | **≈ 65%** | **≈ 35%** | A tradução em si é o grosso da parte do Claude |
+| **Total (item só de legenda)** | | **≈ 45%** | **≈ 55%** | Meta em 3 meses: glossários maiores → 55% / 45% |
+
+**Como gastar menos token aqui:**
+1. O Claude recebe **só o texto** da transcrição (não o vídeo) + o glossário do canal + a tabela de conversões — nunca o arquivo de áudio.
+2. Uma chamada por vídeo (todos os segmentos de uma vez), pedindo de volta **só** os campos `legenda`, `voz` e `notas`.
+3. Enxugar fala (passo 42) vai numa chamada curta, só com as falas que estouraram.
+4. Todo termo que o Claude traduziu de um jeito bom e que vai se repetir entra no glossário (o app passa a fazer sozinho).
+
+---
+
+## 8. Ferramentas existentes que já fazem cada passo
+
+### 8.1 Tabela rápida
+| Passo | Ferramenta | Situação |
+|---|---|---|
+| Transcrição do original (antes do Tradutor) | faster-whisper + roteiro do manual 04 | (a instalar, se faltar) / (provisório) |
+| 45–49 (gerar voz) | **`scripts\dublar.py`** com a voz **Piper pt-BR** já instalada | (existente) |
+| 46, 53, 55, 57 (medir) | **ffmpeg** (`Duration`, `ebur128`, `silencedetect`) | (existente) |
+| 49 (acelerar sem mudar o tom) | ffmpeg `atempo` | (existente) |
+| 52 (montar faixa) | `H:\HypadoLocal\app\provisorio\montar_faixa.py` (seção 8.7) | (provisório) |
+| 54 (mixar e nivelar) | ffmpeg `loudnorm`, `sidechaincompress`, `amix` | (existente) |
+| 27–31 (conversões, glossário, pronúncia) | `config\conversoes.json`, `dicionarios\glossario_<canal>.txt`, `dicionarios\pronuncia.txt` | (a criar) |
+| Trava e horário | `hpbase.TravaPesada` | (existente) |
+| JSON e histórico | `hpbase.escrever_json`, `hpbase.anexar_linha` | (existente) |
+| Subprocesso sem janela preta | `hpbase.rodar` | (existente) |
+| Módulo tradutor da esteira (tudo automático) | etapa 3 do app | (a criar) |
+| Comparar com o feito pelo Claude (7 dias) | `qa_paridade` (duração, loudness, texto e tempos) | (a criar — módulo D) |
+| Tickets | `scripts\tickets.py` | (existente) |
+
+### 8.2 `scripts\dublar.py` (a porta da voz)
+É o script da HP que transforma texto em fala em português usando a voz Piper já instalada no PC. **É a única forma permitida de gerar voz na HP.** Não reescreva e não contorne: se faltar alguma opção (por exemplo, uma fala por arquivo ou velocidade), abra ticket para acrescentar. Os nomes exatos das opções estão no `--help` e ficam anotados no `config\voz.json`.
+
+### 8.3 Piper (explicado para leigo)
+É um programa gratuito que "lê em voz alta" um texto, usando um arquivo de voz (`.onnx`, com um `.onnx.json` ao lado que descreve a voz). Roda no próprio PC, sem internet e sem pagar nada. A voz é **sintética** (não é de uma pessoa específica), o que é exatamente o que a regra "nunca clonar voz" exige. Ajustes que o Piper conhece (o `dublar.py` pode ou não repassar):
+- **length scale**: velocidade. 1,0 = normal; **menor que 1 = mais rápido** (0,91 ≈ 10% mais rápido); maior que 1 = mais lento.
+- **sentence silence**: pausa depois de cada frase (em segundos).
+- **noise scale / noise w**: variação da voz; deixe no padrão (mexer deixa a voz instável).
+A saída normalmente é WAV de 22 050 Hz, mono. O `montar_faixa.py` converte para 48 000 Hz.
+
+### 8.4 ffmpeg: os filtros de áudio usados neste manual
+| Filtro | Para quê (em português) |
+|---|---|
+| `aresample=48000` | Converte para 48 mil amostras por segundo (o padrão de vídeo) |
+| `aformat=channel_layouts=mono` | Deixa em 1 canal |
+| `adelay=4600` | Atrasa a fala 4.600 ms (ela começa em 4,6 s) |
+| `amix` | Junta vários sons num só (`normalize=0` = não abaixa cada um) |
+| `apad` / `atrim` | Completa com silêncio / corta, para ter a duração exata |
+| `loudnorm` | Deixa o volume "percebido" no alvo (−20, −16, −14 LUFS) |
+| `sidechaincompress` | Abaixa um som (o original) **enquanto** outro (a voz) toca |
+| `ebur128` | Mede o volume percebido (LUFS) e o pico |
+| `silencedetect` | Acha onde tem silêncio (e, portanto, onde a voz começa) |
+| `atempo` | Acelera ou desacelera **sem** mudar o tom da voz |
+| `silenceremove` | Tira silêncio do começo de um arquivo |
+| `afade` | Entrada/saída suave (tira o "clique") |
+
+### 8.5 faster-whisper (uso no Tradutor)
+Não é o Tradutor que roda, mas ele depende disso: o Legendador (manual 04) usa para transcrever o original e **para achar o tempo de cada palavra da voz dublada** (karaokê sobre a dublagem). Também é ele que diz o idioma do vídeo (`idioma_detectado`).
+
+### 8.6 Tradução automática offline (não instalada — a avaliar)
+Existem tradutores gratuitos que rodam no PC sem internet (por exemplo, o Argos Translate). **Não estão instalados e não fazem parte do processo hoje.** Podem ser avaliados no futuro só para fazer um **rascunho** que o Claude corrige (economia de token), e só depois de 7 dias de sombra provando que a nota T1/T2 não cai. Até lá: tradução = Claude.
+
+### 8.7 Roteiro provisório de montagem da faixa (`H:\HypadoLocal\app\provisorio\montar_faixa.py`)
+Usado no passo 52. Lê `traducao.json → dublagem.segmentos` (`inicio_planejado` e `arquivo` de cada fala) e `duracao_s`, monta `dublagem.wav` (48 kHz, mono, duração exata), mede o início real de cada fala (`silencedetect`) e grava o desvio. Copie exatamente (salvar em UTF-8):
+```python
+"""montar_faixa.py - PROVISORIO (manual 05, Tradutor e dublador).
+
+Junta as falas dubladas (um .wav por segmento, gerados pelo scripts\\dublar.py)
+numa faixa unica do tamanho do bruto (dublagem.wav, 48 kHz mono), cada fala
+no seu tempo, e mede onde cada fala comecou de verdade (desvio em ms).
+Vale ate o modulo tradutor da etapa 3 do app existir.
+
+Uso (PowerShell):
+  & $py H:\\HypadoLocal\\app\\provisorio\\montar_faixa.py --item <pasta>
+"""
+import argparse
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio")
+
+LIMITE_DESVIO_MS = 200
+
+
+def montar_comando(ffmpeg, segmentos, duracao, saida):
+    """Monta o comando do ffmpeg: cada fala atrasada ate o seu inicio e somada."""
+    cmd = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y"]
+    for s in segmentos:
+        cmd += ["-i", s["arquivo"]]
+    partes, rotulos = [], []
+    for n, s in enumerate(segmentos):
+        atraso = max(0, int(round(s["inicio"] * 1000)))
+        partes.append(f"[{n}:a]aresample=48000,aformat=channel_layouts=mono,"
+                      f"adelay={atraso}[s{n}]")
+        rotulos.append(f"[s{n}]")
+    d = f"{duracao:.3f}"
+    partes.append("".join(rotulos) + f"amix=inputs={len(segmentos)}:duration=longest:"
+                  f"normalize=0,apad=whole_dur={d},atrim=0:{d}[a]")
+    cmd += ["-filter_complex", ";".join(partes), "-map", "[a]",
+            "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le", str(saida)]
+    return cmd
+
+
+def inicios_de_fala(texto_ffmpeg):
+    """Le a saida do silencedetect e devolve os instantes em que a voz comeca."""
+    comecos = re.findall(r"silence_start: (-?[\d.]+)", texto_ffmpeg)
+    inicios = [0.0] if not comecos or float(comecos[0]) > 0.05 else []
+    inicios += [float(x) for x in re.findall(r"silence_end: ([\d.]+)", texto_ffmpeg)]
+    return inicios
+
+
+def comparar(planejados, medidos):
+    """Para cada inicio planejado, acha o medido mais perto e devolve o desvio em ms."""
+    saida = []
+    for p in planejados:
+        if not medidos:
+            saida.append(None)
+            continue
+        m = min(medidos, key=lambda x: abs(x - p))
+        saida.append(int(round((m - p) * 1000)))
+    return saida
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Monta a faixa dublagem.wav de um item (manual 05).")
+    ap.add_argument("--item", required=True, help="pasta do item na esteira")
+    a = ap.parse_args()
+    from hpbase import (TravaPesada, rodar, achar_ffmpeg, ler_json, escrever_json,
+                        anexar_linha)
+    item = Path(a.item)
+    trad = ler_json(item / "traducao.json")
+    dub = trad["dublagem"]
+    segs = [{"id": s["id"], "inicio": s["inicio_planejado"],
+             "arquivo": str(item / s["arquivo"])} for s in dub["segmentos"]]
+    ff = achar_ffmpeg()
+    saida = item / "dublagem.wav"
+    with TravaPesada("tradutor:montar_faixa"):
+        r = rodar(montar_comando(ff, segs, trad["duracao_s"], saida), timeout=600)
+        if r.returncode != 0:
+            print(r.stderr.decode("utf-8", "replace")[-800:])
+            sys.exit(1)
+        r2 = rodar([ff, "-hide_banner", "-nostats", "-i", str(saida), "-af",
+                    "silencedetect=noise=-40dB:d=0.25", "-f", "null", "-"], timeout=300)
+    medidos = inicios_de_fala(r2.stderr.decode("utf-8", "replace"))
+    desvios = comparar([s["inicio"] for s in segs], medidos)
+    ruins = 0
+    for s, d in zip(dub["segmentos"], desvios):
+        s["desvio_inicio_ms"] = d
+        if d is None or abs(d) > LIMITE_DESVIO_MS:
+            ruins += 1
+    dub["medicao"] = {"segmentos": len(segs), "fora_do_limite": ruins,
+                      "limite_ms": LIMITE_DESVIO_MS,
+                      "desvio_max_ms": max((abs(d) for d in desvios if d is not None), default=None)}
+    escrever_json(item / "traducao.json", trad)
+    anexar_linha(item / "historico.log",
+                 f"[03] tradutor: dublagem.wav montada ({len(segs)} falas, "
+                 f"desvio max {dub['medicao']['desvio_max_ms']} ms, {ruins} fora do limite)")
+    print(f"OK: {len(segs)} falas; desvio max {dub['medicao']['desvio_max_ms']} ms; "
+          f"{ruins} fora do limite de {LIMITE_DESVIO_MS} ms")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+## 9. Testes de aceitação
+
+Uma entrega do Tradutor e dublador só é aceita se passar em **todos** os testes que se aplicam ao item. Para o app assumir a tarefa: **7 dias seguidos de modo sombra** passando em tudo, com o `qa_paridade` (a criar) comparando com o feito pelo Claude.
+
+### 9.1 Decisão e regras
+1. 100% dos itens de **Futebol** e **GTA** com `decisao.modo` = `legenda` (0 dublagem, 0 voz sintética).
+2. 100% dos itens dublados com `canal` ∈ {destinos, receitas, carros, filmes}, `origem` = `proprio`, `voz_sintetica_permitida` = `true` e `narracao_em_off` confirmada.
+3. 0 fala dublada sobre trecho com pessoa real falando na tela (conferido nos quadros da prévia).
+4. 0 voz gerada fora do `scripts\dublar.py`; 0 modelo de voz diferente do registrado em `config\voz.json`.
+5. `decisao.motivo` preenchido em 100% dos itens.
+6. 0 trabalho pesado (gerar voz, montar, mixar) registrado no `historico.log` entre 18:00 e 22:29.
+
+### 9.2 Tradução
+7. 100% dos segmentos da transcrição traduzidos (mesmos `id`, mesma quantidade).
+8. Em 5 vídeos de teste conferidos por gente: **0** erro de fato principal, **0** negação invertida, **0** informação inventada.
+9. **0** unidade estrangeira sem conversão na legenda (°F, cup, oz, lb, mph, mpg, miles, feet, gallons).
+10. **100%** das conversões dentro de **± 2%** do valor exato (ex.: 350 °F → 180 °C está a 1,9% de 176,7 °C: ok; 0–60 mph → 0–100 km/h está 3,6% fora: **reprova**).
+11. **100%** dos títulos de filme/série no título oficial brasileiro.
+12. **100%** dos segmentos com dinheiro marcados `"valor": true`; 0 cotação que não veio do pedido.
+13. CPS da legenda **≤ 17** em pelo menos **95%** dos segmentos e **≤ 20** em 100%.
+
+### 9.3 Voz e encaixe (só itens dublados)
+14. Cada fala: duração real **≤ janela** (início da próxima − 0,15 s).
+15. Velocidade de cada fala entre **0,85 e 1,15**.
+16. Desvio do início de cada fala **≤ ± 200 ms** (medido pelo `montar_faixa.py`); média **≤ 80 ms**.
+17. **0** sobreposição entre falas dubladas.
+18. `dublagem.wav`: **48 000 Hz, mono**, duração = duração do `bruto.mp4` **± 0,02 s**, pico ≤ −1 dBFS.
+19. Em 5 vídeos de teste: **0** nome próprio mal pronunciado e no máximo **1** palavra comum estranha por vídeo.
+20. Nenhuma fala com silêncio de mais de **0,30 s** no começo do arquivo.
+
+### 9.4 Mixagem e volume (só itens dublados)
+21. `mix_dublado.wav`: **48 000 Hz, estéreo**, mesma duração do bruto ± 0,02 s.
+22. Volume integrado **−14 LUFS ± 1** (meta ± 0,5).
+23. Pico real **≤ −1,5 dBTP**.
+24. Voz **12 a 20 LU** acima do fundo no trecho da fala mais longa (passo 57).
+25. Fundo presente: nas pausas de mais de 1 s entre falas, o original volta a pelo menos **−26 LUFS** (não pode sumir o clima).
+
+### 9.5 Arquivos e registro
+26. `traducao.json` válido (`json.tool` sai com código 0) com todos os campos da seção 2.6 que se aplicam.
+27. `historico.log` com pelo menos 2 linhas `[03] tradutor:` (decisão e resultado) com números.
+28. `para_o_legendador` e `para_o_narrador` preenchidos.
+29. Nenhum arquivo de outro cargo alterado (comparar data de modificação de `pedido.json`, `bruto.mp4`, `transcricao.json` antes e depois).
+
+### 9.6 Desempenho (para o app)
+30. Gerar voz de 20 s de fala: **≤ 1 min** no PC do Antônio.
+31. Montar faixa + mixar + medir, vídeo de 30 s: **≤ 1 min**.
+32. Na paridade de 7 dias: nota média T1–T11 do app **≥ nota média do Claude − 0,2**, e **0** item do app com T10 ou T11 em 0.
+
+### 9.7 Casos de teste obrigatórios
+| # | Caso | O que tem que acontecer |
+|---|---|---|
+| D1 | GTA, Rockstar em inglês, pedido pede `dublagem` por engano | Decisão = legenda; motivo "GTA: voz sintética não permitida"; legenda com "GTA 6" e nomes oficiais |
+| D2 | Futebol, clube espanhol, entrevista | Legenda traduzida; áudio original intacto; "golaço", "técnico", "contratação" |
+| D3 | Filmes, entrevista de ator em inglês | Legenda (pessoa real falando); título brasileiro |
+| D4 | Receitas, vídeo próprio com narração em off em inglês com °F e cups | Dublagem; 180 °C e xícaras/gramas na legenda; por extenso na voz; −14 LUFS |
+| D5 | Carros, material de imprensa com narração em off, "0 to 60 in 3.2" e preço | Dublagem; "0 a 96 km/h"; "US$ 45 mil" + aviso; voz 12–20 LU acima do fundo |
+| D6 | Destinos, vídeo próprio em italiano (Cinque Terre) | Dublagem; estação "de lá" com meses; € com conversão da cotação do pedido; desvio ≤ 200 ms |
+| D7 | Destinos, vídeo próprio com 3 s de entrevista no meio | Legenda no vídeo todo (padrão) ou dublagem só no off + legenda na entrevista, com motivo registrado |
+| D8 | Fala que estoura a janela em 25% | Texto enxugado (não velocidade 1,25); velocidade final ≤ 1,15 |
+| D9 | `dublar.py` falhando | Item sai com legenda (decisão mudada e registrada) ou vai para `99_erros` com `erro.json`; ticket aberto |
+| D10 | Volta do Revisor por T6 | Só a fala apontada refeita; `refazer_1_feito.json` criado; desvio medido de novo |
+
+---
+
+## Glossário
+
+| Palavra | O que quer dizer |
+|---|---|
+| **Adaptação** | Traduzir mudando o que precisa para o brasileiro entender (medidas, moedas, títulos, gírias), sem mudar o fato. |
+| **Áudio original** | O som que veio no vídeo (voz, ambiente, música). Na HP ele nunca é apagado. |
+| **Abaixamento (ducking)** | Baixar o som original automaticamente só enquanto a voz em português fala. |
+| **Cotação** | Quanto vale 1 unidade de moeda estrangeira em reais naquele dia. Só a que vem no pedido. |
+| **CPS** | Caracteres por segundo: quantas letras a pessoa precisa ler (legenda) ou a voz precisa falar (dublagem) por segundo. |
+| **dBTP / pico real** | O ponto mais alto do som. Acima de −1,5 dBTP pode "estourar" (chiar) nos celulares. |
+| **Dublagem** | Trocar a fala estrangeira por uma voz em português. Na HP: voz Piper, "por cima" do original abaixado. |
+| **`dublar.py`** | O script da HP que gera a voz em português (a única porta permitida). |
+| **Enxugar** | Dizer a mesma coisa com menos palavras. |
+| **Glossário** | Lista de termos com a tradução oficial da HP para cada canal. |
+| **Janela** | O tempo que uma fala dublada tem para caber: do início dela até o início da próxima menos 0,15 s. |
+| **Legenda traduzida** | Manter o áudio original e pôr o texto em português na tela. |
+| **LU / LUFS** | Unidades de volume "percebido". −14 LUFS é o padrão das redes; "LU" é a diferença entre dois volumes. |
+| **Literal / ao pé da letra** | Tradução palavra por palavra (serve só para conferência; nunca vai para o vídeo). |
+| **Mixagem (mistura)** | Juntar a voz e o som original num arquivo só, cada um no volume certo. |
+| **Narração em off** | Voz de narrador que não aparece falando na tela. Só ela pode ser dublada. |
+| **Negação invertida** | Erro de trocar "não" por "sim" (ou o contrário) na tradução. O mais grave. |
+| **Piper** | Programa gratuito, instalado no PC, que lê texto em voz alta com uma voz sintética pt-BR. |
+| **Pronúncia (`pronuncia.txt`)** | Lista de como a voz deve falar siglas, números, símbolos e nomes estrangeiros. |
+| **Retrotradução ("tradução de volta")** | Ler o português e conferir se diz o mesmo que o original. |
+| **Sincronia** | A fala entrar junto com a imagem certa. Na dublagem: até 200 ms de diferença. |
+| **Vídeo próprio** | Vídeo montado pela HP com material que ela pode usar, cuja narração é da HP. Marcado pelo Curador (`origem: "proprio"`). |
+| **Voice-over ("voz por cima")** | Estilo de documentário: a voz traduzida fala por cima do original abaixado. |
+| **Voz clonada** | Voz feita para imitar uma pessoa real. **Proibida** na HP. |
+| **Voz sintética** | Voz gerada por computador (a Piper). Só em Destinos, Receitas, Carros e Filmes, só em vídeo próprio. |

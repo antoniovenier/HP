@@ -19,23 +19,49 @@ Pastas em H:\\HypadoLocal\\esteira\\: 01_pedidos -> 02_baixados ->
 P1 (do dia), P2 (programado)."""
 
 
+class _Formatador(argparse.RawDescriptionHelpFormatter):
+    def add_usage(self, usage, actions, groups, prefix=None):
+        return super().add_usage(usage, actions, groups,
+                                 "uso: " if prefix is None else prefix)
+
+
+class ParserPT(argparse.ArgumentParser):
+    """argparse com os títulos da ajuda em português."""
+
+    def __init__(self, *a, **kw):
+        kw.setdefault("formatter_class", _Formatador)
+        super().__init__(*a, **kw)
+        if not kw.get("add_help", True):
+            return  # "pai" (opções comuns): mantém o título original para mesclar
+        self._positionals.title = "argumentos"
+        self._optionals.title = "opções"
+        for ac in self._actions:
+            if isinstance(ac, argparse._HelpAction):
+                ac.help = "mostra esta ajuda e sai"
+
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        self.exit(2, f"{self.prog}: erro: {message}\n")
+
+
 def _parser() -> argparse.ArgumentParser:
-    comum = argparse.ArgumentParser(add_help=False)
+    comum = ParserPT(add_help=False)
     comum.add_argument("--simular", action="store_true", default=argparse.SUPPRESS,
                        help="não chama nada externo (nem ffmpeg, nem scripts, nem filas "
                             "de verdade): só move e registra")
+    so_simular = ParserPT(add_help=False)
+    so_simular.add_argument("--simular", action="store_true", default=argparse.SUPPRESS,
+                            help="não chama nada externo")
     comum.add_argument("--json", action="store_true", default=argparse.SUPPRESS,
                        dest="saida_json", help="resposta em JSON")
 
-    p = argparse.ArgumentParser(prog="python -m esteira", description=DESCRICAO,
-                                parents=[comum],
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = p.add_subparsers(dest="comando", metavar="comando")
+    p = ParserPT(prog="python -m esteira", description=DESCRICAO, parents=[comum])
+    sub = p.add_subparsers(dest="comando", metavar="comando", title="comandos")
 
     sub.add_parser("iniciar", parents=[comum],
                    help="cria as pastas e o config.json padrão (modo sombra)")
 
-    s = sub.add_parser("pedido", parents=[comum], help="cria um item em 01_pedidos")
+    s = sub.add_parser("pedido", parents=[so_simular], help="cria um item em 01_pedidos")
     s.add_argument("--json", dest="arquivo", required=True,
                    help="arquivo pedido.json (ou - para ler da entrada padrão)")
 
