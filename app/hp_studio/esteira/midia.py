@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -46,11 +47,26 @@ def _cauda(b: bytes | str, linhas: int = 8) -> str:
     return mascarar("\n".join(txt.strip().splitlines()[-linhas:]))
 
 
+def teto_timeout(timeout: float) -> float:
+    """Timeout efetivo: HP_FFMPEG_TIMEOUT_MAX (se definido) é o teto de todos
+    os ffmpeg (os testes usam 90 s: nenhum ffmpeg fica pendurado)."""
+    try:
+        teto = float(os.environ.get("HP_FFMPEG_TIMEOUT_MAX", "") or 0)
+    except ValueError:
+        teto = 0
+    return min(timeout, teto) if teto > 0 else timeout
+
+
 def ffmpeg(args: list, timeout: float = 3600, cwd: Path | None = None,
            o_que: str = "ffmpeg"):
-    """Roda o ffmpeg (sem janela) e levanta ErroEtapa com o fim do log se falhar."""
+    """Roda o ffmpeg (sem janela) e levanta ErroEtapa com o fim do log se falhar.
+    Sempre com timeout (processo morto se passar) — nunca espera para sempre."""
     exe = achar_ffmpeg()
-    r = rodar([exe, "-hide_banner", "-nostdin", *args], timeout=timeout, cwd=cwd)
+    try:
+        r = rodar([exe, "-hide_banner", "-nostdin", *args], timeout=teto_timeout(timeout),
+                  cwd=cwd)
+    except subprocess.TimeoutExpired as e:
+        raise ErroEtapa(f"{o_que} passou do tempo limite ({e.timeout:.0f}s)") from e
     if r.returncode != 0:
         raise ErroEtapa(f"{o_que} falhou (código {r.returncode}): {_cauda(r.stderr)}")
     return r
@@ -85,7 +101,7 @@ def interpretar_saida_ffmpeg(txt: str) -> InfoMidia:
 
 def _info_ffprobe(exe: str, arquivo: Path) -> InfoMidia:
     r = rodar([exe, "-v", "error", "-print_format", "json", "-show_format",
-               "-show_streams", str(arquivo)], timeout=60)
+               "-show_streams", str(arquivo)], timeout=teto_timeout(60))
     if r.returncode != 0:
         raise ValueError(_cauda(r.stderr))
     d = json.loads(r.stdout.decode("utf-8", "replace") or "{}")
@@ -121,8 +137,11 @@ def info_midia(arquivo: Path, usar_ffprobe: bool = True) -> InfoMidia:
             return _info_ffprobe(probe, arquivo)
         except Exception:
             pass  # cai no plano B
-    r = rodar([achar_ffmpeg(), "-hide_banner", "-nostdin", "-i", str(arquivo)],
-              timeout=120)
+    try:
+        r = rodar([achar_ffmpeg(), "-hide_banner", "-nostdin", "-i", str(arquivo)],
+                  timeout=teto_timeout(120))
+    except subprocess.TimeoutExpired as e:
+        raise ErroEtapa(f"ffmpeg -i {arquivo.name} passou do tempo limite") from e
     txt = r.stderr.decode("utf-8", "replace")
     info = interpretar_saida_ffmpeg(txt)
     if not info.tem_video and not info.tem_audio:

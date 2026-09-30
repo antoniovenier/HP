@@ -278,8 +278,12 @@ class NarradorToqueHP:
         duracoes = {n: float(info_midia(p).duracao or 0) for n, p in partes.items()}
         plano = self.planejar(duracoes, duracao)
         fmt = "aformat=sample_rates=48000:channel_layouts=stereo"
-        entradas, filtros, rot = [], [], []
-        for i, nome in enumerate(partes):
+        # 1ª entrada = silêncio com a duração EXATA do vídeo; o amix com
+        # duration=first termina junto com ele. Nada de apad: no ffmpeg 7 o apad
+        # às vezes nunca termina (gerou WAV infinito) ou para antes da hora.
+        entradas = ["-f", "lavfi", "-t", f"{duracao:.3f}", "-i", "anullsrc=r=48000:cl=stereo"]
+        filtros, rot = [f"[0:a]{fmt}[base]"], ["[base]"]
+        for i, nome in enumerate(partes, start=1):
             entradas += ["-i", str(partes[nome])]
             ms = int(plano[nome]["inicio"] * 1000)
             f = f"[{i}:a]{fmt}"
@@ -289,10 +293,7 @@ class NarradorToqueHP:
                 f += f",adelay={ms}|{ms}"
             filtros.append(f + f"[p{i}]")
             rot.append(f"[p{i}]")
-        # apad SEMPRE com whole_dur (fluxo finito) + -t na saída: apad sozinho nunca
-        # termina e o ffmpeg 7 não encerra no atrim (gerava WAV infinito)
-        filtros.append(f"{''.join(rot)}amix=inputs={len(rot)}:normalize=0:duration=longest,"
-                       f"apad=whole_dur={duracao:.3f},atrim=end={duracao:.3f}[n]")
+        filtros.append(f"{''.join(rot)}amix=inputs={len(rot)}:normalize=0:duration=first[n]")
         tmp = item / "_tmp_narracao.wav"
         limite = int(duracao * 48000 * 2 * 2 * 1.5) + 1_000_000  # teto do WAV em bytes
         ffmpeg(["-y", *entradas, "-filter_complex", ";".join(filtros), "-map", "[n]",

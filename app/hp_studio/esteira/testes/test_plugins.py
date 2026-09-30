@@ -17,12 +17,13 @@ from esteira.midia import gerar_audio_teste, info_midia
 from esteira.pedido import criar_pedido
 from esteira.plugins import (BaixadorYtdlp, DesignerScript, DubladorScript,
                              LegendadorWhisper, NarradorToqueHP, montar_comando)
-from esteira.testes.conftest import pedido_carrossel, pedido_reel
+from esteira.testes.conftest import TIMEOUTS_TESTE, pedido_carrossel, pedido_reel
 
 
 @pytest.fixture
 def cfg(tmp_path):
     c = carregar_config()
+    c.timeouts.update(TIMEOUTS_TESTE)
     c.pasta_scripts = tmp_path / "scripts"
     c.pasta_scripts.mkdir()
     return c
@@ -153,7 +154,8 @@ def test_narrador_monta_narracao_com_ffmpeg(cfg, tmp_path):
     n = NarradorToqueHP(cfg, sintetizar=sintetizar)
     wav = n.narrar(tmp_path, {"abertura": "Já viu?", "trecho": "Olha só.", "fecho": "E aí?"}, 8.0)
     i = info_midia(wav, usar_ffprobe=False)
-    assert abs(i.duracao - 8.0) < 0.1
+    assert abs(i.duracao - 8.0) < 0.05
+    assert wav.stat().st_size < 8.0 * 48000 * 4 * 1.1  # nunca maior que 8 s de WAV
     assert ler_json(tmp_path / "narracao.json")["plano"]["fecho"]["inicio"] == 6.7
 
 

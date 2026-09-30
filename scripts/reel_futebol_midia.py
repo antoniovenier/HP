@@ -506,9 +506,14 @@ def comandos_simulados(plano: Plano, pasta: Path) -> list[str]:
                    texto_comando([ffmpeg(), "-hide_banner", "-nostdin",
                                   *_entrada_musica(plano.musica, plano.duracao), "-vn", "-af",
                                   "loudnorm=print_format=json", "-f", "null", "-"])]
-    linhas += ["# montagem final (vídeo copiado, áudio normalizado; os measured_* e o "
-               "volume da música saem das medições acima)",
-               texto_comando(comando_final(plano, lista, principal, ganho))]
+    final = texto_comando(comando_final(plano, lista, principal, ganho))
+    for chave, valor in (("measured_I", "-20.00"), ("measured_TP", "-3.00"),
+                         ("measured_LRA", "5.00"), ("measured_thresh", "-30.00"),
+                         ("offset", "0.00")):
+        final = final.replace(f"{chave}={valor}", f"{chave}=<medido>")
+    final = final.replace("volume=0.00dB", "volume=<ganho>dB")
+    linhas += ["# montagem final (vídeo copiado, áudio normalizado; os <medido> e o "
+               "<ganho> da música saem das medições acima)", final]
     return linhas
 
 

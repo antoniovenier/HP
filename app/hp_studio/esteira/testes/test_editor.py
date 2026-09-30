@@ -7,12 +7,14 @@ from esteira.editor import EditorFFmpeg
 from esteira.legendas import Fala, escrever_srt
 from esteira.midia import (gerar_audio_teste, gerar_video_teste, info_midia,
                            medir_loudness)
+from esteira.testes.conftest import TIMEOUTS_TESTE
 
 
 @pytest.fixture
 def editor():
     cfg = carregar_config()
     cfg.editor["preset"] = "ultrafast"
+    cfg.timeouts.update(TIMEOUTS_TESTE)
     return EditorFFmpeg(cfg)
 
 
@@ -89,3 +91,36 @@ def test_editor_legenda_manual_tem_preferencia(tmp_path, editor):
     escrever_srt([Fala(0, 0.8, "corrigida pelo revisor")], item / "legenda_manual.srt")
     editor.editar(item, pedido())
     assert "corrigida pelo revisor" in (item / "legenda.ass").read_text(encoding="utf-8")
+
+
+def test_todo_ffmpeg_tem_saida_finita(tmp_path, editor, monkeypatch):
+    """Regressão: apad gerava WAV infinito (encheu o disco) ou curto demais.
+    Nenhum grafo usa apad, toda saída tem -t, toda fonte anullsrc tem -t e todo
+    ffmpeg tem timeout curto."""
+    import esteira.midia as midia
+    from esteira.plugins import NarradorToqueHP
+    comandos = []
+    real = midia.rodar
+
+    def espiao(cmd, timeout=None, **kw):
+        comandos.append((cmd, timeout))
+        assert timeout is not None and timeout <= 90  # teto HP_FFMPEG_TIMEOUT_MAX
+        return real(cmd, timeout=timeout, **kw)
+    monkeypatch.setattr(midia, "rodar", espiao)
+    item = tmp_path / "item"
+    item.mkdir()
+    gerar_video_teste(item / "bruto.mp4", 2.0, 320, 180)
+    gerar_audio_teste(item / "dublagem.wav", 2.0, 700)
+    NarradorToqueHP(editor.cfg, sintetizar=lambda t, s: gerar_audio_teste(s, 0.5, 800)) \
+        .narrar(item, {"abertura": "Viu?", "fecho": "E aí?"}, 2.0)
+    editor.editar(item, pedido(canal="destinos", dublar=True, narrar_toque_hp=True))
+    grafos = [[str(x) for x in c] for c, _ in comandos if "-filter_complex" in map(str, c)]
+    assert len(grafos) >= 3  # narração + 2 passadas do editor
+    for txt in grafos:
+        assert not any("apad" in x for x in txt)  # apad já gerou WAV infinito
+        assert "-t" in txt  # saída sempre com duração
+        for i, x in enumerate(txt):
+            if x.startswith("anullsrc"):
+                assert "-t" in txt[max(0, i - 4):i]  # fonte infinita sempre limitada
+    assert abs(info_midia(item / "narracao.wav", usar_ffprobe=False).duracao - 2.0) < 0.05
+    assert (item / "narracao.wav").stat().st_size < 2_000_000

@@ -363,9 +363,25 @@ def test_render_estatistica_contador(roteiros, tmp_path):
     assert np.abs(q1 - q2).mean() < 1.0      # parado no valor final
 
 
-def test_render_resultado(roteiros, tmp_path):
-    res = rf.montar(gravar(tmp_path, roteiros("resultado", duracao=2.0)), agora=MANHA)
+def test_render_gol_video_em_pe_cobre_a_tela(roteiros, tmp_path):
+    gerar_clipe(tmp_path / "em_pe.mp4", 1.5, (360, 640))
+    r = roteiros("gol", duracao_cartao=1.5)
+    r["video"]["arquivo"] = str(tmp_path / "em_pe.mp4")
+    res = rf.montar(gravar(tmp_path, r), agora=MANHA)
+    conferir_saida(res, 3.0)
+    assert medir_volume(res["saida"], 1.7, 1.0)["media_db"] > -30   # áudio original
+
+
+def test_render_resultado_com_escudo(roteiros, tmp_path):
+    from PIL import Image
+    Image.new("RGBA", (300, 360), (200, 20, 40, 255)).save(tmp_path / "escudo.png")
+    r = roteiros("resultado", duracao=2.0)
+    r["mandante"]["escudo"] = "escudo.png"
+    res = rf.montar(gravar(tmp_path, r), agora=MANHA)
     conferir_saida(res, 2.0)
+    q = np.asarray(extrair_quadro(res["saida"], 1.9))
+    vermelho = (q[..., 0] > 170) & (q[..., 1] < 60) & (q[..., 2] < 80)
+    assert vermelho.sum() > 5000   # o escudo em arquivo apareceu
 
 
 def test_render_tabela_linha_a_linha(roteiros, tmp_path):

@@ -92,15 +92,16 @@ class EditorFFmpeg:
                 partes.append(f"[{idx}:a]{fmt}[narr]")
                 base = "narr"
             idx += 1
+        # linha do tempo: silêncio com a duração EXATA do trecho; o amix com
+        # duration=first termina junto com ele (sem apad, que no ffmpeg 7 às vezes
+        # nunca termina ou para antes da hora)
+        entradas += ["-f", "lavfi", "-t", f"{dur:.3f}", "-i", "anullsrc=r=48000:cl=stereo"]
+        partes.append(f"[{idx}:a]{fmt}[linha]")
         silencioso = base is None
         if silencioso:
-            entradas += ["-f", "lavfi", "-t", f"{dur:.3f}", "-i",
-                         "anullsrc=r=48000:cl=stereo"]
-            partes.append(f"[{idx}:a]{fmt}[sil]")
-            base = "sil"
-            idx += 1
-        # apad com whole_dur = fluxo finito (apad puro nunca termina no ffmpeg 7)
-        partes.append(f"[{base}]apad=whole_dur={dur:.3f},atrim=end={dur:.3f}[amix]")
+            partes.append("[linha]anull[amix]")
+        else:
+            partes.append(f"[linha][{base}]amix=inputs=2:normalize=0:duration=first[amix]")
         return entradas, ";".join(partes), silencioso
 
     def _loudnorm(self, medido: dict | None, json_saida: bool = False) -> str:

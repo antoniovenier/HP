@@ -14,6 +14,8 @@ from esteira.motor import Esteira
 from esteira.pastas import ler_nome
 from esteira.plugins import Plugins
 
+TIMEOUTS_TESTE = {"ffmpeg": 90, "ffmpeg_curto": 30, "baixar": 30, "dublar": 30,
+                  "falar": 30, "estaticos": 30}
 MANHA = datetime(2026, 9, 30, 10, 0)
 NOITE = datetime(2026, 9, 30, 19, 0)
 
@@ -74,10 +76,17 @@ def plugins_espionados(cfg, chamadas, **troca) -> Plugins:
     return Plugins(**campos)
 
 
+@pytest.fixture(autouse=True)
+def ffmpeg_com_teto(monkeypatch):
+    """Nenhum ffmpeg dos testes da esteira passa de 90 s (nunca fica pendurado)."""
+    monkeypatch.setenv("HP_FFMPEG_TIMEOUT_MAX", "90")
+
+
 @pytest.fixture
 def amb():
     cfg = carregar_config()
     cfg.editor["preset"] = "ultrafast"
+    cfg.timeouts.update(TIMEOUTS_TESTE)  # ffmpeg nunca fica pendurado nos testes
     cfg.garantir_pastas()
     chamadas: list = []
     ns = SimpleNamespace(cfg=cfg, chamadas=chamadas)
