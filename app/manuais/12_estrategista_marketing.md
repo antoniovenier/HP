@@ -462,7 +462,13 @@ Além do esquema, o validador confere **regras de negócio** (se qualquer uma fa
 #### 2.6.7 Como o Pauteiro (manual 02) usa o plano
 
 1. Lê as vagas do dia (plano da semana **mais** o ajuste do dia, 2.7).
-2. Para cada vaga, acha o **assunto** que encaixa em `canal` + `formato` + `pilar` + `publico` e cria o pedido em `01_pedidos` **copiando** `slot_id`, `formato` (vira `formato_estrategia`), `teste_ab`, `redes` e `duracao_alvo_s`.
+2. Para cada vaga, acha o **assunto** que encaixa em `canal` + `formato` + `pilar` + `publico` e cria o pedido em `01_pedidos` **copiando** para o `pedido.json`:
+   - `slot_id` → `slot_id`; `formato` → `formato_estrategia`; `teste_ab` → `teste_ab`;
+   - `redes[].rede` → `redes` (a lista de nomes, como o `pedido.json` já usa hoje);
+   - `redes[].hora` → `horarios` (`{"instagram": "<data>T18:30:00-03:00", ...}`) e o **menor** horário → `publicar_em`;
+   - `story` → `story`; `duracao_alvo_s` → `duracao_alvo_s`;
+   - `narracao` → os campos de áudio e Toque HP do pedido (`nenhuma` → sem voz; `toque_hp_texto` → Toque HP em texto; `*_piper` → voz Piper permitida, só nos 4 canais liberados).
+   O Publicador (manual 10, seção 2.3) lê `horarios`, `story` e os campos de rastreio (`slot_id`, `formato_estrategia`, `teste_ab`) daí.
 3. Se **não houver assunto bom** para a vaga, o Pauteiro marca a vaga como `vazia` com o motivo. **Não se enche linguiça**: vaga vazia é melhor que post ruim (post ruim derruba a média do canal e ensina errado o algoritmo).
 4. Campo que o Pauteiro não conhecer ele **ignora** e registra um aviso no log (assim o plano pode ganhar campos novos sem quebrar a etapa 2).
 

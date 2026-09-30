@@ -387,6 +387,8 @@ class Seletores:
         for k, v in (extra.get("textos") or {}).items():
             self.textos[k] = _lista(v)
         self.avisos = [normalizar(a) for a in list(SEL.AVISOS_META) + list(avisos_extra or [])]
+        self.avisos_palavras = [re.compile(r"(?<![a-z0-9])" + re.escape(normalizar(a)))
+                                for a in SEL.AVISOS_META_PALAVRAS]
         self.proibido_exato = {normalizar(x) for x in SEL.PROIBIDO_TOCAR_EXATO}
         self.proibido_contem = [normalizar(x) for x in SEL.PROIBIDO_TOCAR_CONTEM]
         self.popups = [normalizar(x) for x in SEL.POPUPS_DISPENSAVEIS]
@@ -401,19 +403,28 @@ class Seletores:
 
 
 def detectar_aviso(nos: list[No], sel: Seletores) -> tuple | None:
-    """(frase, trecho) se a tela tem aviso da Meta, login ou termos; senão None."""
+    """(frase, trecho) se a tela tem aviso da Meta, login ou termos; senão None.
+
+    Frases valem no texto e na descrição; palavras soltas ("suspeita"...) só no
+    texto visível. Legenda, grade, fotos e campos de digitação não contam.
+    """
     for n in nos:
         if n.senha:
             return ("campo de senha (tela de login)", n.rotulo[:300])
         if n.id_curto in sel.ignorar_aviso or n.classe.endswith("EditText"):
             continue
-        for campo in (n.texto, n.desc):
+        for campo, e_texto in ((n.texto, True), (n.desc, False)):
             if not campo:
                 continue
             t = normalizar(campo)
             for a in sel.avisos:
                 if a and a in t:
                     return (a, campo[:300])
+            if e_texto:
+                for rx in sel.avisos_palavras:
+                    m = rx.search(t)
+                    if m:
+                        return (m.group(0), campo[:300])
     return None
 
 
@@ -1992,8 +2003,19 @@ def carregar_enquete(cfg: dict, dia: str, cortar: bool | None = None) -> dict:
             "destaque": it.get("destaque", cfg["destaque_enquetes"])}
 
 
-def rodar_enquete(ctx: Contexto, dia: str, cortar: bool | None = None) -> dict:
+def _dia(ctx: Contexto, dia: str | None) -> str:
+    """None/"hoje" -> data de hoje (AAAA-MM-DD); senão valida o formato."""
+    if not dia or normalizar(dia) in ("hoje", "today"):
+        return ctx.relogio.agora().date().isoformat()
     try:
+        return date.fromisoformat(str(dia)).isoformat()
+    except ValueError as e:
+        raise DadosInvalidos(f"dia inválido '{dia}' (use AAAA-MM-DD ou hoje)") from e
+
+
+def rodar_enquete(ctx: Contexto, dia: str | None = None, cortar: bool | None = None) -> dict:
+    try:
+        dia = _dia(ctx, dia)
         dados = carregar_enquete(ctx.cfg, dia, cortar)
     except DadosInvalidos as e:
         ctx.saida(f"ERRO: {e}")
@@ -2045,8 +2067,8 @@ def carregar_contagem(cfg: dict, dia: str, arte=None, titulo=None, data_alvo=Non
 
 def rodar_contagem(ctx: Contexto, dia: str | None = None, arte=None, titulo=None,
                    data_alvo=None) -> dict:
-    dia = dia or ctx.relogio.agora().date().isoformat()
     try:
+        dia = _dia(ctx, dia)
         dados = carregar_contagem(ctx.cfg, dia, arte, titulo, data_alvo,
                                   hoje=ctx.relogio.agora().date())
     except DadosInvalidos as e:
@@ -2110,15 +2132,21 @@ def criar_config_padrao() -> Path:
 # Gancho do HP Studio e linha de comando
 # ===========================================================================
 def executar(trabalho: dict) -> dict:
-    """Gancho do motor do HP Studio: {"modo": "fila"|"post"|"enquete"|"contagem", ...}."""
-    ctx = criar_contexto(simular=bool(trabalho.get("simular")), saida=lambda *_: None)
+    """Gancho do motor do HP Studio: {"modo": "fila"|"post"|"enquete"|"contagem", ...}.
+
+    Devolve {"ok", "codigo", "mensagem", "resultados"?}; nunca levanta StoryErro.
+    """
+    try:
+        ctx = criar_contexto(simular=bool(trabalho.get("simular")), saida=lambda *_: None)
+    except StoryErro as e:
+        return _resultado(False, ERRO, str(e))
     modo = trabalho.get("modo", "fila")
     if modo == "fila":
         return rodar_fila(ctx, uma_vez=bool(trabalho.get("uma_vez", True)))
     if modo == "post":
         return rodar_post(ctx, str(trabalho["post_id"]))
     if modo == "enquete":
-        return rodar_enquete(ctx, str(trabalho["dia"]), trabalho.get("cortar"))
+        return rodar_enquete(ctx, trabalho.get("dia"), trabalho.get("cortar"))
     if modo == "contagem":
         return rodar_contagem(ctx, trabalho.get("dia"), trabalho.get("arte"),
                               trabalho.get("titulo"), trabalho.get("data"))
@@ -2141,11 +2169,11 @@ def _parser() -> argparse.ArgumentParser:
     p = sub.add_parser("post", parents=[comum], help="story de um post da fila")
     p.add_argument("post_id", help="nome do arquivo da fila_story sem .json")
     e = sub.add_parser("enquete", parents=[comum], help="story com enquete (16h do GTA)")
-    e.add_argument("--dia", required=True, help="dia do lote, ex.: 2026-09-30")
+    e.add_argument("--dia", default="hoje", help="dia do lote, ex.: 2026-09-30 (padrão: hoje)")
     e.add_argument("--cortar", action="store_true",
                    help="corta a pergunta em 25 caracteres em vez de abortar")
     c = sub.add_parser("contagem", parents=[comum], help="story com contagem regressiva do GTA 6")
-    c.add_argument("--dia", help="dia do lote (padrão: hoje)")
+    c.add_argument("--dia", default="hoje", help="dia do lote (padrão: hoje)")
     c.add_argument("--arte", help="imagem de fundo do story")
     c.add_argument("--titulo", help="título da contagem")
     c.add_argument("--data", help="data final AAAA-MM-DD (padrão 2026-11-19)")

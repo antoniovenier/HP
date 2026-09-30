@@ -63,7 +63,7 @@ Pegar cada item **aprovado** pelo Revisor, publicá-lo (ou agendá-lo) **em cada
 
 | Indicador | Meta | Como medir |
 |---|---|---|
-| Posts no ar no horário do plano (tolerância de ±5 min) | ≥ 95% | `publicado.json` → campo `publicado_em` comparado com `horario_plano` |
+| Posts no ar no horário do plano (tolerância de ±5 min) | ≥ 95% | `publicado.json` → campo `publicado_em` comparado com `horario_plano` (o horário que veio do `pedido.json`) |
 | Posts duplicados | **0** (zero absoluto) | Conferência diária na API: 2 posts com a mesma legenda na mesma conta no mesmo dia = duplicado |
 | Posts na conta errada | **0** | Conferência do `conta` do `post.json` com a conta devolvida pela API |
 | Itens aprovados que não foram ao ar em até 24 h sem motivo registrado | 0 | Pastas paradas em `06_agendados` há mais de 24 h sem `erro.json` |
@@ -106,11 +106,13 @@ H:\HypadoLocal\
 │   ├── 05_revisao\                  ← o Revisor trabalha aqui
 │   ├── 06_agendados\                ← ENTRADA do Publicador
 │   │   └── P1_2026-10-06_1830_gta_rockstar-quinta\
-│   │       ├── pedido.json
-│   │       ├── post.json            ← o que publicar, onde e quando
+│   │       ├── pedido.json          ← em quais redes e quando (Pauteiro, manual 02)
+│   │       ├── post.json            ← texto exato de cada rede (Redator, manual 08)
 │   │       ├── aprovado.json        ← sem isto, NADA sai
-│   │       ├── final.mp4            ← vídeo final (ou arte\*.png no estático)
-│   │       ├── capa.jpg
+│   │       ├── final.mp4            ← vídeo final (Editor, manual 03)
+│   │       ├── capa.jpg             ← capa (Designer, manual 07)
+│   │       ├── lamina_01.jpg …      ← só em estático (carrossel, arte de feed)
+│   │       ├── story.jpg · pin.jpg  ← quando houver story com arte / Pinterest
 │   │       ├── legenda.srt
 │   │       ├── publicado.json       ← o Publicador cria e vai completando
 │   │       ├── tiktok_ok.json       ← o Claude grava depois de agendar no TikTok
@@ -167,103 +169,122 @@ Regras de leitura:
 - `veredito` diferente de `"aprovado"` → **não publica**. Se existir `refazer.json` na pasta, o item nem deveria estar em `06_agendados`: mova para `99_erros` com motivo "item sem aprovação em 06_agendados" (passo 17).
 - `media_nota` abaixo de 7 com veredito "aprovado" → incoerente. **Não publica**, abre ticket (passo 91).
 
-### 2.3 Entrada 2 — `post.json` (vem do Redator, manual 08, com horários do Estrategista, manual 12)
+### 2.3 Entrada 2 — `pedido.json` (onde e quando) e `post.json` (com que texto)
 
-É o "pedido de publicação". Diz **o que** sai, **onde**, **quando** e **com que texto** em cada rede. Exemplo completo de um reel do GTA 6 que vai para 6 redes:
+O Publicador lê **dois** arquivos da pasta do item:
+- o **`pedido.json`**, criado pelo Pauteiro (manual 02) a partir da vaga do plano do Estrategista (manual 12): diz **em quais redes** e **quando**;
+- o **`post.json`**, escrito pelo Redator (manual 08, esquema `hp.post/1`): diz **o texto exato** de cada rede.
+
+> **Nome curto usado neste manual:** `post_id` = **o nome da pasta do item** (igual ao campo `item` do `post.json` e ao `id` do `pedido.json`). Ex.: `P1_2026-10-06_1830_gta_rockstar-quinta`. É esse nome que vai nas filas (`fila_api`, `fila_story`, `whatsapp_fila`) e no `publicado.json`.
+
+#### 2.3.1 O que o Publicador usa do `pedido.json`
 
 ```json
 {
-  "versao_esquema": 1,
-  "item": "P1_2026-10-06_1830_gta_rockstar-quinta",
-  "post_id": "gta-20261006-1830-rockstar-quinta",
+  "id": "P1_2026-10-06_1830_gta_rockstar-quinta",
   "canal": "gta",
   "tipo": "reel",
   "prioridade": "P1",
-  "slot_plano": "2026-W41-gta-ter-1830-ig-reel",
+  "publicar_em": "2026-10-06T18:30:00-03:00",
+  "redes": ["instagram", "threads", "facebook", "youtube", "tiktok"],
+  "slot_id": "2026-W41-gta-ter-02",
   "formato_estrategia": "reel_noticia",
   "teste_ab": null,
-  "arquivos": {
-    "video": "final.mp4",
-    "capa": "capa.jpg",
-    "legenda_srt": "legenda.srt",
-    "imagens": []
+  "horarios": {
+    "instagram": "2026-10-06T18:30:00-03:00",
+    "threads":   "2026-10-06T18:35:00-03:00",
+    "facebook":  "2026-10-06T18:40:00-03:00",
+    "youtube":   "2026-10-06T19:00:00-03:00",
+    "tiktok":    "2026-10-06T19:10:00-03:00"
   },
-  "duracao_s": 31.4,
-  "credito": "Vídeo: @criador_exemplo (TikTok)",
-  "redes": {
-    "instagram": {
-      "publicar": true,
-      "conta": "@hpgta6",
-      "formato": "reels",
-      "horario_plano": "2026-10-06T18:30:00-03:00",
-      "legenda": "A Rockstar mexeu no site de novo… o que você acha que vem aí na quinta? 👀\n\nVídeo: @criador_exemplo (TikTok)\n\n#gta6 #gtavi #rockstargames #hpgta6",
-      "compartilhar_no_feed": true,
-      "story_divulgacao": true,
-      "story_clicavel": { "fazer": true, "destaque": "Notícias" }
-    },
-    "threads": {
-      "publicar": true,
-      "conta": "@hpgta6",
-      "formato": "texto_video",
-      "horario_plano": "2026-10-06T18:35:00-03:00",
-      "texto": "A Rockstar mexeu no site de novo. Aposta: o que sai na quinta? Vídeo: @criador_exemplo"
-    },
-    "facebook": {
-      "publicar": true,
-      "conta": "GTA 6 | HP",
-      "formato": "reels",
-      "horario_plano": "2026-10-06T18:40:00-03:00",
-      "legenda": "A Rockstar mexeu no site de novo… o que vem aí na quinta? Vídeo: @criador_exemplo (TikTok)"
-    },
-    "youtube": {
-      "publicar": true,
-      "conta": "GTA 6 | HP",
-      "formato": "shorts",
-      "horario_plano": "2026-10-06T19:00:00-03:00",
-      "titulo": "A Rockstar mexeu no site de novo… o que vem na quinta? #gta6 #shorts",
-      "descricao": "Vídeo: @criador_exemplo (TikTok). Canal GTA 6 | HP — tudo sobre o lançamento em 19/11/2026.",
-      "tags": ["gta 6", "gta vi", "rockstar"],
-      "privacidade_final": "public"
-    },
-    "tiktok": {
-      "publicar": true,
-      "conta": "@hpgta6",
-      "horario_plano": "2026-10-06T19:10:00-03:00",
-      "legenda": "A Rockstar mexeu no site de novo… o que vem na quinta? 👀 Vídeo: @criador_exemplo #gta6 #gtavi"
-    },
-    "pinterest": { "publicar": false }
-  },
-  "aviso_no_ar": { "enviar": true, "lote": "noite" },
-  "observacoes_publicador": ""
+  "story": { "divulgacao": true, "clicavel": true, "destaque": "Notícias" },
+  "aviso_lote": "noite"
 }
 ```
 
-O que cada campo quer dizer (o que o Publicador confere):
+(O `pedido.json` real tem mais campos — fonte, áudio, legenda, Toque HP —, que são das etapas anteriores. Acima estão só os que o Publicador usa.)
+
+| Campo | Para que serve | O que conferir / o que fazer se faltar |
+|---|---|---|
+| `id` | Nome do item | Igual ao nome da pasta e ao `item` do `post.json` |
+| `canal` | Qual dos 6 canais | Igual ao `<canal>` do nome da pasta e ao `canal` do `post.json` |
+| `tipo` | `reel`, `video`, `carrossel`, `story`, `threads` | Define quais arquivos de mídia têm que existir (2.3.3) |
+| `prioridade` | `P0`, `P1`, `P2` | Igual ao começo do nome da pasta |
+| `publicar_em` | Hora principal | Usada para **todas** as redes quando `horarios` não existe |
+| `redes` | Lista de redes em que o item sai | Pinterest **só** em `receitas`, `carros`, `destinos` |
+| `slot_id`, `formato_estrategia`, `teste_ab` | De qual vaga do plano o item veio, qual formato da matriz e se é teste A/B | **Só copiar** para o `publicado.json` (é assim que o Analista, manual 11, sabe o que medir). Se faltar, grava `null` e segue |
+| `horarios` | Hora de cada rede (vem do plano) | **Opcional.** Sem ele, todas as redes usam `publicar_em` |
+| `story` | Story de divulgação e story clicável | **Opcional.** Sem ele: `divulgacao: true` em reel e carrossel do Instagram, `clicavel: false` |
+| `aviso_lote` | Em qual aviso "no ar" o item entra | **Opcional.** Sem ele: `manha` (antes das 12h), `tarde` (12h–18h), `noite` (depois das 18h); P0 → `p0` |
+
+#### 2.3.2 O que o Publicador usa do `post.json` (esquema `hp.post/1`; exemplo completo no manual 08, seção 2.4)
+
+Trecho de exemplo, só com os campos que o Publicador lê:
+
+```json
+{
+  "esquema": "hp.post/1",
+  "item": "P1_2026-10-06_1830_gta_rockstar-quinta",
+  "canal": "gta",
+  "conta": "@hpgta6",
+  "tipo": "reel",
+  "status": "pronto",
+  "versao": 1,
+  "credito": {
+    "rotulo": "Vídeo",
+    "nome": "Criador Exemplo",
+    "por_rede": { "instagram": "@criadorexemplo", "facebook": "Criador Exemplo", "tiktok": "@criadorexemplo", "youtube": "@CriadorExemplo", "threads": "@criadorexemplo" }
+  },
+  "valores_aproximados": false,
+  "texto_valores": null,
+  "redes": {
+    "instagram": { "texto_final": "A Rockstar mexeu no site de novo… o que você acha que vem aí na quinta? 👀\n\nVídeo: @criadorexemplo\n\n#gta6 #gtavi #rockstargames" },
+    "facebook":  { "texto_final": "A Rockstar mexeu no site de novo… o que vem aí na quinta?\n\nVídeo: Criador Exemplo\n\n#gta6" },
+    "tiktok":    { "texto_final": "Rockstar mexeu no site de novo 👀 o que vem na quinta? Vídeo: @criadorexemplo #gta6 #gtavi" },
+    "youtube":   { "titulo": "A Rockstar mexeu no site de novo… o que vem na quinta? #gta6", "descricao": "Vídeo: @CriadorExemplo. Tudo sobre o lançamento em 19/11/2026.", "tags": ["gta 6", "gta vi", "rockstar"] },
+    "threads":   { "texto_final": "A Rockstar mexeu no site de novo. O que sai na quinta? Comenta aí 👇\n\nVídeo: @criadorexemplo", "topico": "GTA 6" },
+    "pinterest": null
+  },
+  "enquete": null,
+  "aviso": { "titulo_curto": "Rockstar mexeu no site de novo" },
+  "modo": "valendo"
+}
+```
 
 | Campo | Para que serve | O que conferir |
 |---|---|---|
-| `item` | Nome da pasta | Tem que ser **igual** ao nome da pasta. Se não for, o JSON é de outro item: parar. |
-| `post_id` | Identificador único do post na HP (sem espaços, sem acento) | Único no dia. É o nome usado nas filas (`fila_api`, `fila_story`, `whatsapp_fila`). |
-| `canal` | Qual dos 6 canais | Tem que bater com o `<canal>` do nome da pasta **e** com as contas em `redes`. |
-| `slot_plano` / `formato_estrategia` / `teste_ab` | De qual vaga do plano do Estrategista o item veio, qual formato da matriz ele representa e se faz parte de um teste A/B | Só copiar para o `publicado.json`: é assim que o Analista (manual 11) sabe o que medir. Nunca mudar. |
-| `tipo` | `reel`, `carrossel`, `foto`, `story`, `texto` | Estático (`carrossel`, `foto`, `story`, `texto`) não tem `final.mp4`; tem `arquivos.imagens`. |
-| `arquivos.*` | Nomes dos arquivos dentro da pasta | Todo arquivo citado **existe** e tem tamanho > 0. |
-| `credito` | Crédito do criador | Não pode estar vazio em conteúdo de terceiros. Tem que aparecer na legenda de **todas** as redes publicadas. |
-| `redes.<rede>.publicar` | Se sai nessa rede | `false` = ignorar a rede. |
-| `redes.<rede>.conta` | Em qual conta sai | Tem que ser a conta **do canal**. Conta de outro canal = parar. |
-| `redes.<rede>.horario_plano` | Quando sai | Data/hora com fuso (`-03:00`). Horário no passado há mais de 2 h = pergunta ao Estrategista (passo 20). |
-| `redes.<rede>.legenda` / `texto` / `titulo` | Texto de cada rede | Limites de tamanho da seção 4.4. |
-| `story_divulgacao` | Se faz story de divulgação depois do post | Só depois do post confirmado. |
-| `story_clicavel` | Se o robô do emulador compartilha o post no story | `destaque` = nome do destaque onde o story fica guardado. |
-| `aviso_no_ar` | Se o item entra no aviso do WhatsApp | `lote` agrupa os links (ex.: `manha`, `tarde`, `noite`). |
+| `esquema` | Versão do formato | Tem que ser `hp.post/1`. Outro valor → não publica (passo 17) |
+| `item` | Nome da pasta | Igual ao nome da pasta. Diferente = `post.json` de outro item: parar |
+| `canal`, `conta` | Canal e @ do Instagram/Threads/TikTok | `conta` tem que ser a do canal (tabela do passo 15) |
+| `status` | Situação do texto | Tem que ser `pronto` |
+| `credito.por_rede.<rede>` | Crédito do criador em cada rede | Tem que aparecer **dentro** do texto da rede (passo 18). Em conteúdo próprio pode ser a própria conta HP |
+| `valores_aproximados` / `texto_valores` | Se cita valor em dinheiro | `true` → o `texto_valores` tem que estar no texto de cada rede (passo 19) |
+| `redes.<rede>.texto_final` | Texto de Instagram, Facebook, TikTok e Threads | O Publicador publica **exatamente** este texto, letra por letra |
+| `redes.youtube.titulo` / `descricao` / `tags` | Texto do YouTube | Limites da seção 4.4 |
+| `redes.pinterest.titulo` / `descricao` / `texto_alternativo` / `link` | Texto do Pinterest | Só nos 3 canais com Pinterest |
+| `redes.<rede>` = `null` | A rede não tem texto | Se a rede está no `pedido.json` e o texto é `null` → passo 17 |
+| `enquete` | Pergunta e opções do story com enquete (GTA 16h) | Usado pelo `story_post.py` (bloco L) |
+| `aviso.titulo_curto` | Título do item no aviso "no ar" | Usado no bloco M |
+
+#### 2.3.3 Arquivos de mídia (nomes fixos da esteira)
+
+| Arquivo | Quem faz | Quando é obrigatório |
+|---|---|---|
+| `final.mp4` | Editor (manual 03) | `tipo` = `reel` ou `video` |
+| `capa.jpg` | Designer (manual 07) | Reel e vídeo |
+| `lamina_01.jpg` … `lamina_10.jpg` | Designer | `tipo` = `carrossel` (ou arte de feed avulsa: só `lamina_01.jpg`) |
+| `story.jpg` | Designer | Story de divulgação com arte, story com enquete |
+| `pin.jpg` | Designer | Quando `pinterest` está em `redes` |
+| `legenda.srt` | Legendador (manual 04) | Vídeo com fala (vai como legenda no YouTube quando a etapa 4 permitir) |
 
 ### 2.4 Entrada 3 — plano da semana (vem do Estrategista, manual 12)
 
 O Publicador **não decide horário**, mas usa o plano para conferir. O arquivo é `H:\HypadoLocal\estrategia\planos\plano_semana_<AAAA>-W<nn>.json` **(a criar — ver manual 12, seção 2)**. O Publicador só lê de lá:
 
-- `canais[].slots[].slot_id` → tem que existir o `slot_plano` do `post.json`;
-- `canais[].slots[].hora` e `rede` → confirmam o `horario_plano`;
-- `canais[].limites.max_posts_dia_por_rede` → nunca publicar acima disso no mesmo dia.
+- `canais.<canal>.slots[].slot_id` → tem que existir o `slot_id` do `pedido.json` (item sem `slot_id` é P0 ou está fora do plano: segue normalmente e fica registrado no `historico.log`);
+- `canais.<canal>.slots[].redes[].hora` → confirma os `horarios` do `pedido.json`;
+- `canais.<canal>.limites.max_posts_dia_por_rede` e `intervalo_minimo_min` → nunca publicar acima disso no mesmo dia (passos 22 e 23);
+- o ajuste do dia, `H:\HypadoLocal\estrategia\ajustes\ajuste_<AAAA-MM-DD>.json` → horários mudados de última hora (campo `mover`).
 
 ### 2.5 Entrada 4 — tokens e IDs das contas (NUNCA ler à mão)
 
@@ -277,20 +298,22 @@ Para Instagram e Threads, o Publicador (app) coloca **um arquivo por publicaçã
 
 ```json
 {
-  "id": "gta-20261006-1830-rockstar-quinta-ig",
-  "post_id": "gta-20261006-1830-rockstar-quinta",
+  "id": "P1_2026-10-06_1830_gta_rockstar-quinta-ig",
+  "post_id": "P1_2026-10-06_1830_gta_rockstar-quinta",
   "rede": "instagram",
   "conta": "@hpgta6",
   "tipo": "reels",
   "arquivo": "H:\\HypadoLocal\\esteira\\06_agendados\\P1_2026-10-06_1830_gta_rockstar-quinta\\final.mp4",
   "capa": "H:\\HypadoLocal\\esteira\\06_agendados\\P1_2026-10-06_1830_gta_rockstar-quinta\\capa.jpg",
-  "legenda": "A Rockstar mexeu no site de novo… o que você acha que vem aí na quinta? 👀\n\nVídeo: @criador_exemplo (TikTok)\n\n#gta6 #gtavi #rockstargames #hpgta6",
+  "legenda": "A Rockstar mexeu no site de novo… o que você acha que vem aí na quinta? 👀\n\nVídeo: @criadorexemplo\n\n#gta6 #gtavi #rockstargames",
   "publicar_em": "2026-10-06T18:30:00-03:00",
   "story_depois": true,
   "tentativas": 0,
   "status": "na_fila"
 }
 ```
+
+O campo `legenda` é **exatamente** o `redes.instagram.texto_final` do `post.json` (no Threads, o `redes.threads.texto_final`), sem mudar nenhuma letra. O `publicar_em` é o horário daquela rede (`horarios.<rede>` do `pedido.json`, ou `publicar_em` quando não houver `horarios`).
 
 Estados possíveis do campo `status` (ciclo de vida):
 
@@ -308,12 +331,13 @@ Um registro por rede. É o que o Analista (manual 11) usa para saber **qual post
 ```json
 {
   "item": "P1_2026-10-06_1830_gta_rockstar-quinta",
-  "post_id": "gta-20261006-1830-rockstar-quinta",
+  "post_id": "P1_2026-10-06_1830_gta_rockstar-quinta",
   "canal": "gta",
   "tipo": "reel",
   "formato_estrategia": "reel_noticia",
-  "slot_plano": "2026-W41-gta-ter-1830-ig-reel",
+  "slot_id": "2026-W41-gta-ter-02",
   "teste_ab": null,
+  "duracao_video_s": 31.4,
   "redes": {
     "instagram": {
       "status": "publicado",
@@ -376,6 +400,8 @@ Um registro por rede. É o que o Analista (manual 11) usa para saber **qual post
 }
 ```
 
+`formato_estrategia`, `slot_id` e `teste_ab` são copiados do `pedido.json`. `duracao_video_s` é medida no `final.mp4` (com `achar_ffprobe()` da `hpbase`; se não houver ffprobe, pelo plano B com ffmpeg) — o Analista usa para calcular a retenção.
+
 Valores aceitos para `status` de cada rede:
 
 | Valor | Significado |
@@ -387,7 +413,7 @@ Valores aceitos para `status` de cada rede:
 | `publicado` | Está no ar, com `media_id` e `permalink` conferidos na API |
 | `tempo_esgotado` | A rede não respondeu; em reenvio seguro |
 | `erro` | Recusado; ver `erro.json` |
-| `nao_se_aplica` | `publicar: false` no `post.json` |
+| `nao_se_aplica` | A rede não está na lista `redes` do `pedido.json` |
 | `rede_inativa` | A rede ainda não foi ligada no app (ex.: Facebook e YouTube enquanto a etapa 4 não termina); não segura as outras redes (passos 37 e 42) |
 
 ### 2.8 Saída 3 — `tiktok_ok.json` (o Claude grava depois de agendar no Chrome)
@@ -396,11 +422,11 @@ Enquanto este arquivo não existir, o app **não** considera o TikTok feito e **
 
 ```json
 {
-  "post_id": "gta-20261006-1830-rockstar-quinta",
+  "post_id": "P1_2026-10-06_1830_gta_rockstar-quinta",
   "conta": "@hpgta6",
   "acao": "agendado",
   "agendado_para": "2026-10-06T19:10:00-03:00",
-  "legenda_usada": "A Rockstar mexeu no site de novo… o que vem na quinta? 👀 Vídeo: @criador_exemplo #gta6 #gtavi",
+  "legenda_usada": "Rockstar mexeu no site de novo 👀 o que vem na quinta? Vídeo: @criadorexemplo #gta6 #gtavi",
   "arquivo_enviado": "final.mp4",
   "capa_escolhida": "quadro 0,8 s",
   "conferido_lista_agendados": true,
@@ -421,13 +447,14 @@ Mesmo modelo do TikTok, com os campos do Pinterest:
 
 ```json
 {
-  "post_id": "receitas-20261007-1200-bolo-cenoura",
+  "post_id": "P2_2026-10-07_1200_receitas_bolo-cenoura",
   "conta": "Receitas | HP",
   "acao": "agendado",
   "pasta_pinterest": "Bolos fáceis",
   "titulo": "Bolo de cenoura fofinho com calda de chocolate",
-  "descricao": "Receita completa no vídeo. Valores aproximados dos ingredientes podem variar por região.",
-  "link_destino": "https://sites.google.com/view/hpcanais",
+  "descricao": "Receita completa no vídeo. Valores aproximados, pesquisados em out/2026. Podem mudar.",
+  "texto_alternativo": "Fatia de bolo de cenoura com cobertura de chocolate",
+  "link": "https://sites.google.com/view/hpcanais",
   "agendado_para": "2026-10-07T12:00:00-03:00",
   "conferido_lista_agendados": true,
   "link": null,
@@ -442,7 +469,7 @@ Criado **só depois** do Instagram confirmar o post (tem que existir o `permalin
 
 ```json
 {
-  "post_id": "gta-20261006-1830-rockstar-quinta",
+  "post_id": "P1_2026-10-06_1830_gta_rockstar-quinta",
   "conta": "@hpgta6",
   "canal": "gta",
   "link": "https://www.instagram.com/reel/EXEMPLO1/",
@@ -477,11 +504,11 @@ Um arquivo por mensagem. O texto segue o modelo de `G:\Meu Drive\Hypado\06 Proje
 Cada acontecimento vira **uma linha** no `historico.log` da pasta (a função `anexar_linha` da base `hpbase` já põe a data e hora na frente). Exemplo:
 
 ```
-2026-10-06T18:30:02-03:00 publicador: instagram na_fila (fila_api\gta-20261006-1830-rockstar-quinta-ig.json)
+2026-10-06T18:30:02-03:00 publicador: instagram na_fila (fila_api\P1_2026-10-06_1830_gta_rockstar-quinta-ig.json)
 2026-10-06T18:31:12-03:00 publicador: instagram publicado media_id=17900000000000001
 2026-10-06T18:31:15-03:00 publicador: instagram conferido na API (legenda e horário batem)
 2026-10-06T18:34:40-03:00 publicador: instagram story_divulgacao publicado
-2026-10-06T18:34:41-03:00 publicador: fila_story criado (gta-20261006-1830-rockstar-quinta.json)
+2026-10-06T18:34:41-03:00 publicador: fila_story criado (P1_2026-10-06_1830_gta_rockstar-quinta.json)
 2026-10-06T18:35:20-03:00 publicador: threads publicado media_id=18000000000000003
 2026-10-06T19:12:40-03:00 publicador: todas as redes ok; pasta movida para 07_postados
 ```
@@ -582,7 +609,7 @@ $item = "$esteira\06_agendados\P1_2026-10-06_1830_gta_rockstar-quinta"
 Get-ChildItem $item | Select-Object Name, Length
 ```
 
-Tem que ter, no mínimo: `post.json`, `aprovado.json`, `historico.log` e o arquivo de mídia (`final.mp4` para vídeo, ou as imagens listadas em `arquivos.imagens` para estático). Nenhum com `Length` igual a 0.
+Tem que ter, no mínimo: `pedido.json`, `post.json`, `aprovado.json`, `historico.log` e a mídia (`final.mp4` + `capa.jpg` para vídeo; `lamina_01.jpg`… para carrossel; `pin.jpg` quando tem Pinterest). Nenhum com `Length` igual a 0.
 
 **Passo 12.** Confira a aprovação:
 
@@ -601,15 +628,18 @@ Test-Path "$item\refazer.json"
 
 Tem que responder `False`. Se responder `True`, o item foi mandado de volta e não deveria estar aqui: passo 17.
 
-**Passo 14.** Leia o `post.json` e confira se é deste item mesmo:
+**Passo 14.** Leia o `pedido.json` e o `post.json` e confira se são deste item mesmo:
 
 ```powershell
-$post = Get-Content "$item\post.json" -Raw -Encoding UTF8 | ConvertFrom-Json
-$post.item
+$ped  = Get-Content "$item\pedido.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$post = Get-Content "$item\post.json"   -Raw -Encoding UTF8 | ConvertFrom-Json
 Split-Path $item -Leaf
+$ped.id
+$post.item
+$post.esquema; $post.status
 ```
 
-As duas linhas têm que mostrar **exatamente o mesmo nome**. Diferente = o `post.json` é de outro item: passo 17.
+As três primeiras linhas têm que mostrar **exatamente o mesmo nome**. Depois tem que aparecer `hp.post/1` e `pronto`. Qualquer diferença = passo 17 (motivo: "post.json de outro item", "esquema desconhecido" ou "post.json não está pronto").
 
 **Passo 15.** Confira o canal e as contas. Tabela oficial:
 
@@ -623,19 +653,18 @@ As duas linhas têm que mostrar **exatamente o mesmo nome**. Diferente = o `post
 | `destinos` | @hp.destinos | Destinos \| HP |
 
 ```powershell
-$post.canal
-$post.redes.instagram.conta; $post.redes.threads.conta; $post.redes.tiktok.conta
-$post.redes.facebook.conta; $post.redes.youtube.conta
+$ped.canal; $post.canal; $post.conta
+$ped.redes -join ", "
 ```
 
-Todas as contas têm que ser do mesmo canal. **Uma conta de outro canal = parar** (passo 17). Pinterest só existe para `receitas`, `carros` e `destinos`; se aparecer `pinterest.publicar = true` em outro canal, é erro: passo 17.
+`$ped.canal` e `$post.canal` têm que ser iguais, e `$post.conta` tem que ser o @ do canal na tabela acima (as contas de Facebook, YouTube e Pinterest saem da mesma tabela, pelo canal). **Conta de outro canal = parar** (passo 17). Pinterest só existe para `receitas`, `carros` e `destinos`; se `pinterest` aparecer nas redes de outro canal, é erro: passo 17. Toda rede da lista tem que ter texto no `post.json` (`$post.redes.<rede>` diferente de vazio); rede sem texto = passo 17.
 
-**Passo 16.** Confira que os arquivos citados existem e não estão vazios:
+**Passo 16.** Confira que os arquivos de mídia existem e não estão vazios (nomes fixos, seção 2.3.3):
 
 ```powershell
-foreach ($a in @($post.arquivos.video, $post.arquivos.capa) + @($post.arquivos.imagens)) {
-  if ($a) { $p = Join-Path $item $a; "{0}  existe={1}  tamanho={2}" -f $a, (Test-Path $p), ((Get-Item $p -ErrorAction SilentlyContinue).Length) }
-}
+$precisa = switch ($ped.tipo) { "reel" { @("final.mp4","capa.jpg") } "video" { @("final.mp4","capa.jpg") } "carrossel" { @("lamina_01.jpg") } "story" { @("story.jpg") } default { @() } }
+if ($ped.redes -contains "pinterest") { $precisa += "pin.jpg" }
+foreach ($a in $precisa) { $p = Join-Path $item $a; "{0}  existe={1}  tamanho={2}" -f $a, (Test-Path $p), ((Get-Item $p -ErrorAction SilentlyContinue).Length) }
 ```
 
 Todo arquivo tem que mostrar `existe=True` e tamanho maior que zero.
@@ -655,21 +684,25 @@ Depois abra ticket (passo 91). **Nunca** conserte o `post.json` você mesmo "par
 **Passo 18.** Confira o **crédito** em todas as redes que vão publicar (conteúdo de terceiros **sempre** tem crédito):
 
 ```powershell
-$post.credito
-$post.redes.PSObject.Properties | Where-Object { $_.Value.publicar } | ForEach-Object {
-  $t = "$($_.Value.legenda) $($_.Value.texto) $($_.Value.descricao)"
-  "{0}: tem_credito={1}" -f $_.Name, ($t -match [regex]::Escape(($post.credito -split ':')[-1].Trim().Split(' ')[0]))
+$post.credito.nome
+foreach ($r in $ped.redes) {
+  $t = $post.redes.$r
+  $texto = "$($t.texto_final) $($t.descricao)"
+  $cred = $post.credito.por_rede.$r
+  "{0}: credito='{1}' tem_credito={2}" -f $r, $cred, ([bool]$cred -and $texto.Contains([string]$cred))
 }
 ```
 
-Toda rede com `publicar = true` tem que mostrar `tem_credito=True`. Se alguma mostrar `False`: passo 17 com motivo "crédito faltando na legenda de <rede>".
+Em conteúdo de **terceiros**, toda rede tem que mostrar `tem_credito=True`. Se alguma mostrar `False`: passo 17 com motivo "crédito faltando no texto de <rede>". Conteúdo **próprio** da HP (o `credito.nome` é da própria HP, como "HP Receitas") dispensa o crédito no texto, como define o Redator (manual 08).
 
 **Passo 19.** Se a legenda cita **valor em dinheiro** (R$, preço, custo), ela **tem** que ter a frase "Valores aproximados…":
 
 ```powershell
-$post.redes.PSObject.Properties | Where-Object { $_.Value.publicar } | ForEach-Object {
-  $t = "$($_.Value.legenda) $($_.Value.texto) $($_.Value.descricao)"
-  if ($t -match 'R\$|reais|preço|custa') { "{0}: cita valor; tem_aviso={1}" -f $_.Name, ($t -match 'Valores aproximados') }
+"valores_aproximados = {0}" -f $post.valores_aproximados
+foreach ($r in $ped.redes) {
+  $t = $post.redes.$r
+  $texto = "$($t.texto_final) $($t.descricao)"
+  if ($post.valores_aproximados -or $texto -match 'R\$|reais|preço|custa') { "{0}: cita valor; tem_aviso={1}" -f $r, ($texto -match 'Valores aproximados') }
 }
 ```
 
@@ -677,13 +710,14 @@ Se aparecer `tem_aviso=False`: passo 17 com motivo "valor sem 'Valores aproximad
 
 ### Bloco C — Conferir o horário
 
-**Passo 20.** Compare o `horario_plano` de cada rede com a hora de agora:
+**Passo 20.** Compare o horário de cada rede (`horarios.<rede>` do `pedido.json`; sem ele, `publicar_em`) com a hora de agora:
 
 ```powershell
 $agora = Get-Date
-$post.redes.PSObject.Properties | Where-Object { $_.Value.publicar } | ForEach-Object {
-  $h = [datetime]::Parse($_.Value.horario_plano)
-  "{0}: plano={1:dd/MM HH:mm}  diferenca_min={2:N0}" -f $_.Name, $h, ($h - $agora).TotalMinutes
+foreach ($r in $ped.redes) {
+  $hs = if ($ped.horarios -and $ped.horarios.$r) { $ped.horarios.$r } else { $ped.publicar_em }
+  $h = [datetime]::Parse($hs)
+  "{0}: plano={1:dd/MM HH:mm}  diferenca_min={2:N0}" -f $r, $h, ($h - $agora).TotalMinutes
 }
 ```
 
@@ -691,7 +725,7 @@ $post.redes.PSObject.Properties | Where-Object { $_.Value.publicar } | ForEach-O
 - Entre 0 e −120 (atrasou até 2 h): o app publica **assim que puder** e registra o atraso.
 - Menor que −120 (atrasou mais de 2 h) num `P1`/`P2`: **não publica sozinho.** O horário ruim pode derrubar o alcance e bagunçar a medição. O app marca o item como "precisa de novo horário" e o **Estrategista** (manual 12) escolhe o próximo horário livre no plano (pelo ajuste diário das 7h ou na hora, se for urgente). Registre no `historico.log`.
 
-**Passo 21.** `P0` (urgente, ao vivo) **fura a fila**: sai **na hora**, sem esperar horário do plano, em todas as redes com `publicar = true`. Continua valendo: aprovação, conta certa, crédito, conferência antes de reenviar, story só depois do post. Meta de tempo: do `aprovado.json` ao post no Instagram em **≤ 10 minutos**.
+**Passo 21.** `P0` (urgente, ao vivo) **fura a fila**: sai **na hora**, sem esperar horário do plano, em todas as redes da lista `redes` do `pedido.json`. Continua valendo: aprovação, conta certa, crédito, conferência antes de reenviar, story só depois do post. Meta de tempo: do `aprovado.json` ao post no Instagram em **≤ 10 minutos**.
 
 **Passo 22.** Confira o **limite do dia**. O plano da semana diz o máximo de posts por rede por dia em cada canal (`limites.max_posts_dia_por_rede`). Para contar quantos já saíram hoje num canal:
 
@@ -715,7 +749,7 @@ Get-ChildItem "H:\HypadoLocal\fila_api" -File | Sort-Object LastWriteTime -Desce
 **Passo 25.** Para ver o conteúdo de um trabalho da fila (esses arquivos **não** têm token; o token fica só em `segredos\`):
 
 ```powershell
-Get-Content "H:\HypadoLocal\fila_api\gta-20261006-1830-rockstar-quinta-ig.json" -Raw -Encoding UTF8 | ConvertFrom-Json | Format-List
+Get-Content "H:\HypadoLocal\fila_api\P1_2026-10-06_1830_gta_rockstar-quinta-ig.json" -Raw -Encoding UTF8 | ConvertFrom-Json | Format-List
 ```
 
 Confira: `conta`, `publicar_em`, `legenda` (com crédito) e caminho do `arquivo`.
@@ -741,7 +775,7 @@ O `publicador_meta.py` também tem o log próprio dele, no lugar onde ele já gr
 
 **Passo 28.** Resultado esperado no log: uma linha `instagram publicado media_id=...`. Logo depois, a **conferência na API** (bloco J) roda sozinha. Só depois dela o post conta como publicado de verdade.
 
-**Passo 29.** **Carrossel** (várias imagens num post): o script cria um contêiner para cada imagem e um contêiner "pai" que junta todas, na ordem de `arquivos.imagens`. Limite de imagens por carrossel e tamanhos aceitos: **(conferir na página oficial)** — hoje a HP usa de 2 a 10 lâminas, verticais 1080×1350. A ordem das lâminas é a do `post.json`; **nunca** reordenar na publicação.
+**Passo 29.** **Carrossel** (várias imagens num post): o script cria um contêiner para cada imagem e um contêiner "pai" que junta todas, na ordem dos nomes (`lamina_01.jpg`, `lamina_02.jpg`…). Limite de imagens por carrossel e tamanhos aceitos: **(conferir na página oficial)** — hoje a HP usa de 2 a 10 lâminas, verticais 1080×1350. A ordem das lâminas é a da numeração feita pelo Designer; **nunca** reordenar na publicação.
 
 **Passo 30.** **Limite de publicações pela API.** A Meta limita quantos posts uma conta pode publicar pela API em 24 horas (o número muda; **conferir na página oficial**, e o próprio script pode consultar o uso atual da conta). Se uma conta estiver a **5 posts ou menos** do limite, o app segura os `P2` para o dia seguinte e reserva o restante para `P0`/`P1`. Esse limite quase nunca é atingido no ritmo da HP; se for, é sinal de que tem algo publicando em dobro — abrir ticket P0.
 
@@ -777,19 +811,20 @@ O `publicador_meta.py` também tem o log próprio dele, no lugar onde ele já gr
 
 **Passo 43.** **Cota diária** da API do YouTube: cada projeto tem uma cota por dia, e **enviar vídeo custa muito mais do que ler dados** (**conferir os números atuais na página oficial de cotas**). A cota zera todo dia à meia-noite do horário do Pacífico (4h ou 5h da manhã em Brasília, dependendo da época do ano). Se a cota acabar, o app **não** tenta de novo o dia todo: marca o vídeo para o primeiro horário do plano depois que a cota zerar e registra no `historico.log`.
 
-**Passo 44.** Conferência do YouTube: depois do envio, o app pergunta à API os dados do vídeo pelo `media_id` e confere: canal certo, título igual ao `post.json`, `publishAt` igual ao `horario_plano`. Vídeo vertical e curto (limite de duração de Shorts: **conferir na página oficial**).
+**Passo 44.** Conferência do YouTube: depois do envio, o app pergunta à API os dados do vídeo pelo `media_id` e confere: canal certo, título igual ao `post.json`, `publishAt` igual ao horário do YouTube no `pedido.json` (`horarios.youtube` ou `publicar_em`). Vídeo vertical e curto (limite de duração de Shorts: **conferir na página oficial**).
 
 ### Bloco H — TikTok (quem faz é o **Claude**, pela página oficial no Chrome)
 
 > O TikTok **não** é publicado pelo app: a HP não tem API do TikTok para publicar. O Claude agenda na **página oficial** (TikTok Studio) no Chrome que **já está logado** na conta (o login foi feito pelo Antônio). O app **espera** o arquivo `tiktok_ok.json` para considerar o TikTok feito.
 
-**Passo 45.** Descubra quais itens estão esperando o TikTok (têm `tiktok.publicar = true` e ainda não têm `tiktok_ok.json`):
+**Passo 45.** Descubra quais itens estão esperando o TikTok (têm `tiktok` nas `redes` do `pedido.json` e ainda não têm `tiktok_ok.json`):
 
 ```powershell
 Get-ChildItem "$esteira\06_agendados" -Directory | Sort-Object Name | ForEach-Object {
-  $p = Get-Content (Join-Path $_.FullName "post.json") -Raw -Encoding UTF8 | ConvertFrom-Json
-  if ($p.redes.tiktok.publicar -and -not (Test-Path (Join-Path $_.FullName "tiktok_ok.json"))) {
-    "{0}  conta={1}  hora={2}" -f $_.Name, $p.redes.tiktok.conta, $p.redes.tiktok.horario_plano
+  $pd = Get-Content (Join-Path $_.FullName "pedido.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+  if (($pd.redes -contains "tiktok") -and -not (Test-Path (Join-Path $_.FullName "tiktok_ok.json"))) {
+    $hora = if ($pd.horarios -and $pd.horarios.tiktok) { $pd.horarios.tiktok } else { $pd.publicar_em }
+    "{0}  canal={1}  hora={2}" -f $_.Name, $pd.canal, $hora
   }
 }
 ```
@@ -804,11 +839,13 @@ Faça **em lote** (vários itens de uma vez, de manhã e à tarde), para gastar 
 
 **Passo 49.** Clique em **Selecionar vídeo** (ou arraste o arquivo) e escolha o `final.mp4` **da pasta do item** (`H:\HypadoLocal\esteira\06_agendados\<item>\final.mp4`). Espere a barra de envio chegar a 100%.
 
-**Passo 50.** No campo de **descrição**, apague o que o TikTok sugerir e cole **exatamente** o texto de `redes.tiktok.legenda` do `post.json`. Para copiar o texto certinho para a área de transferência:
+**Passo 50.** No campo de **descrição**, apague o que o TikTok sugerir e cole **exatamente** o texto de `redes.tiktok.texto_final` do `post.json`. Para copiar o texto certinho para a área de transferência:
 
 ```powershell
-$p = Get-Content "$item\post.json" -Raw -Encoding UTF8 | ConvertFrom-Json
-Set-Clipboard -Value $p.redes.tiktok.legenda
+$p   = Get-Content "$item\post.json"   -Raw -Encoding UTF8 | ConvertFrom-Json
+$ped = Get-Content "$item\pedido.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$hTik = if ($ped.horarios -and $ped.horarios.tiktok) { $ped.horarios.tiktok } else { $ped.publicar_em }
+Set-Clipboard -Value $p.redes.tiktok.texto_final
 ```
 
 Depois é só colar (`Ctrl + V`). Confira se o **crédito** está no texto.
@@ -821,17 +858,17 @@ Depois é só colar (`Ctrl + V`). Confira se o **crédito** está no texto.
 - Divulgação de conteúdo comercial / conteúdo de marca: **desligado** (a HP ainda não faz publicidade paga nem afiliado — ver manual 13, FUTURO).
 - **Rótulo de conteúdo gerado por IA:** ligar quando o vídeo tiver **voz sintética** (Piper, nos canais Destinos, Receitas, Carros e Filmes). A regra de quando o rótulo é obrigatório muda: **conferir na página oficial**. Futebol **nunca** tem voz sintética.
 
-**Passo 53.** **Agendar:** ligue a opção **Agendar** e escolha a **data** e a **hora** exatas de `redes.tiktok.horario_plano`. Confira que o fuso mostrado é o de Brasília. O TikTok tem prazo mínimo e máximo para agendar (**conferir na página oficial**; costuma ser de alguns minutos até alguns dias à frente). Se o horário já passou ou está perto demais para agendar, use **Publicar agora** só se o horário do plano já chegou; senão, escolha o horário possível mais próximo e anote em `observacoes`.
+**Passo 53.** **Agendar:** ligue a opção **Agendar** e escolha a **data** e a **hora** exatas do TikTok (`$hTik` do passo 50: `horarios.tiktok` do `pedido.json` ou, sem ele, `publicar_em`). Confira que o fuso mostrado é o de Brasília. O TikTok tem prazo mínimo e máximo para agendar (**conferir na página oficial**; costuma ser de alguns minutos até alguns dias à frente). Se o horário já passou ou está perto demais para agendar, use **Publicar agora** só se o horário do plano já chegou; senão, escolha o horário possível mais próximo e anote em `observacoes`.
 
 **Passo 54.** Clique em **Agendar** (ou **Publicar**). Depois abra a **lista de posts** do TikTok Studio e confira que o vídeo aparece como agendado, **na conta certa, na hora certa**. Só então grave o `tiktok_ok.json` na pasta do item. Modelo em PowerShell (troque os valores):
 
 ```powershell
 $ok = [ordered]@{
-  post_id = $p.post_id
-  conta = $p.redes.tiktok.conta
+  post_id = $p.item
+  conta = $p.conta
   acao = "agendado"
-  agendado_para = $p.redes.tiktok.horario_plano
-  legenda_usada = $p.redes.tiktok.legenda
+  agendado_para = $hTik
+  legenda_usada = $p.redes.tiktok.texto_final
   arquivo_enviado = "final.mp4"
   capa_escolhida = "quadro 0,8 s"
   conferido_lista_agendados = $true
@@ -848,7 +885,7 @@ Set-Content -Path "$item\tiktok_ok.json" -Value $ok -Encoding UTF8
 **Passo 55.** Anote no histórico do item:
 
 ```powershell
-Add-Content -Path "$item\historico.log" -Value ("{0} claude: tiktok agendado para {1}" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), $p.redes.tiktok.horario_plano) -Encoding UTF8
+Add-Content -Path "$item\historico.log" -Value ("{0} claude: tiktok agendado para {1}" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), $hTik) -Encoding UTF8
 ```
 
 ### Bloco I — Pinterest (só Receitas, Carros e Destinos; hoje o **Claude**, pela página oficial)
@@ -858,13 +895,14 @@ Add-Content -Path "$item\historico.log" -Value ("{0} claude: tiktok agendado par
 **Passo 57.** Abra o Chrome no perfil já logado e vá para a página de criar Pin do Pinterest (endereço atual: `https://www.pinterest.com/pin-creation-tool/` — **conferir na página oficial**). As mesmas regras do passo 47 valem aqui: login, senha, código, CAPTCHA ou termos novos → **parar** e abrir ticket.
 
 **Passo 58.** Confira a conta ativa (tem que ser a do canal) e preencha:
-- **Imagem ou vídeo:** o arquivo que o `post.json` indicar para o Pinterest (em geral a arte vertical 2:3 feita pelo Designer, manual 07; tamanhos recomendados: **conferir na página oficial**).
-- **Título:** `redes.pinterest.titulo`.
+- **Imagem:** o `pin.jpg` da pasta do item (arte vertical 2:3 feita pelo Designer, manual 07; tamanhos recomendados: **conferir na página oficial**).
+- **Título:** `redes.pinterest.titulo` do `post.json`.
 - **Descrição:** `redes.pinterest.descricao` (com "Valores aproximados…" se citar preço).
-- **Link de destino:** `redes.pinterest.link_destino` (em geral a página de links `https://sites.google.com/view/hpcanais`). **Nunca** link de afiliado (manual 13 é FUTURO).
-- **Pasta (board):** `redes.pinterest.pasta`.
+- **Texto alternativo:** `redes.pinterest.texto_alternativo`.
+- **Link de destino:** `redes.pinterest.link`; se vier `null`, a página de links `https://sites.google.com/view/hpcanais`. **Nunca** link de afiliado (manual 13 é FUTURO).
+- **Pasta (board):** uma pasta **já existente** do canal que combine com o assunto (ex.: "Bolos fáceis"). Não achou pasta adequada: use a pasta geral do canal e anote em `observacoes` do `pinterest_ok.json` a sugestão de pasta nova (quem cria pasta nova é o plantão, com calma, não no meio da publicação).
 
-**Passo 59.** Escolha **Publicar mais tarde** com a data e a hora de `horario_plano` e confirme. Abra a lista de Pins agendados e confira.
+**Passo 59.** Escolha **Publicar mais tarde** com a data e a hora do Pinterest (`horarios.pinterest` do `pedido.json` ou `publicar_em`) e confirme. Abra a lista de Pins agendados e confira.
 
 **Passo 60.** Grave o `pinterest_ok.json` (modelo da seção 2.9, igual ao passo 54 trocando os campos) e anote no `historico.log`. Quando a HP tiver acesso liberado à **API oficial do Pinterest**, este bloco passa para o app **(a criar)** e o Claude deixa de fazer.
 
@@ -915,7 +953,7 @@ No pior caso, o item fica uns **22 a 25 minutos** tentando. Cada tentativa vira 
 **Passo 72.** **Reenvio manual** (depois de o problema ser resolvido, por exemplo a internet voltar). O comando faz **a mesma conferência antes** de tentar:
 
 ```powershell
-& $py .\publicador_meta.py reenviar gta-20261006-1830-rockstar-quinta-ig
+& $py .\publicador_meta.py reenviar P1_2026-10-06_1830_gta_rockstar-quinta-ig
 ```
 
 (`reenviar <id>` é **(a criar — ticket H)**; o `<id>` é o nome do arquivo da fila sem o `.json`.) Ele só mexe na rede daquele `id`; nunca republica as redes que já estão `publicado`.
@@ -923,7 +961,7 @@ No pior caso, o item fica uns **22 a 25 minutos** tentando. Cada tentativa vira 
 **Passo 73.** **Modo simular** — obrigatório antes de ligar o reenvio de verdade no PC (e sempre que mexerem no script):
 
 ```powershell
-& $py .\publicador_meta.py reenviar gta-20261006-1830-rockstar-quinta-ig --simular
+& $py .\publicador_meta.py reenviar P1_2026-10-06_1830_gta_rockstar-quinta-ig --simular
 ```
 
 **(a criar — ticket H)**. No modo simular, o script faz a conferência (só leitura) e **mostra o que faria** ("já está no ar, não reenviaria" ou "não achei, reenviaria"), **sem publicar nada**.
@@ -934,9 +972,9 @@ No pior caso, o item fica uns **22 a 25 minutos** tentando. Cada tentativa vira 
 
 **Passo 75.** Regra fixa: **story só depois do post**. "Depois" quer dizer: o post está `publicado` **e** `conferido_na_api: true` **e** tem `permalink`. Story de algo que ainda não está no ar leva o seguidor a um post que não existe — isso não acontece nunca.
 
-**Passo 76.** **Story de divulgação (pela API):** quando `story_divulgacao: true`, o `publicador_meta.py` **(existe)** já solta o story **depois** do post dele — esse comportamento já funciona e **não deve ser mudado**. O Publicador só confere no `publicado.json` que o horário do story é **maior** que o horário do post.
+**Passo 76.** **Story de divulgação (pela API):** quando `story.divulgacao` do `pedido.json` é `true` (ou não existe e o item é reel/carrossel do Instagram), o `publicador_meta.py` **(existe)** já solta o story **depois** do post dele — esse comportamento já funciona e **não deve ser mudado**. O Publicador só confere no `publicado.json` que o horário do story é **maior** que o horário do post.
 
-**Passo 77.** **Story clicável (pelo emulador):** quando `story_clicavel.fazer: true`, depois da conferência do Instagram o app cria o pedido `H:\HypadoLocal\emulador\fila_story\<post_id>.json` (modelo na seção 2.10). Quem cria esse pedido automaticamente, no fluxo da largada, é o `fila_story_com_post.py`, chamado pelo `largada_canais.py` (ticket H; se o `fila_story_com_post.py` não existir no PC, ele é **(a criar)**).
+**Passo 77.** **Story clicável (pelo emulador):** quando `story.clicavel` do `pedido.json` é `true`, depois da conferência do Instagram o app cria o pedido `H:\HypadoLocal\emulador\fila_story\<post_id>.json` (modelo na seção 2.10). Quem cria esse pedido automaticamente, no fluxo da largada, é o `fila_story_com_post.py`, chamado pelo `largada_canais.py` (ticket H; se o `fila_story_com_post.py` não existir no PC, ele é **(a criar)**).
 
 **Passo 78.** O robô do emulador, `story_post.py` **(a criar — ticket F)**, pega os pedidos da fila, um de cada vez:
 1. Pega a trava do trabalho pesado com `ignorar_horario=True` (o story pode sair a qualquer hora, inclusive das 18h às 22h30, desde que leve **no máximo 5 minutos**).
@@ -958,7 +996,7 @@ Para ver a tela do emulador numa conferência: `H:\HypadoLocal\android\tela.ps1`
 
 ```powershell
 $pedido = [ordered]@{
-  post_id = "gta-20261006-1830-rockstar-quinta"
+  post_id = "P1_2026-10-06_1830_gta_rockstar-quinta"
   conta = "@hpgta6"
   canal = "gta"
   link = "https://www.instagram.com/reel/EXEMPLO1/"
@@ -966,16 +1004,16 @@ $pedido = [ordered]@{
   titulo = "Rockstar mexeu no site de novo"
   destaque = "Notícias"
 } | ConvertTo-Json
-Set-Content -Path "H:\HypadoLocal\emulador\fila_story\gta-20261006-1830-rockstar-quinta.json" -Value $pedido -Encoding UTF8
+Set-Content -Path "H:\HypadoLocal\emulador\fila_story\P1_2026-10-06_1830_gta_rockstar-quinta.json" -Value $pedido -Encoding UTF8
 ```
 
 Só faça isso com o `link` de um post **confirmado** no ar (passo 75).
 
-**Passo 82.** **Story interativo das 16h do GTA e contagem regressiva:** são pedidos do **plano** (manual 12), não de um post. A arte vem de `lotes\<dia>_estaticos.json` (Designer, manual 07); o `story_post.py` **(a criar — ticket F)** publica pelo emulador com a figurinha de **enquete** (pergunta com **no máximo ~25 caracteres**) e salva no destaque **Enquetes**. O Publicador confere depois: saiu às 16h (±10 min), na @hpgta6, com a enquete e no destaque certo.
+**Passo 82.** **Story interativo das 16h do GTA e contagem regressiva:** são pedidos do **plano** (manual 12), não de um post. A arte vem de `lotes\<dia>_estaticos.json` (Designer, manual 07); o `story_post.py` **(a criar — ticket F)** publica pelo emulador com a figurinha de **enquete** (pergunta com **no máximo ~25 caracteres** e as opções: campo `enquete` do `post.json`, escrito pelo Redator, manual 08) e salva no destaque **Enquetes**. O Publicador confere depois: saiu às 16h (±10 min), na @hpgta6, com a enquete e no destaque certo.
 
 ### Bloco M — Fechar o item: mover para `07_postados` e aviso "no ar"
 
-**Passo 83.** O app olha o `publicado.json`. O item está **pronto para fechar** quando **toda** rede com `publicar = true` está em um destes estados: `publicado` (com `conferido_na_api: true`), `agendado` (YouTube, com `publishAt` conferido), `agendado_pelo_claude` (com `tiktok_ok.json` / `pinterest_ok.json`) ou `rede_inativa`.
+**Passo 83.** O app olha o `publicado.json`. O item está **pronto para fechar** quando **toda** rede da lista `redes` do `pedido.json` está em um destes estados: `publicado` (com `conferido_na_api: true`), `agendado` (YouTube, com `publishAt` conferido), `agendado_pelo_claude` (com `tiktok_ok.json` / `pinterest_ok.json`) ou `rede_inativa`.
 
 **Passo 84.** O app move a pasta de `06_agendados` para `07_postados`. À mão (emergência):
 
@@ -986,7 +1024,7 @@ Move-Item -LiteralPath $item -Destination "$esteira\07_postados\"
 
 **Passo 85.** O app atualiza o `agendados.json` que o plantão já usa **(existe)** com os links do item, e a fila local do painel (`scripts\painel_local.py` **(existe)**), para o painel mostrar o post no ar.
 
-**Passo 86.** **Aviso "no ar" no WhatsApp** (uma das 3 únicas coisas permitidas no WhatsApp). O app junta os itens do **mesmo lote** (`aviso_no_ar.lote`: `manha`, `tarde`, `noite` ou `p0`) e monta **uma** mensagem com os links, seguindo o texto-modelo de `G:\Meu Drive\Hypado\06 Projeto\AVISO.md` **(existe)**. A mensagem **sempre começa com `*Claude - *`**.
+**Passo 86.** **Aviso "no ar" no WhatsApp** (uma das 3 únicas coisas permitidas no WhatsApp). O app junta os itens do **mesmo lote** (`aviso_lote` do `pedido.json`: `manha`, `tarde`, `noite` ou `p0`; o título de cada item é o `aviso.titulo_curto` do `post.json`) e monta **uma** mensagem com os links, seguindo o texto-modelo de `G:\Meu Drive\Hypado\06 Projeto\AVISO.md` **(existe)**. A mensagem **sempre começa com `*Claude - *`**.
 
 **Passo 87.** **Quando** o aviso sai: depois que o **último** item do lote foi ao ar (ou foi para `99_erros`). No máximo **1 aviso por lote por grupo**. Item `P0` pode ter aviso próprio, na hora. Se o `AVISO.md` disser outra frequência, vale o `AVISO.md`.
 

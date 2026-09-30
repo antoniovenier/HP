@@ -115,9 +115,9 @@ H:\HypadoLocal\
 
 ### 2.2 Entrada 1 — `publicado.json` (do Publicador, manual 10)
 
-O Analista lê de cada pasta de `07_postados` (últimos **30 dias**) estes campos: `post_id`, `canal`, `tipo`, `formato_estrategia`, `slot_plano`, `teste_ab`, e em `redes.<rede>`: `conta`, `media_id`, `permalink`, `publicado_em`, `status`. Só mede redes com `status` `publicado` (ou `agendado` cuja hora já passou). Modelo completo no manual 10, seção 2.7.
+O Analista lê de cada pasta de `07_postados` (últimos **30 dias**) estes campos: `post_id` (é o nome da pasta do item), `canal`, `tipo`, `formato_estrategia`, `slot_id`, `teste_ab`, `duracao_video_s`, e em `redes.<rede>`: `conta`, `media_id`, `permalink`, `publicado_em`, `status`. Só mede redes com `status` `publicado` (ou `agendado` cuja hora já passou). Modelo completo no manual 10, seção 2.7.
 
-A **duração do vídeo** (`duracao_s`) vem do `post.json` da mesma pasta. Ela é necessária para calcular a retenção.
+A **duração do vídeo** vem do campo `duracao_video_s` do `publicado.json` (o Publicador mede no `final.mp4`). Ela é necessária para calcular a retenção. **Atenção:** o campo `duracao_s` do `post.json` é outra coisa (quanto tempo o Redator levou para escrever) e **não** serve para retenção. Nos arquivos de métrica, o campo `duracao_s` de cada post é sempre a duração do **vídeo**.
 
 ### 2.3 Entrada 2 — `contas.json` **(a criar)**
 
@@ -172,7 +172,7 @@ Exemplo completo (Instagram, @hpgta6):
   },
   "posts": [
     {
-      "post_id": "gta-20261002-1830-contagem-48",
+      "post_id": "P1_2026-10-02_1830_gta_contagem-48",
       "media_id": "17900000000000011",
       "permalink": "https://www.instagram.com/reel/EXEMPLO11/",
       "tipo": "reel",
@@ -265,7 +265,7 @@ Calculado a partir das fotos. Um bloco por canal e rede, mais a lista de posts c
   },
   "posts": [
     {
-      "post_id": "gta-20261002-1830-contagem-48",
+      "post_id": "P1_2026-10-02_1830_gta_contagem-48",
       "rede": "instagram",
       "canal": "gta",
       "formato_estrategia": "reel_contagem",
@@ -432,7 +432,7 @@ Get-Content "$met\$(Get-Date -Format yyyy-MM-dd)\coleta.json" -Raw -Encoding UTF
 
 ```json
 {
-  "post_id": "gta-20261002-1830-contagem-48",
+  "post_id": "P1_2026-10-02_1830_gta_contagem-48",
   "media_id": null,
   "permalink": "https://www.tiktok.com/@hpgta6/video/EXEMPLO",
   "tipo": "reel",
@@ -971,7 +971,7 @@ Cobertura da semana: 98,9%
 **Passo 81.** Serve para: posts **P0** (1 h e 6 h depois de publicados), **testes A/B** que precisam de marca D+1, e quando o Antônio ou o Estrategista pedem o número de agora.
 
 ```powershell
-& $py -m metricas coletar --post gta-20261002-1830-contagem-48
+& $py -m metricas coletar --post P1_2026-10-02_1830_gta_contagem-48
 ```
 
 **(a criar — etapa 6)**. Grava em `metricas\sob_demanda\<dia>_<hora>_<post_id>.json`, **nunca** por cima da foto das 6h.
@@ -1069,7 +1069,7 @@ Classificação: **≥ 9 Excelente**; **7 a 8,9 Bom**; **5 a 6,9 Médio** (ticke
 | 11 | Comparação "estranha" (formato novo parece péssimo) | Posts novos medidos antes de 72 h | Conferir a janela (passo 41) |
 | 12 | Um viral distorce a média | Média é sensível a valor extremo | Olhar a mediana e o IDR (passo 48); regras usam sem P0 |
 | 13 | Meta de monetização desatualizada | Mais de 30 dias sem conferir | Passo 60 |
-| 14 | Relatório semanal sem testes A/B | `teste_ab` não gravado nos posts | Ticket para o Publicador copiar o campo do `post.json` |
+| 14 | Relatório semanal sem testes A/B | `teste_ab` não gravado nos posts | Ticket para o Pauteiro/Publicador: o campo vem da vaga do plano, passa pelo `pedido.json` e é copiado para o `publicado.json` |
 | 15 | Cota do YouTube acabou na coleta | Coleta pesada demais | Passo 12: pular posts antigos; publicação tem prioridade |
 | 16 | Número diferente da tela > 2% | Hora diferente (6h × agora) ou métrica com outro significado | Comparar com coleta sob demanda; se persistir, ticket P1 |
 

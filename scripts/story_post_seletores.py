@@ -111,13 +111,19 @@ TIMESTAMP_AGORA = ["agora", "agora mesmo", "now", "just now"]
 # grava H:\HypadoLocal\emulador\PARADO_AVISO_META.json e nenhum story sai
 # enquanto esse arquivo existir (só o Antônio apaga). Comparação por "contém",
 # sem acento e sem maiúscula.
+#
+# AVISOS_META (frases): valem no texto E na descrição de qualquer elemento.
+# AVISOS_META_PALAVRAS (palavras soltas): valem só no TEXTO visível (não na
+# descrição automática de fotos, que pode trazer o texto de uma imagem de
+# notícia) e fora de legenda/grade/mídia (IDS_CONTEUDO_IGNORAR_AVISO).
 # ---------------------------------------------------------------------------
+AVISOS_META_PALAVRAS = ["suspeita", "suspicious", "captcha", "restringimos"]
+
 AVISOS_META = [
     "tente novamente mais tarde", "try again later",
     "ação bloqueada", "action blocked",
-    "we restrict certain activity", "restringimos",
-    "suspeita", "suspicious",
-    "captcha",
+    "we restrict certain activity", "restringimos certas",
+    "atividade suspeita", "suspicious activity", "suspicious login",
     "confirme que é você", "confirme que você", "confirm it's you",
     "confirm it is you", "confirm that it's you", "confirm you're human",
     "help us confirm", "ajude-nos a confirmar", "nos ajude a confirmar",
@@ -135,12 +141,14 @@ AVISOS_META = [
     "please log in again",
 ]
 
-# Nós cujo texto é conteúdo nosso (legenda/comentários) não contam como aviso
-# (evita parar por causa de uma legenda com a palavra "suspeita").
-# Campos de digitação (EditText) também são ignorados.
+# Nós de conteúdo (legendas, comentários, fotos do feed, grade do perfil) não
+# contam como aviso: evita parar por causa de uma legenda ou foto de notícia
+# com a palavra "suspeita". Campos de digitação (EditText) também são
+# ignorados. (ids a confirmar com o ui.py)
 IDS_CONTEUDO_IGNORAR_AVISO = [
     "row_feed_comment_textview_layout", "row_feed_textview_comments",
-    "row_feed_headline_text",
+    "row_feed_headline_text", "row_feed_photo_imageview", "carousel_image",
+    "image_button", "grid_card_layout_container",
 ]
 
 # ---------------------------------------------------------------------------
