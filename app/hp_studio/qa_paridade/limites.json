@@ -1,0 +1,86 @@
+{
+  "_leia": "Limites do teste de paridade (app x Claude). 'pontos' = lista [valor, nota] ligada por retas: abaixo do primeiro ponto vale a nota do primeiro, acima do último vale a do último. Para trocar sem mexer aqui, crie H:\\HypadoLocal\\app\\paridade\\limites.json só com o que mudar (é mesclado por cima) ou use --limites arquivo.json. Chaves que começam com _ são comentários.",
+
+  "veredito": {
+    "_leia": "IDENTICO: média >= identico E todas as métricas >= nota_minima_metrica. EQUIVALENTE: média >= equivalente E todas >= nota_minima_metrica. Senão DIFERENTE. Passa no dia (aprovado) só com média >= aprovacao_media E todas >= aprovacao_minima_metrica.",
+    "identico": 9.5,
+    "equivalente": 9.0,
+    "nota_minima_metrica": 9.0,
+    "aprovacao_media": 9.5,
+    "aprovacao_minima_metrica": 9.0
+  },
+
+  "pesos": {
+    "_leia": "Peso de cada métrica na nota final (média ponderada só das métricas que se aplicam ao caso).",
+    "duracao": 1.0,
+    "ssim": 3.0,
+    "loudness": 1.5,
+    "legenda": 1.5,
+    "laminas": 3.0,
+    "formato": 0.5
+  },
+
+  "duracao": {
+    "_leia": "Diferença absoluta de duração em segundos. 10 até 0,1 s; 9 em 0,25 s; 7 em 0,5 s; 4 em 1 s; 0 a partir de 2 s.",
+    "pontos": [[0.1, 10], [0.25, 9], [0.5, 7], [1.0, 4], [2.0, 0]]
+  },
+
+  "ssim": {
+    "_leia": "Quadros comparados em cinza, reduzidos (lado maior <= lado_max, sem aumentar), 'quadros_por_segundo' amostras por segundo alinhadas por tempo (mínimo min_quadros, máximo max_quadros). Nota = menor entre a nota da média e a do pior quadro. Referência: reencode do mesmo vídeo (crf 18 x crf 23) dá ~0,988; caixa cobrindo 15% da tela ~0,90; vídeo 0,5 s adiantado ~0,85; ruído forte ~0,3.",
+    "lado_max": 480,
+    "quadros_por_segundo": 1.0,
+    "min_quadros": 6,
+    "max_quadros": 180,
+    "piores": 3,
+    "janela": 7,
+    "sigma": 1.5,
+    "pontos_media": [[0.8, 0], [0.9, 5], [0.95, 8], [0.97, 9], [0.985, 10]],
+    "pontos_minimo": [[0.7, 0], [0.85, 5], [0.93, 9], [0.97, 10]]
+  },
+
+  "imagem": {
+    "_leia": "Arte/lâmina única: mesmo SSIM e mesmos pontos do vídeo, com mais resolução (texto miúdo pesa mais).",
+    "lado_max": 540
+  },
+
+  "loudness": {
+    "_leia": "LUFS integrado e true peak medidos pelo filtro loudnorm do ffmpeg (plano B: ebur128). Nota = menor entre: diferença app x referência, distância do app ao alvo e true peak do app.",
+    "alvo_lufs": -14.0,
+    "usar_alvo": true,
+    "pontos_diferenca": [[0.5, 10], [1.0, 9], [2.0, 7], [3.0, 5], [6.0, 0]],
+    "pontos_alvo": [[1.0, 10], [2.0, 9], [3.0, 7], [5.0, 4], [8.0, 0]],
+    "pontos_true_peak": [[-1.0, 10], [-0.5, 9], [0.0, 7], [1.0, 4], [2.0, 0]]
+  },
+
+  "legenda": {
+    "_leia": "Texto: similaridade por palavras (difflib) depois de tirar acento, caixa e pontuação. Tempos: desvio em ms do início e do fim dos blocos pareados. Blocos: diferença na quantidade. Nota = menor das quatro.",
+    "pontos_texto": [[0.7, 0], [0.9, 5], [0.98, 9], [1.0, 10]],
+    "pontos_desvio_medio_ms": [[40, 10], [100, 9], [250, 6], [500, 3], [1000, 0]],
+    "pontos_desvio_maximo_ms": [[100, 10], [200, 9], [500, 5], [1000, 0]],
+    "pontos_blocos": [[0, 10], [1, 7], [3, 3], [5, 0]]
+  },
+
+  "laminas": {
+    "_leia": "Pastas de imagens em ordem natural do nome (2 antes de 10). Casamento ótimo pelo SSIM (algoritmo húngaro) acha lâmina trocada, faltando ou sobrando. Um par só é 'a mesma lâmina' se o SSIM passar do limiar = maior entre limiar_par e (maior SSIM entre duas lâminas diferentes da referência + margem_modelo), sem passar de limiar_teto — assim lâminas do mesmo modelo visual não se confundem.",
+    "lado_max": 400,
+    "limiar_par": 0.5,
+    "margem_modelo": 0.05,
+    "limiar_teto": 0.9,
+    "pontos_quantidade": [[0, 10], [1, 5], [2, 0]],
+    "nota_ordem_trocada": 5.0
+  },
+
+  "formato": {
+    "_leia": "Resolução, fps e presença de áudio iguais. Resolução diferente = nota_resolucao_diferente; fps com diferença maior que tolerancia_fps = nota_fps_diferente; um tem áudio e o outro não = nota_audio_diferente.",
+    "tolerancia_fps": 0.05,
+    "nota_resolucao_diferente": 0.0,
+    "nota_fps_diferente": 6.0,
+    "nota_audio_diferente": 0.0
+  },
+
+  "sombra": {
+    "_leia": "A tarefa só é liberada para o app com dias_necessarios dias corridos seguidos, cada um com pelo menos comparacoes_minimas_por_dia comparações, todas aprovadas. Um dia reprovado zera a contagem (e tira a liberação); dia sem comparação quebra a sequência enquanto ela não chegou aos dias necessários.",
+    "dias_necessarios": 7,
+    "comparacoes_minimas_por_dia": 1
+  }
+}
