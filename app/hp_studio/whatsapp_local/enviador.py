@@ -31,7 +31,7 @@ from .fila import Fila, ItemFila
 from .montagem import ler_datahora
 from .navegador import (CabecalhoDivergente, NaoEGrupo, Navegador,
                         NavegadorIndisponivel)
-from .recebidas import ArquivoRecebidas
+from .recebidas import ArquivoRecebidas, hash_curto
 from .ritmo import ControleRitmo, Relogio
 from .sombra import gerar_relatorio
 from .tarefas import tarefas_automaticas
@@ -58,7 +58,8 @@ def mesmo_texto(lido: str, enviado: str) -> bool:
 def fabrica_padrao(cfg: Config, visivel: bool = False) -> Navegador:
     """Navegador real (o Playwright só é importado quando abrir)."""
     from .navegador_playwright import NavegadorPlaywright
-    return NavegadorPlaywright(pasta_perfil(), visivel=visivel, canal=cfg.canal_navegador)
+    return NavegadorPlaywright(pasta_perfil(), visivel=visivel, canal=cfg.canal_navegador,
+                               minimizar=cfg.minimizar_janela)
 
 
 @dataclass
@@ -251,13 +252,22 @@ class Enviador:
         finally:
             nav.fechar()
 
+    @staticmethod
+    def _titulo_para_log(titulo: str) -> str:
+        """Nome de conversa que não é grupo HP não vai para o log (só um hash)."""
+        t = nfc(titulo)
+        if not t:
+            return "(vazio)"
+        return f"'{t[:60]}'" if t.upper().startswith("HP") else f"outra conversa (hash {hash_curto(t)})"
+
     def _abrir_e_conferir(self, nav: Navegador, grupo: str) -> None:
         """Abre pela busca e confere o cabeçalho. Levanta se não bater."""
         nav.abrir_conversa(grupo)
         titulo = nav.titulo_conversa()
         if nfc(titulo) != nfc(grupo):
             raise CabecalhoDivergente(
-                f"cabeçalho da conversa '{nfc(titulo)}' diferente do grupo '{nfc(grupo)}'; nada enviado")
+                f"cabeçalho da conversa {self._titulo_para_log(titulo)} diferente do grupo "
+                f"'{nfc(grupo)}'; nada enviado")
         if nav.conversa_e_grupo() is False:
             raise NaoEGrupo(f"'{nfc(grupo)}' parece contato individual; nada enviado")
 

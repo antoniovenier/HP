@@ -39,19 +39,24 @@ ARGS_BASE = [
     "--disable-renderer-backgrounding",
 ]
 # Uso normal (nunca em primeiro plano): janela fora da tela e minimizada.
-ARGS_FORA_DA_TELA = ["--window-position=-32000,-32000", "--start-minimized"]
+ARGS_FORA_DA_TELA = ["--window-position=-32000,-32000"]
+ARG_MINIMIZADA = "--start-minimized"
 
 
 def opcoes_lancamento(perfil: Path, visivel: bool = False,
-                      canal: str | None = None) -> dict:
+                      canal: str | None = None, minimizar: bool = True) -> dict:
     """Parâmetros do launch_persistent_context (função pura, testada).
 
     visivel=True só no comando `login` (o Antônio precisa ver o QR).
     canal="chrome" usa o Google Chrome instalado em vez do Chromium do Playwright.
+    minimizar=False deixa só fora da tela (config minimizar_janela), para o
+    caso raro de o WhatsApp Web não desenhar a página com a janela minimizada.
     """
     args = list(ARGS_BASE)
     if not visivel:
         args += ARGS_FORA_DA_TELA
+        if minimizar:
+            args.append(ARG_MINIMIZADA)
     op = {
         "user_data_dir": str(perfil),
         "headless": False,
@@ -81,10 +86,12 @@ def classificar_subtitulo(texto: str) -> bool | None:
 
 class NavegadorPlaywright(Navegador):
     def __init__(self, perfil: Path | None = None, *, visivel: bool = False,
-                 canal: str | None = None, timeout_ms: int = 30000):
+                 canal: str | None = None, minimizar: bool = True,
+                 timeout_ms: int = 30000):
         self.perfil = Path(perfil) if perfil else pasta_perfil()
         self.visivel = visivel
         self.canal = canal
+        self.minimizar = minimizar
         self.timeout_ms = timeout_ms
         self._pw = None
         self._ctx = None
@@ -103,7 +110,7 @@ class NavegadorPlaywright(Navegador):
         try:
             self._pw = sync_playwright().start()
             self._ctx = self._pw.chromium.launch_persistent_context(
-                **opcoes_lancamento(self.perfil, self.visivel, self.canal))
+                **opcoes_lancamento(self.perfil, self.visivel, self.canal, self.minimizar))
             self._ctx.set_default_timeout(self.timeout_ms)
             self._page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()
             self._page.goto(URL_WHATSAPP, wait_until="domcontentloaded", timeout=90000)

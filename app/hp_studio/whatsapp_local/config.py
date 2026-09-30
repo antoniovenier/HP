@@ -134,6 +134,7 @@ class Config:
     intervalo_min_seg: float = 20        # nunca menos de 20 s
     max_tentativas: int = 3              # depois disso vai para erros\
     canal_navegador: str | None = None   # None = Chromium do Playwright; "chrome" = Chrome instalado
+    minimizar_janela: bool = True        # False = só fora da tela (se o WhatsApp não carregar minimizado)
     ler_recebidas: bool = True           # salvar mensagens novas do Antônio
     ler_recebidas_a_cada_min: int = 30   # no vigiar, passa em todos os grupos
     ultimas_mensagens: int = 20          # quantas mensagens ler por conversa

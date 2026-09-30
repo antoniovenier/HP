@@ -231,3 +231,14 @@ def test_ordem_pela_data_de_criacao(grupos, enfileirar, relogio, cfg_real):
     nav = _nav()
     Enviador(cfg_real, fabrica_de(nav), relogio).ciclo("real", ler_todos_grupos=False)
     assert [e["texto"].split("— ")[1] for e in nav.enviadas] == ["zz_primeira", "aa_segunda"]
+
+
+def test_nome_de_conversa_que_nao_e_do_hp_nao_vai_para_o_log(grupos, enfileirar, relogio, cfg_real):
+    from hpbase import pasta_logs
+    enfileirar(ident="m1")
+    nav = _nav(titulos={GRUPO_COMISSAO: "Maria da Silva"})   # abriu conversa de uma pessoa
+    Enviador(cfg_real, fabrica_de(nav), relogio).ciclo("real", ler_todos_grupos=False)
+    assert nav.enviadas == []
+    log = "".join(p.read_text(encoding="utf-8") for p in pasta_logs().glob("whatsapp_*.log"))
+    assert "Maria" not in log and "outra conversa (hash" in log
+    assert "Maria" not in _ler(pasta_fila() / "m1.json")["ultimo_erro"]

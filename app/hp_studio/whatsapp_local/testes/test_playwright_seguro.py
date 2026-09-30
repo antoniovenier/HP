@@ -36,6 +36,8 @@ def test_perfil_separado_fora_da_tela_e_mudo():
     assert "--mute-audio" in op["args"]
     assert op["headless"] is False and "channel" not in op
     assert opcoes_lancamento(pasta_perfil(), canal="chrome")["channel"] == "chrome"
+    so_fora = opcoes_lancamento(pasta_perfil(), minimizar=False)["args"]
+    assert "--window-position=-32000,-32000" in so_fora and "--start-minimized" not in so_fora
 
 
 def test_login_abre_visivel_mas_continua_mudo():
