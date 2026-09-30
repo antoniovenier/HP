@@ -1012,7 +1012,7 @@ Add-Content -Path historico.log -Encoding UTF8 -Value "$(Get-Date -Format 'yyyy-
 12. **Nunca promessa de saúde** (Receitas), **nunca incentivo a risco** (Carros, Destinos), **nunca ofensa** a time, torcida, árbitro ou grupo (Futebol).
 13. **O modo só pode descer** (voz → misto → texto → nenhum), nunca subir além do que o pedido e as regras permitem.
 14. **Crédito do criador sempre** (quem põe é o Legendador; o Toque nunca tapa o crédito).
-15. **Trabalho pesado (gerar voz, montar, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+15. **Trabalho pesado (gerar voz, montar, mixar) 1 por vez e nunca das 18h às 22h30** — exceto P0 (decisão de 30/09/2026), ainda 1 por vez.
 16. **Nada no disco C:.**
 17. **Nunca alterar arquivo de outro cargo**; nunca renomear a pasta; nunca apagar linha do `historico.log`.
 18. **O mesmo modelo de pergunta não se repete no mesmo canal em 7 dias.**

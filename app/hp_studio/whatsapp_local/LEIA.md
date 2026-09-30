@@ -209,8 +209,12 @@ Importante:
 ## Montagem automática (sem Claude)
 
 No `config.json`:
-- `"arquivo_agendados": "H:\\...\\agendados.json"` → a cada ciclo, os posts que já
-  entraram no ar (horário passou, pelo menos 1 link, até 24 h atrás) viram aviso;
+- `"arquivo_agendados"`: **padrão `"auto"`** (decisão de 30/09/2026: o aviso "no ar"
+  é montado aqui, e o da esteira fica desligado). Procura o `agendados.json` do plantão em
+  `H:\\HypadoLocal\\`, `H:\\HypadoLocal\\app\\`, `06 Projeto\\`, `06 Projeto\\app\\` e na raiz do
+  Drive; também aceita o caminho exato, ou `null` para desligar. A cada ciclo, os posts que
+  já entraram no ar (horário passou, pelo menos 1 link, até 24 h atrás) viram aviso — em
+  modo sombra só montam e comparam, não enviam;
 - `"hora_resumo_dia": "08:00"` → depois das 8h, resumo de ontem;
 - `"hora_resumo_sabado": "10:00"` → sábado depois das 10h, resumo da semana;
 - `"grupo_por_canal": {"GTA 6 | HP": "HP | GTA 6"}` → destino por canal (padrão: Comissão).

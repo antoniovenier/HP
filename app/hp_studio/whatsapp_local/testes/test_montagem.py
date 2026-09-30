@@ -209,3 +209,19 @@ def test_resumo_a_partir_das_fotos_diarias_do_modulo_metricas():
     m2 = enfileirar_resumo_dia(Config(), datetime(2026, 9, 30, 8, 0, tzinfo=FUSO))
     assert m2 and m2["tipo"] == "resumo_dia" and m2["texto"].startswith(PREFIXO)
     assert montar_resumo_dia(m, date(2026, 9, 29))
+
+
+def test_no_ar_automatico_acha_o_agendados_do_plantao(tmp_path):
+    """Decisão 30/09: o "no ar" é montado pelo whatsapp_local, já ligado ("auto")."""
+    import shutil
+    assert Config().arquivo_agendados == "auto"
+    assert tarefas_automaticas(Config(), AGORA) == 0            # sem agendados.json: nada
+    shutil.copy(_agendados(tmp_path), raiz_local() / "agendados.json")
+    assert tarefas_automaticas(Config(), AGORA) == 1            # aviso do GTA na fila
+    assert tarefas_automaticas(Config(arquivo_agendados=None), AGORA) == 0
+
+
+def test_esteira_nao_monta_aviso_por_padrao():
+    from esteira.config import carregar_config
+    cfg = carregar_config()
+    assert cfg.aviso_no_ar_habilitado is False and cfg.p0_na_janela is True

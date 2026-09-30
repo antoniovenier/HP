@@ -12,7 +12,7 @@ from pathlib import Path
 
 from hpbase import obter_logger
 
-from .config import Config, candidatos_metricas, nfc
+from .config import Config, candidatos_agendados, candidatos_metricas, nfc
 from .fila import Fila
 from .montagem import (carregar_agendados, carregar_metricas, carregar_modelo_aviso,
                        chave_post, id_mensagem, mensagem_fila, montar_no_ar,
@@ -90,6 +90,15 @@ def enfileirar_resumo_sabado(cfg: Config, agora: datetime, *, sabado: date | Non
     return _entregar(msg, fila or Fila(), so_mostrar)
 
 
+def resolver_agendados(cfg: Config) -> Path | None:
+    """cfg.arquivo_agendados: caminho, "auto" (procura nos lugares de sempre) ou None."""
+    valor = cfg.arquivo_agendados
+    if not valor:
+        return None
+    cands = candidatos_agendados() if str(valor).lower() == "auto" else [Path(valor)]
+    return next((p for p in cands if p.is_file()), None)
+
+
 def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) -> int:
     """O que o vigia monta sozinho, se estiver ligado na config.json:
     - arquivo_agendados → aviso "no ar" dos posts que entraram no ar;
@@ -101,8 +110,9 @@ def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) 
     lg = obter_logger("whatsapp")
     hhmm = agora.strftime("%H:%M")
     try:
-        if cfg.arquivo_agendados and Path(cfg.arquivo_agendados).exists():
-            novas += sum(1 for m in enfileirar_no_ar(Path(cfg.arquivo_agendados), cfg, agora, fila=fila)
+        arq = resolver_agendados(cfg)
+        if arq:
+            novas += sum(1 for m in enfileirar_no_ar(arq, cfg, agora, fila=fila)
                          if m["_situacao"] == "enfileirada")
         if cfg.hora_resumo_dia and hhmm >= cfg.hora_resumo_dia:
             m = enfileirar_resumo_dia(cfg, agora, fila=fila)

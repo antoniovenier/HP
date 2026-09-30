@@ -68,6 +68,12 @@ class Esteira:
     def agora(self) -> datetime:
         return self._agora or datetime.now()
 
+    def _p0_na_janela(self, item: Path) -> bool:
+        """P0 (gol, placar, lançamento) pode rodar pesado das 18h às 22h30
+        (decisão do Antônio, 30/09/2026). Continua 1 pesado por vez (pesado.lock)."""
+        info = ler_nome(item.name)
+        return bool(self.cfg.p0_na_janela and info and info.prioridade == "P0")
+
     # --- ciclo ------------------------------------------------------------
     def ciclo(self, max_trabalhos: int | None = None) -> dict:
         """Uma passada: importa pedidos soltos e processa o que der, em ordem
@@ -78,8 +84,11 @@ class Esteira:
                   "avancaram": [], "aguardando": [], "erros": [], "adiados_pesado": [],
                   "motivo_pesado": None}
         bloqueio = None
-        if janela_proibida(self.agora()):
-            bloqueio = "janela proibida (18h-22h30): trabalho pesado espera, inclusive P0"
+        janela = janela_proibida(self.agora())
+        if janela:
+            bloqueio = ("janela proibida (18h-22h30): trabalho pesado espera (P0 passa)"
+                        if self.cfg.p0_na_janela else
+                        "janela proibida (18h-22h30): trabalho pesado espera, inclusive P0")
         # (item, etapa) -> voltas: cada item passa 1 vez por etapa no ciclo; depois
         # de uma volta da revisão pode passar de novo (as voltas são limitadas)
         feitos: dict[tuple[str, str], int] = {}
@@ -91,7 +100,9 @@ class Esteira:
             etapa, item = prox
             feitos[(item.name, etapa)] = ler_estado(item)["voltas"]
             pesado = self.trabalhos[etapa].eh_pesado(item)
-            if pesado and bloqueio:
+            p0_libera = (janela and self._p0_na_janela(item)
+                         and bloqueio and bloqueio.startswith("janela proibida"))
+            if pesado and bloqueio and not p0_libera:
                 resumo["adiados_pesado"].append(f"{etapa}/{item.name}")
                 continue
             try:
@@ -168,7 +179,8 @@ class Esteira:
                                             f"caiu {n} vezes nesta etapa", "", n, True)
 
         # 3) trabalho (com a trava do pesado quando precisa)
-        trava = TravaPesada(f"esteira:{etapa}:{item.name}", agora=self.agora()) \
+        trava = TravaPesada(f"esteira:{etapa}:{item.name}", agora=self.agora(),
+                            ignorar_horario=self._p0_na_janela(item)) \
             if pesado else nullcontext()
         with trava:
             escrever_json(marcador, {"etapa": etapa, "trabalho": trab.nome,

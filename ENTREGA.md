@@ -8,17 +8,17 @@ Para a sessão **HP GESTÃO** integrar no PC do Antônio e ligar o **modo sombra
 |---|---|---|---|---|
 | A | Manuais 04–13 + `README.md` (índice) | `06 Projeto\app\manuais\` | — | (texto; faltam revisão e o 01) |
 | 0 | `hpbase`: base comum (caminhos, log sem segredo, `pesado.lock`, 18h–22h30, sem janela preta, segredos) | `06 Projeto\app\hp_studio\hpbase\` | 9 | — |
-| B | `esteira`: etapa 3, pastas P0/P1/P2 | `06 Projeto\app\hp_studio\esteira\` | 149 | sombra (`--simular`) |
+| B | `esteira`: etapa 3, pastas P0/P1/P2 | `06 Projeto\app\hp_studio\esteira\` | 151 | sombra (`--simular`) |
 | C | `metricas`: etapa 6, métricas por API | `06 Projeto\app\hp_studio\metricas\` | 30 | `coletar --simular` |
 | D | `qa_paridade`: teste de paridade + 7 dias | `06 Projeto\app\hp_studio\qa_paridade\` | 93 | (é a régua da sombra) |
-| E | `whatsapp_local`: enviador local | `06 Projeto\app\hp_studio\whatsapp_local\` | 88 | sombra (padrão) |
+| E | `whatsapp_local`: enviador local | `06 Projeto\app\hp_studio\whatsapp_local\` | 90 | sombra (padrão) |
 | F | `story_post.py`: story pelo emulador | `scripts\` | 43 | `--simular` |
 | G | `reel_futebol.py`: reels do Futebol | `scripts\` | 29 | `montar --simular` |
 | H | `reenvio_seguro.py`: publicador sem duplicar | `scripts\` | 22 | `reenviar --simular` |
 | I | Painel: espelho do banco, selo das abas, prévia no celular | `scripts\painel\` | 73 | `comparar` (sombra) |
 | J | Página de links: fundos, botões e passo a passo | `scripts\pagina_links\` | 14 | (manual no Google Sites) |
 
-**Total: 550 testes passando** (369 no `app\hp_studio` + 181 em `scripts\`). Os módulos com ffmpeg rodaram com vídeo e áudio sintéticos de verdade.
+**Total: 554 testes passando** (373 no `app\hp_studio` + 181 em `scripts\`). Os módulos com ffmpeg rodaram com vídeo e áudio sintéticos de verdade.
 
 Cada módulo tem o seu `LEIA.md` com o passo a passo completo. Este arquivo é só o roteiro de integração.
 
@@ -29,7 +29,7 @@ Cada módulo tem o seu `LEIA.md` com o passo a passo completo. Este arquivo é s
    - **Não há `conftest.py` em `app\` nem em `scripts\testes\`.** Cada pasta `testes\` traz o seu, então os 53 testes da etapa 1 continuam intactos.
 2. **Não mexer no que está em andamento no PC:** etapa 4 (Facebook e YouTube pela API), redução de arquivos do painel público e auditoria da API do YouTube.
 3. **Nenhuma tarefa passa para o app sem 7 dias de sombra aprovados no `qa_paridade`.**
-4. Trabalho pesado é 1 por vez (`H:\HypadoLocal\app\pesado.lock`) e nunca das 18h às 22h30. Todos os módulos usam `hpbase.TravaPesada`; só o story usa `ignorar_horario=True`, porque é leve.
+4. Trabalho pesado é 1 por vez (`H:\HypadoLocal\app\pesado.lock`) e nunca das 18h às 22h30, exceto P0 da esteira (decisão de 30/09, ver item 6). Todos os módulos usam `hpbase.TravaPesada`; só o story (leve) e o P0 usam `ignorar_horario=True`.
 5. Tokens ficam só em `H:\HypadoLocal\segredos\`. O `hpbase.ler_segredo` lê e nunca mostra, e o log passa tudo por `mascarar()`.
 
 ## 3. Instalação no PC, passo a passo
@@ -63,7 +63,7 @@ Tudo no **PowerShell 5.1**. `$PY` é o Python 3.12 do Antônio.
 12. Confira que o ffmpeg está no PATH: `ffmpeg -version`. Se não estiver, defina `HP_FFMPEG` com o caminho do `ffmpeg.exe`.
 13. Rode os testes do app:
     `cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"; & $PY -m pytest -q hpbase esteira metricas qa_paridade whatsapp_local`
-    Esperado: **369 passed**.
+    Esperado: **373 passed**.
 14. Rode os testes dos scripts:
     `cd "G:\Meu Drive\Hypado\scripts"; & $PY -m pytest -q testes\test_story_post.py testes\test_reel_futebol.py testes\test_reenvio_seguro.py testes\test_painel_espelho.py testes\test_painel_selo.py testes\test_painel_previa.py testes\test_pagina_links.py`
     Esperado: **181 passed** (os testes de JS são pulados se não houver `node`).
@@ -105,19 +105,15 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
    - Os manuais e o `reel_futebol` usam uma proposta nova, que vale até ser trocada pela paleta de `posts_canais.py`/`estaticos.py`.
    - A página de links usa as mesmas cores do painel, com contraste WCAG conferido.
 
-## 6. Decisões que ficam para o Antônio
+## 6. Decisões do Antônio (30/09/2026) — já aplicadas
 
-1. **P0 das 18h às 22h30:** hoje o P0 (gol, placar, lançamento) **também espera**, porque a regra do CLAUDE.md não tem exceção. Um gol às 19h só sai às 22h30. Se quiser liberar o P0 nesse horário, a regra precisa mudar primeiro; no código é uma mudança pequena (P0 pegar a trava com `ignorar_horario=True` no motor da esteira).
-2. **Quem monta o aviso "no ar":**
-   - A esteira sabe gerar o aviso, mas começa em sombra e com `aviso_no_ar_habilitado: false`.
-   - O `whatsapp_local` também monta o aviso, a partir do `agendados.json` e do `AVISO.md`, mas a montagem automática vem desligada.
-   - **Ligue só um dos dois.** A sugestão é o `whatsapp_local`, porque usa o texto-modelo do `AVISO.md`.
-3. **Volume da música no Futebol:**
-   - notícia e estatística, que só têm música: −20 LUFS (baixa, mas audível);
-   - quando há áudio original: 20 dB abaixo dele;
-   - gol: sem música nenhuma.
-4. **Critério de paridade:** para o dia passar, toda métrica precisa ter nota ≥ 9 e a média ≥ 9,5. Os limites de SSIM vêm de testes sintéticos e devem ser recalibrados depois dos primeiros dias reais, em `qa_paridade\limites.json`.
-5. **Manual 13 (afiliados):** está marcado "FUTURO — NÃO IMPLEMENTAR" e nenhum código foi escrito.
+1. **P0 roda também das 18h às 22h30.** Gol, placar, lançamento e bombástica são baixados e editados na hora; P1/P2 continuam esperando 22h30. O P0 ainda respeita o `pesado.lock` (1 pesado por vez). Chave `p0_na_janela` no `esteira\config.json` (padrão `true`). **A sessão HP GESTÃO precisa acrescentar essa exceção no CLAUDE.md da empresa.**
+2. **O aviso "no ar" é montado só pelo `whatsapp_local`** (a partir do `agendados.json` + `AVISO.md`): `arquivo_agendados` vem como `"auto"` e acha o `agendados.json` do plantão sozinho. O da esteira fica desligado (`aviso_no_ar_habilitado: false`). Tudo começa em modo sombra: monta e compara, não envia.
+
+Outras escolhas que valem até alguém mudar:
+- **Volume da música no Futebol:** notícia e estatística, que só têm música, saem a −20 LUFS (baixa, mas audível); com áudio original a música fica 20 dB abaixo dele; o gol não tem música.
+- **Critério de paridade:** para o dia passar, toda métrica precisa ter nota ≥ 9 e a média ≥ 9,5. Os limites de SSIM vêm de testes sintéticos e devem ser recalibrados depois dos primeiros dias reais, em `qa_paridade\limites.json`.
+- **Manual 13 (afiliados):** marcado "FUTURO — NÃO IMPLEMENTAR"; nenhum código.
 
 ## 7. Onde está cada coisa
 

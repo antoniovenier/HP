@@ -1,4 +1,4 @@
-"""Trabalho pesado: nunca 18h-22h30 (nem P0), 1 por vez (pesado.lock)."""
+"""Trabalho pesado: nunca 18h-22h30 (exceto P0, decisão de 30/09), 1 por vez (pesado.lock)."""
 import json
 import os
 from datetime import datetime
@@ -10,7 +10,26 @@ from esteira.pedido import criar_pedido
 from esteira.testes.conftest import NOITE, pedido_carrossel, pedido_reel
 
 
-def test_janela_proibida_segura_o_pesado_ate_do_p0(amb):
+def test_p0_roda_na_janela_e_p1_espera(amb):
+    p1 = criar_pedido(pedido_reel(titulo="Normal"))
+    p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
+    r = amb.ciclo(agora=NOITE)
+    assert amb.itens(REVISAO) == [p0.name]          # P0 foi até a revisão às 19h
+    assert amb.itens(PEDIDOS) == [p1.name]          # P1 espera 22h30
+    assert r["adiados_pesado"] == [f"{PEDIDOS}/{p1.name}"]
+
+
+def test_p0_na_janela_respeita_pesado_lock(amb):
+    (pasta_app()).mkdir(parents=True, exist_ok=True)
+    (pasta_app() / "pesado.lock").write_text(json.dumps(
+        {"dono": "outro", "pid": os.getpid(), "desde": 9e18}))
+    p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
+    amb.ciclo(agora=NOITE)
+    assert amb.itens(PEDIDOS) == [p0.name]          # 1 pesado por vez, mesmo P0
+
+
+def test_janela_proibida_segura_o_p0_se_desligado(amb):
+    amb.cfg.p0_na_janela = False
     p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
     r = amb.ciclo(agora=NOITE)
     assert amb.itens(PEDIDOS) == [p0.name]

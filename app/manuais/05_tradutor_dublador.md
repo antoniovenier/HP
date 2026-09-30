@@ -1043,7 +1043,7 @@ Set-Location $esteira; Move-Item $item "$esteira\99_erros\"
 13. **Volume final −14 LUFS ± 1 e pico ≤ −1,5 dBTP.**
 14. **Crédito do criador sempre** (quem põe na tela é o Legendador; o Tradutor nunca tira o crédito nem traduz o @).
 15. **Na dúvida entre legendar e dublar: legenda.**
-16. **Trabalho pesado (gerar voz, montar faixa, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+16. **Trabalho pesado (gerar voz, montar faixa, mixar) 1 por vez e nunca das 18h às 22h30** — exceto P0 (decisão de 30/09/2026), ainda 1 por vez.
 17. **Nada no disco C:**; tudo no H: (áudio, temporários) ou G: (glossários, configuração).
 18. **Nunca alterar** `pedido.json`, `bruto.mp4`, `transcricao.json` ou arquivos de outro cargo; nunca renomear a pasta do item.
 19. **Nunca apagar linha do `historico.log`.**

@@ -85,7 +85,8 @@ TIMEOUTS_PADRAO = {
 class Config:
     raiz: Path
     modo: str = "sombra"                      # "sombra" | "real"
-    aviso_no_ar_habilitado: bool = False
+    aviso_no_ar_habilitado: bool = False      # decisão 30/09: o aviso "no ar" é do whatsapp_local
+    p0_na_janela: bool = True                 # decisão 30/09: P0 roda também das 18h às 22h30
     grupo_whatsapp: str = "HP | Comissão 🚀"
     grupos_permitidos: list = field(default_factory=lambda: ["HP | Comissão 🚀"])
     max_voltas: int = 2
@@ -147,7 +148,7 @@ class Config:
 
     def como_dict(self) -> dict:
         d = {}
-        for k in ("modo", "aviso_no_ar_habilitado", "grupo_whatsapp",
+        for k in ("modo", "aviso_no_ar_habilitado", "p0_na_janela", "grupo_whatsapp",
                   "grupos_permitidos", "max_voltas", "max_tentativas",
                   "copiar_midia_para_fila", "redes_api", "redes_manuais",
                   "comandos", "editor", "legendador", "narrador", "timeouts",
@@ -187,6 +188,8 @@ def salvar_config_padrao(cfg: Config) -> Path:
     if not p.exists():
         d = cfg.como_dict()
         d["_leia"] = ("modo: 'sombra' (padrão) não publica nada; 'real' grava na "
-                      "fila_api. aviso_no_ar_habilitado só vale com modo 'real'.")
+                      "fila_api. aviso_no_ar_habilitado só vale com modo 'real' — deixe false: "
+                      "o aviso 'no ar' é montado pelo whatsapp_local. p0_na_janela: "
+                      "P0 (urgente) roda também das 18h às 22h30, 1 pesado por vez.")
         escrever_json(p, d)
     return p

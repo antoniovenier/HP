@@ -14,17 +14,17 @@ Para a sessão **HP GESTÃO** integrar no PC do Antônio e ligar o **modo sombra
 |---|---|---|---|---|
 | A | Manuais 04–13 + `README.md` (índice) | `06 Projeto\app\manuais\` | — | (texto; faltam revisão e o 01) |
 | 0 | `hpbase`: base comum (caminhos, log sem segredo, `pesado.lock`, 18h–22h30, sem janela preta, segredos) | `06 Projeto\app\hp_studio\hpbase\` | 9 | — |
-| B | `esteira`: etapa 3, pastas P0/P1/P2 | `06 Projeto\app\hp_studio\esteira\` | 149 | sombra (`--simular`) |
+| B | `esteira`: etapa 3, pastas P0/P1/P2 | `06 Projeto\app\hp_studio\esteira\` | 151 | sombra (`--simular`) |
 | C | `metricas`: etapa 6, métricas por API | `06 Projeto\app\hp_studio\metricas\` | 30 | `coletar --simular` |
 | D | `qa_paridade`: teste de paridade + 7 dias | `06 Projeto\app\hp_studio\qa_paridade\` | 93 | (é a régua da sombra) |
-| E | `whatsapp_local`: enviador local | `06 Projeto\app\hp_studio\whatsapp_local\` | 88 | sombra (padrão) |
+| E | `whatsapp_local`: enviador local | `06 Projeto\app\hp_studio\whatsapp_local\` | 90 | sombra (padrão) |
 | F | `story_post.py`: story pelo emulador | `scripts\` | 43 | `--simular` |
 | G | `reel_futebol.py`: reels do Futebol | `scripts\` | 29 | `montar --simular` |
 | H | `reenvio_seguro.py`: publicador sem duplicar | `scripts\` | 22 | `reenviar --simular` |
 | I | Painel: espelho do banco, selo das abas, prévia no celular | `scripts\painel\` | 73 | `comparar` (sombra) |
 | J | Página de links: fundos, botões e passo a passo | `scripts\pagina_links\` | 14 | (manual no Google Sites) |
 
-**Total: 550 testes passando** (369 no `app\hp_studio` + 181 em `scripts\`). Os módulos com ffmpeg rodaram com vídeo e áudio sintéticos de verdade.
+**Total: 554 testes passando** (373 no `app\hp_studio` + 181 em `scripts\`). Os módulos com ffmpeg rodaram com vídeo e áudio sintéticos de verdade.
 
 Cada módulo tem o seu `LEIA.md` com o passo a passo completo. Este arquivo é só o roteiro de integração.
 
@@ -35,7 +35,7 @@ Cada módulo tem o seu `LEIA.md` com o passo a passo completo. Este arquivo é s
    - **Não há `conftest.py` em `app\` nem em `scripts\testes\`.** Cada pasta `testes\` traz o seu, então os 53 testes da etapa 1 continuam intactos.
 2. **Não mexer no que está em andamento no PC:** etapa 4 (Facebook e YouTube pela API), redução de arquivos do painel público e auditoria da API do YouTube.
 3. **Nenhuma tarefa passa para o app sem 7 dias de sombra aprovados no `qa_paridade`.**
-4. Trabalho pesado é 1 por vez (`H:\HypadoLocal\app\pesado.lock`) e nunca das 18h às 22h30. Todos os módulos usam `hpbase.TravaPesada`; só o story usa `ignorar_horario=True`, porque é leve.
+4. Trabalho pesado é 1 por vez (`H:\HypadoLocal\app\pesado.lock`) e nunca das 18h às 22h30, exceto P0 da esteira (decisão de 30/09, ver item 6). Todos os módulos usam `hpbase.TravaPesada`; só o story (leve) e o P0 usam `ignorar_horario=True`.
 5. Tokens ficam só em `H:\HypadoLocal\segredos\`. O `hpbase.ler_segredo` lê e nunca mostra, e o log passa tudo por `mascarar()`.
 
 ## 3. Instalação no PC, passo a passo
@@ -69,7 +69,7 @@ Tudo no **PowerShell 5.1**. `$PY` é o Python 3.12 do Antônio.
 12. Confira que o ffmpeg está no PATH: `ffmpeg -version`. Se não estiver, defina `HP_FFMPEG` com o caminho do `ffmpeg.exe`.
 13. Rode os testes do app:
     `cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"; & $PY -m pytest -q hpbase esteira metricas qa_paridade whatsapp_local`
-    Esperado: **369 passed**.
+    Esperado: **373 passed**.
 14. Rode os testes dos scripts:
     `cd "G:\Meu Drive\Hypado\scripts"; & $PY -m pytest -q testes\test_story_post.py testes\test_reel_futebol.py testes\test_reenvio_seguro.py testes\test_painel_espelho.py testes\test_painel_selo.py testes\test_painel_previa.py testes\test_pagina_links.py`
     Esperado: **181 passed** (os testes de JS são pulados se não houver `node`).
@@ -111,19 +111,15 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
    - Os manuais e o `reel_futebol` usam uma proposta nova, que vale até ser trocada pela paleta de `posts_canais.py`/`estaticos.py`.
    - A página de links usa as mesmas cores do painel, com contraste WCAG conferido.
 
-## 6. Decisões que ficam para o Antônio
+## 6. Decisões do Antônio (30/09/2026) — já aplicadas
 
-1. **P0 das 18h às 22h30:** hoje o P0 (gol, placar, lançamento) **também espera**, porque a regra do CLAUDE.md não tem exceção. Um gol às 19h só sai às 22h30. Se quiser liberar o P0 nesse horário, a regra precisa mudar primeiro; no código é uma mudança pequena (P0 pegar a trava com `ignorar_horario=True` no motor da esteira).
-2. **Quem monta o aviso "no ar":**
-   - A esteira sabe gerar o aviso, mas começa em sombra e com `aviso_no_ar_habilitado: false`.
-   - O `whatsapp_local` também monta o aviso, a partir do `agendados.json` e do `AVISO.md`, mas a montagem automática vem desligada.
-   - **Ligue só um dos dois.** A sugestão é o `whatsapp_local`, porque usa o texto-modelo do `AVISO.md`.
-3. **Volume da música no Futebol:**
-   - notícia e estatística, que só têm música: −20 LUFS (baixa, mas audível);
-   - quando há áudio original: 20 dB abaixo dele;
-   - gol: sem música nenhuma.
-4. **Critério de paridade:** para o dia passar, toda métrica precisa ter nota ≥ 9 e a média ≥ 9,5. Os limites de SSIM vêm de testes sintéticos e devem ser recalibrados depois dos primeiros dias reais, em `qa_paridade\limites.json`.
-5. **Manual 13 (afiliados):** está marcado "FUTURO — NÃO IMPLEMENTAR" e nenhum código foi escrito.
+1. **P0 roda também das 18h às 22h30.** Gol, placar, lançamento e bombástica são baixados e editados na hora; P1/P2 continuam esperando 22h30. O P0 ainda respeita o `pesado.lock` (1 pesado por vez). Chave `p0_na_janela` no `esteira\config.json` (padrão `true`). **A sessão HP GESTÃO precisa acrescentar essa exceção no CLAUDE.md da empresa.**
+2. **O aviso "no ar" é montado só pelo `whatsapp_local`** (a partir do `agendados.json` + `AVISO.md`): `arquivo_agendados` vem como `"auto"` e acha o `agendados.json` do plantão sozinho. O da esteira fica desligado (`aviso_no_ar_habilitado: false`). Tudo começa em modo sombra: monta e compara, não envia.
+
+Outras escolhas que valem até alguém mudar:
+- **Volume da música no Futebol:** notícia e estatística, que só têm música, saem a −20 LUFS (baixa, mas audível); com áudio original a música fica 20 dB abaixo dele; o gol não tem música.
+- **Critério de paridade:** para o dia passar, toda métrica precisa ter nota ≥ 9 e a média ≥ 9,5. Os limites de SSIM vêm de testes sintéticos e devem ser recalibrados depois dos primeiros dias reais, em `qa_paridade\limites.json`.
+- **Manual 13 (afiliados):** marcado "FUTURO — NÃO IMPLEMENTAR"; nenhum código.
 
 ## 7. Onde está cada coisa
 
@@ -164,14 +160,14 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
 - [`app/manuais/13_comercial_afiliados.md`](#app-manuais-13-comercial-afiliados-md) — 17.7 KB
 
 ### B. Etapa 3 — esteira P0/P1/P2
-- [`app/hp_studio/esteira/LEIA.md`](#app-hp-studio-esteira-leia-md) — 13.7 KB
+- [`app/hp_studio/esteira/LEIA.md`](#app-hp-studio-esteira-leia-md) — 13.9 KB
 - [`app/hp_studio/esteira/__init__.py`](#app-hp-studio-esteira---init---py) — 1.5 KB
 - [`app/hp_studio/esteira/__main__.py`](#app-hp-studio-esteira---main---py) — 0.1 KB
 - [`app/hp_studio/esteira/acoes.py`](#app-hp-studio-esteira-acoes-py) — 11.9 KB
 - [`app/hp_studio/esteira/agendador.py`](#app-hp-studio-esteira-agendador-py) — 5.9 KB
 - [`app/hp_studio/esteira/aviso.py`](#app-hp-studio-esteira-aviso-py) — 2.3 KB
 - [`app/hp_studio/esteira/cli.py`](#app-hp-studio-esteira-cli-py) — 8.1 KB
-- [`app/hp_studio/esteira/config.py`](#app-hp-studio-esteira-config-py) — 7.1 KB
+- [`app/hp_studio/esteira/config.py`](#app-hp-studio-esteira-config-py) — 7.5 KB
 - [`app/hp_studio/esteira/constantes.py`](#app-hp-studio-esteira-constantes-py) — 3.8 KB
 - [`app/hp_studio/esteira/conteudo.py`](#app-hp-studio-esteira-conteudo-py) — 3.7 KB
 - [`app/hp_studio/esteira/editor.py`](#app-hp-studio-esteira-editor-py) — 10.7 KB
@@ -179,7 +175,7 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
 - [`app/hp_studio/esteira/gancho.py`](#app-hp-studio-esteira-gancho-py) — 3.6 KB
 - [`app/hp_studio/esteira/legendas.py`](#app-hp-studio-esteira-legendas-py) — 4.8 KB
 - [`app/hp_studio/esteira/midia.py`](#app-hp-studio-esteira-midia-py) — 10.8 KB
-- [`app/hp_studio/esteira/motor.py`](#app-hp-studio-esteira-motor-py) — 17.3 KB
+- [`app/hp_studio/esteira/motor.py`](#app-hp-studio-esteira-motor-py) — 18.0 KB
 - [`app/hp_studio/esteira/pastas.py`](#app-hp-studio-esteira-pastas-py) — 6.8 KB
 - [`app/hp_studio/esteira/pedido.py`](#app-hp-studio-esteira-pedido-py) — 11.9 KB
 - [`app/hp_studio/esteira/plugins.py`](#app-hp-studio-esteira-plugins-py) — 15.2 KB
@@ -198,7 +194,7 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
 - [`app/hp_studio/esteira/testes/test_plugins.py`](#app-hp-studio-esteira-testes-test-plugins-py) — 9.0 KB
 - [`app/hp_studio/esteira/testes/test_retomada.py`](#app-hp-studio-esteira-testes-test-retomada-py) — 6.2 KB
 - [`app/hp_studio/esteira/testes/test_revisao.py`](#app-hp-studio-esteira-testes-test-revisao-py) — 8.2 KB
-- [`app/hp_studio/esteira/testes/test_trava.py`](#app-hp-studio-esteira-testes-test-trava-py) — 3.2 KB
+- [`app/hp_studio/esteira/testes/test_trava.py`](#app-hp-studio-esteira-testes-test-trava-py) — 4.0 KB
 - [`app/hp_studio/esteira/trabalhos.py`](#app-hp-studio-esteira-trabalhos-py) — 24.8 KB
 - [`app/hp_studio/esteira/vigia.py`](#app-hp-studio-esteira-vigia-py) — 2.5 KB
 
@@ -261,11 +257,11 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
 
 ### E. Enviador local de WhatsApp
 - [`app/hp_studio/whatsapp_local/AVISO.md`](#app-hp-studio-whatsapp-local-aviso-md) — 1.4 KB
-- [`app/hp_studio/whatsapp_local/LEIA.md`](#app-hp-studio-whatsapp-local-leia-md) — 14.3 KB
+- [`app/hp_studio/whatsapp_local/LEIA.md`](#app-hp-studio-whatsapp-local-leia-md) — 14.7 KB
 - [`app/hp_studio/whatsapp_local/__init__.py`](#app-hp-studio-whatsapp-local---init---py) — 1.4 KB
 - [`app/hp_studio/whatsapp_local/__main__.py`](#app-hp-studio-whatsapp-local---main---py) — 0.1 KB
 - [`app/hp_studio/whatsapp_local/cli.py`](#app-hp-studio-whatsapp-local-cli-py) — 8.6 KB
-- [`app/hp_studio/whatsapp_local/config.py`](#app-hp-studio-whatsapp-local-config-py) — 8.4 KB
+- [`app/hp_studio/whatsapp_local/config.py`](#app-hp-studio-whatsapp-local-config-py) — 9.0 KB
 - [`app/hp_studio/whatsapp_local/enviador.py`](#app-hp-studio-whatsapp-local-enviador-py) — 15.9 KB
 - [`app/hp_studio/whatsapp_local/fila.py`](#app-hp-studio-whatsapp-local-fila-py) — 7.2 KB
 - [`app/hp_studio/whatsapp_local/gancho.py`](#app-hp-studio-whatsapp-local-gancho-py) — 3.3 KB
@@ -278,13 +274,13 @@ Os pontos abaixo dependem de código que não existia na nuvem. Todos estão iso
 - [`app/hp_studio/whatsapp_local/seletores.py`](#app-hp-studio-whatsapp-local-seletores-py) — 8.8 KB
 - [`app/hp_studio/whatsapp_local/situacao.py`](#app-hp-studio-whatsapp-local-situacao-py) — 3.4 KB
 - [`app/hp_studio/whatsapp_local/sombra.py`](#app-hp-studio-whatsapp-local-sombra-py) — 8.8 KB
-- [`app/hp_studio/whatsapp_local/tarefas.py`](#app-hp-studio-whatsapp-local-tarefas-py) — 5.4 KB
+- [`app/hp_studio/whatsapp_local/tarefas.py`](#app-hp-studio-whatsapp-local-tarefas-py) — 5.7 KB
 - [`app/hp_studio/whatsapp_local/testes/__init__.py`](#app-hp-studio-whatsapp-local-testes---init---py) — 0.0 KB
 - [`app/hp_studio/whatsapp_local/testes/auxiliares.py`](#app-hp-studio-whatsapp-local-testes-auxiliares-py) — 1.1 KB
 - [`app/hp_studio/whatsapp_local/testes/conftest.py`](#app-hp-studio-whatsapp-local-testes-conftest-py) — 1.2 KB
 - [`app/hp_studio/whatsapp_local/testes/test_cli.py`](#app-hp-studio-whatsapp-local-testes-test-cli-py) — 3.2 KB
 - [`app/hp_studio/whatsapp_local/testes/test_envio.py`](#app-hp-studio-whatsapp-local-testes-test-envio-py) — 11.3 KB
-- [`app/hp_studio/whatsapp_local/testes/test_montagem.py`](#app-hp-studio-whatsapp-local-testes-test-montagem-py) — 11.0 KB
+- [`app/hp_studio/whatsapp_local/testes/test_montagem.py`](#app-hp-studio-whatsapp-local-testes-test-montagem-py) — 11.8 KB
 - [`app/hp_studio/whatsapp_local/testes/test_playwright_seguro.py`](#app-hp-studio-whatsapp-local-testes-test-playwright-seguro-py) — 3.9 KB
 - [`app/hp_studio/whatsapp_local/testes/test_recebidas.py`](#app-hp-studio-whatsapp-local-testes-test-recebidas-py) — 4.8 KB
 - [`app/hp_studio/whatsapp_local/testes/test_sombra.py`](#app-hp-studio-whatsapp-local-testes-test-sombra-py) — 6.2 KB
@@ -2284,7 +2280,7 @@ Test-Path "$esteira\04_edicao\$(Split-Path $item -Leaf)"
 10. **Nunca apagar nem sobrescrever arquivo de outro cargo** (`pedido.json`, `bruto.mp4`, `traducao.json`, `dublagem.wav`, `toque_hp.*`, `final.mp4`, `capa.jpg`, `post.json`).
 11. **Nunca apagar linha do `historico.log`.** Só acrescentar.
 12. **Nunca renomear a pasta do item** nem mudar a prioridade (`P0_`/`P1_`/`P2_`).
-13. **Trabalho pesado 1 por vez e nunca das 18h às 22h30** — transcrição e prévia respeitam o `pesado.lock`. Nem P0 fura esse horário.
+13. **Trabalho pesado 1 por vez e nunca das 18h às 22h30** — transcrição e prévia respeitam o `pesado.lock`. Exceção (decisão de 30/09/2026): P0 roda nesse horário, ainda 1 por vez.
 14. **Nada no disco C:.** Modelos, fontes, arquivos temporários: tudo no H: (ou no G:, para o que é conhecimento, como dicionários).
 15. **Nenhuma janela preta piscando na tela do Antônio.** Rotina automática roda sem console (`pythonw` + `CREATE_NO_WINDOW`, que a função `rodar()` do `hpbase` já faz).
 16. **Nunca emoji dentro da legenda queimada.** Vira quadradinho.
@@ -3764,7 +3760,7 @@ Set-Location $esteira; Move-Item $item "$esteira\99_erros\"
 13. **Volume final −14 LUFS ± 1 e pico ≤ −1,5 dBTP.**
 14. **Crédito do criador sempre** (quem põe na tela é o Legendador; o Tradutor nunca tira o crédito nem traduz o @).
 15. **Na dúvida entre legendar e dublar: legenda.**
-16. **Trabalho pesado (gerar voz, montar faixa, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+16. **Trabalho pesado (gerar voz, montar faixa, mixar) 1 por vez e nunca das 18h às 22h30** — exceto P0 (decisão de 30/09/2026), ainda 1 por vez.
 17. **Nada no disco C:**; tudo no H: (áudio, temporários) ou G: (glossários, configuração).
 18. **Nunca alterar** `pedido.json`, `bruto.mp4`, `transcricao.json` ou arquivos de outro cargo; nunca renomear a pasta do item.
 19. **Nunca apagar linha do `historico.log`.**
@@ -5152,7 +5148,7 @@ Add-Content -Path historico.log -Encoding UTF8 -Value "$(Get-Date -Format 'yyyy-
 12. **Nunca promessa de saúde** (Receitas), **nunca incentivo a risco** (Carros, Destinos), **nunca ofensa** a time, torcida, árbitro ou grupo (Futebol).
 13. **O modo só pode descer** (voz → misto → texto → nenhum), nunca subir além do que o pedido e as regras permitem.
 14. **Crédito do criador sempre** (quem põe é o Legendador; o Toque nunca tapa o crédito).
-15. **Trabalho pesado (gerar voz, montar, mixar) 1 por vez e nunca das 18h às 22h30**, nem para P0.
+15. **Trabalho pesado (gerar voz, montar, mixar) 1 por vez e nunca das 18h às 22h30** — exceto P0 (decisão de 30/09/2026), ainda 1 por vez.
 16. **Nada no disco C:.**
 17. **Nunca alterar arquivo de outro cargo**; nunca renomear a pasta; nunca apagar linha do `historico.log`.
 18. **O mesmo modelo de pergunta não se repete no mesmo canal em 7 dias.**
@@ -14611,15 +14607,18 @@ Pela regra da empresa, só depois de **7 dias de sombra com paridade** trocar pa
   Arquivo aberto em outro programa: o movimento é adiado, não perde nada.
 - Pedido novo nasce em `.criando_<nome>` e só aparece completo.
 
-## 9. Pesado e horário — **ponto para o Antônio decidir**
+## 9. Pesado e horário — **P0 liberado (decisão do Antônio, 30/09/2026)**
 
 Baixar, conferir, legendar/dublar e editar vídeo usam `TravaPesada` (1 por vez,
-`pesado.lock`) e **nunca rodam das 18h às 22h30**, como manda o CLAUDE.md —
-**inclusive P0**. Um gol às 20h só é baixado/editado às 22h30. Estáticos,
-revisão, agendamento e aviso são leves e rodam a qualquer hora.
-**Decisão pendente**: liberar P0 na janela (ex.: só P0 de futebol, só o
-download, ou só com o PC ocioso)? Hoje não libera. Mudar é trocar uma linha em
-`motor.py` (`ciclo`) — não foi feito de propósito.
+`pesado.lock`) e **não rodam das 18h às 22h30 — exceto P0** (gol, placar,
+lançamento, bombástica). Um gol às 20h é baixado e editado na hora; um P1/P2
+espera 22h30. O P0 continua respeitando o `pesado.lock` (1 pesado por vez).
+Estáticos, revisão, agendamento e aviso são leves e rodam a qualquer hora.
+Chave `p0_na_janela` no `config.json` (padrão `true`; `false` volta à regra antiga).
+**O CLAUDE.md da empresa precisa ganhar essa exceção** (a sessão HP GESTÃO atualiza).
+
+Aviso "no ar": `aviso_no_ar_habilitado` fica **false** — decisão de 30/09: quem
+monta o aviso é o `whatsapp_local` (a partir do `agendados.json` + `AVISO.md`).
 
 ## 10. Suposições da nuvem (conferir no PC antes de ligar)
 
@@ -15492,7 +15491,8 @@ TIMEOUTS_PADRAO = {
 class Config:
     raiz: Path
     modo: str = "sombra"                      # "sombra" | "real"
-    aviso_no_ar_habilitado: bool = False
+    aviso_no_ar_habilitado: bool = False      # decisão 30/09: o aviso "no ar" é do whatsapp_local
+    p0_na_janela: bool = True                 # decisão 30/09: P0 roda também das 18h às 22h30
     grupo_whatsapp: str = "HP | Comissão 🚀"
     grupos_permitidos: list = field(default_factory=lambda: ["HP | Comissão 🚀"])
     max_voltas: int = 2
@@ -15554,7 +15554,7 @@ class Config:
 
     def como_dict(self) -> dict:
         d = {}
-        for k in ("modo", "aviso_no_ar_habilitado", "grupo_whatsapp",
+        for k in ("modo", "aviso_no_ar_habilitado", "p0_na_janela", "grupo_whatsapp",
                   "grupos_permitidos", "max_voltas", "max_tentativas",
                   "copiar_midia_para_fila", "redes_api", "redes_manuais",
                   "comandos", "editor", "legendador", "narrador", "timeouts",
@@ -15594,7 +15594,9 @@ def salvar_config_padrao(cfg: Config) -> Path:
     if not p.exists():
         d = cfg.como_dict()
         d["_leia"] = ("modo: 'sombra' (padrão) não publica nada; 'real' grava na "
-                      "fila_api. aviso_no_ar_habilitado só vale com modo 'real'.")
+                      "fila_api. aviso_no_ar_habilitado só vale com modo 'real' — deixe false: "
+                      "o aviso 'no ar' é montado pelo whatsapp_local. p0_na_janela: "
+                      "P0 (urgente) roda também das 18h às 22h30, 1 pesado por vez.")
         escrever_json(p, d)
     return p
 
@@ -16664,6 +16666,12 @@ class Esteira:
     def agora(self) -> datetime:
         return self._agora or datetime.now()
 
+    def _p0_na_janela(self, item: Path) -> bool:
+        """P0 (gol, placar, lançamento) pode rodar pesado das 18h às 22h30
+        (decisão do Antônio, 30/09/2026). Continua 1 pesado por vez (pesado.lock)."""
+        info = ler_nome(item.name)
+        return bool(self.cfg.p0_na_janela and info and info.prioridade == "P0")
+
     # --- ciclo ------------------------------------------------------------
     def ciclo(self, max_trabalhos: int | None = None) -> dict:
         """Uma passada: importa pedidos soltos e processa o que der, em ordem
@@ -16674,8 +16682,11 @@ class Esteira:
                   "avancaram": [], "aguardando": [], "erros": [], "adiados_pesado": [],
                   "motivo_pesado": None}
         bloqueio = None
-        if janela_proibida(self.agora()):
-            bloqueio = "janela proibida (18h-22h30): trabalho pesado espera, inclusive P0"
+        janela = janela_proibida(self.agora())
+        if janela:
+            bloqueio = ("janela proibida (18h-22h30): trabalho pesado espera (P0 passa)"
+                        if self.cfg.p0_na_janela else
+                        "janela proibida (18h-22h30): trabalho pesado espera, inclusive P0")
         # (item, etapa) -> voltas: cada item passa 1 vez por etapa no ciclo; depois
         # de uma volta da revisão pode passar de novo (as voltas são limitadas)
         feitos: dict[tuple[str, str], int] = {}
@@ -16687,7 +16698,9 @@ class Esteira:
             etapa, item = prox
             feitos[(item.name, etapa)] = ler_estado(item)["voltas"]
             pesado = self.trabalhos[etapa].eh_pesado(item)
-            if pesado and bloqueio:
+            p0_libera = (janela and self._p0_na_janela(item)
+                         and bloqueio and bloqueio.startswith("janela proibida"))
+            if pesado and bloqueio and not p0_libera:
                 resumo["adiados_pesado"].append(f"{etapa}/{item.name}")
                 continue
             try:
@@ -16764,7 +16777,8 @@ class Esteira:
                                             f"caiu {n} vezes nesta etapa", "", n, True)
 
         # 3) trabalho (com a trava do pesado quando precisa)
-        trava = TravaPesada(f"esteira:{etapa}:{item.name}", agora=self.agora()) \
+        trava = TravaPesada(f"esteira:{etapa}:{item.name}", agora=self.agora(),
+                            ignorar_horario=self._p0_na_janela(item)) \
             if pesado else nullcontext()
         with trava:
             escrever_json(marcador, {"etapa": etapa, "trabalho": trab.nome,
@@ -20008,7 +20022,7 @@ def test_estatico_na_revisao(amb):
 ## app/hp_studio/esteira/testes/test_trava.py
 
 ````python
-"""Trabalho pesado: nunca 18h-22h30 (nem P0), 1 por vez (pesado.lock)."""
+"""Trabalho pesado: nunca 18h-22h30 (exceto P0, decisão de 30/09), 1 por vez (pesado.lock)."""
 import json
 import os
 from datetime import datetime
@@ -20020,7 +20034,26 @@ from esteira.pedido import criar_pedido
 from esteira.testes.conftest import NOITE, pedido_carrossel, pedido_reel
 
 
-def test_janela_proibida_segura_o_pesado_ate_do_p0(amb):
+def test_p0_roda_na_janela_e_p1_espera(amb):
+    p1 = criar_pedido(pedido_reel(titulo="Normal"))
+    p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
+    r = amb.ciclo(agora=NOITE)
+    assert amb.itens(REVISAO) == [p0.name]          # P0 foi até a revisão às 19h
+    assert amb.itens(PEDIDOS) == [p1.name]          # P1 espera 22h30
+    assert r["adiados_pesado"] == [f"{PEDIDOS}/{p1.name}"]
+
+
+def test_p0_na_janela_respeita_pesado_lock(amb):
+    (pasta_app()).mkdir(parents=True, exist_ok=True)
+    (pasta_app() / "pesado.lock").write_text(json.dumps(
+        {"dono": "outro", "pid": os.getpid(), "desde": 9e18}))
+    p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
+    amb.ciclo(agora=NOITE)
+    assert amb.itens(PEDIDOS) == [p0.name]          # 1 pesado por vez, mesmo P0
+
+
+def test_janela_proibida_segura_o_p0_se_desligado(amb):
+    amb.cfg.p0_na_janela = False
     p0 = criar_pedido(pedido_reel(prioridade="P0", titulo="Gol"))
     r = amb.ciclo(agora=NOITE)
     assert amb.itens(PEDIDOS) == [p0.name]
@@ -27201,8 +27234,12 @@ Importante:
 ## Montagem automática (sem Claude)
 
 No `config.json`:
-- `"arquivo_agendados": "H:\\...\\agendados.json"` → a cada ciclo, os posts que já
-  entraram no ar (horário passou, pelo menos 1 link, até 24 h atrás) viram aviso;
+- `"arquivo_agendados"`: **padrão `"auto"`** (decisão de 30/09/2026: o aviso "no ar"
+  é montado aqui, e o da esteira fica desligado). Procura o `agendados.json` do plantão em
+  `H:\\HypadoLocal\\`, `H:\\HypadoLocal\\app\\`, `06 Projeto\\`, `06 Projeto\\app\\` e na raiz do
+  Drive; também aceita o caminho exato, ou `null` para desligar. A cada ciclo, os posts que
+  já entraram no ar (horário passou, pelo menos 1 link, até 24 h atrás) viram aviso — em
+  modo sombra só montam e comparam, não enviam;
 - `"hora_resumo_dia": "08:00"` → depois das 8h, resumo de ontem;
 - `"hora_resumo_sabado": "10:00"` → sábado depois das 10h, resumo da semana;
 - `"grupo_por_canal": {"GTA 6 | HP": "HP | GTA 6"}` → destino por canal (padrão: Comissão).
@@ -27660,6 +27697,17 @@ def candidatos_metricas() -> list[Path]:
     ]
 
 
+def candidatos_agendados() -> list[Path]:
+    """Onde procurar o agendados.json do plantão (o primeiro que existir vale)."""
+    return [
+        raiz_local() / "agendados.json",
+        raiz_local() / "app" / "agendados.json",
+        raiz_drive() / "06 Projeto" / "agendados.json",
+        raiz_drive() / "06 Projeto" / "app" / "agendados.json",
+        raiz_drive() / "agendados.json",
+    ]
+
+
 # ------------------------------------------------------------ configuração
 @dataclass
 class Config:
@@ -27676,7 +27724,9 @@ class Config:
     timeout_carregar_seg: int = 90       # quanto espera o WhatsApp Web carregar
     grupo_padrao: str = GRUPO_COMISSAO   # para onde vão avisos/resumos sem grupo
     grupo_por_canal: dict = field(default_factory=dict)  # {"GTA 6 | HP": "HP | GTA 6"}
-    arquivo_agendados: str | None = None # se preenchido, o vigiar monta o "no ar" sozinho
+    # decisão 30/09: o aviso "no ar" é montado AQUI (a esteira fica com o dela desligado).
+    # "auto" = procura o agendados.json do plantão (candidatos_agendados); None desliga.
+    arquivo_agendados: str | None = "auto"
     janela_no_ar_horas: int = 24         # posts mais velhos que isso não viram aviso
     hora_resumo_dia: str | None = None   # "08:00" = o vigiar monta o resumo de ontem
     hora_resumo_sabado: str | None = None  # "10:00" = o vigiar monta o resumo no sábado
@@ -30259,7 +30309,7 @@ from pathlib import Path
 
 from hpbase import obter_logger
 
-from .config import Config, candidatos_metricas, nfc
+from .config import Config, candidatos_agendados, candidatos_metricas, nfc
 from .fila import Fila
 from .montagem import (carregar_agendados, carregar_metricas, carregar_modelo_aviso,
                        chave_post, id_mensagem, mensagem_fila, montar_no_ar,
@@ -30337,6 +30387,15 @@ def enfileirar_resumo_sabado(cfg: Config, agora: datetime, *, sabado: date | Non
     return _entregar(msg, fila or Fila(), so_mostrar)
 
 
+def resolver_agendados(cfg: Config) -> Path | None:
+    """cfg.arquivo_agendados: caminho, "auto" (procura nos lugares de sempre) ou None."""
+    valor = cfg.arquivo_agendados
+    if not valor:
+        return None
+    cands = candidatos_agendados() if str(valor).lower() == "auto" else [Path(valor)]
+    return next((p for p in cands if p.is_file()), None)
+
+
 def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) -> int:
     """O que o vigia monta sozinho, se estiver ligado na config.json:
     - arquivo_agendados → aviso "no ar" dos posts que entraram no ar;
@@ -30348,8 +30407,9 @@ def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) 
     lg = obter_logger("whatsapp")
     hhmm = agora.strftime("%H:%M")
     try:
-        if cfg.arquivo_agendados and Path(cfg.arquivo_agendados).exists():
-            novas += sum(1 for m in enfileirar_no_ar(Path(cfg.arquivo_agendados), cfg, agora, fila=fila)
+        arq = resolver_agendados(cfg)
+        if arq:
+            novas += sum(1 for m in enfileirar_no_ar(arq, cfg, agora, fila=fila)
                          if m["_situacao"] == "enfileirada")
         if cfg.hora_resumo_dia and hhmm >= cfg.hora_resumo_dia:
             m = enfileirar_resumo_dia(cfg, agora, fila=fila)
@@ -31004,6 +31064,22 @@ def test_resumo_a_partir_das_fotos_diarias_do_modulo_metricas():
     m2 = enfileirar_resumo_dia(Config(), datetime(2026, 9, 30, 8, 0, tzinfo=FUSO))
     assert m2 and m2["tipo"] == "resumo_dia" and m2["texto"].startswith(PREFIXO)
     assert montar_resumo_dia(m, date(2026, 9, 29))
+
+
+def test_no_ar_automatico_acha_o_agendados_do_plantao(tmp_path):
+    """Decisão 30/09: o "no ar" é montado pelo whatsapp_local, já ligado ("auto")."""
+    import shutil
+    assert Config().arquivo_agendados == "auto"
+    assert tarefas_automaticas(Config(), AGORA) == 0            # sem agendados.json: nada
+    shutil.copy(_agendados(tmp_path), raiz_local() / "agendados.json")
+    assert tarefas_automaticas(Config(), AGORA) == 1            # aviso do GTA na fila
+    assert tarefas_automaticas(Config(arquivo_agendados=None), AGORA) == 0
+
+
+def test_esteira_nao_monta_aviso_por_padrao():
+    from esteira.config import carregar_config
+    cfg = carregar_config()
+    assert cfg.aviso_no_ar_habilitado is False and cfg.p0_na_janela is True
 
 ````
 

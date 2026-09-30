@@ -1148,7 +1148,7 @@ Test-Path "$esteira\04_edicao\$(Split-Path $item -Leaf)"
 10. **Nunca apagar nem sobrescrever arquivo de outro cargo** (`pedido.json`, `bruto.mp4`, `traducao.json`, `dublagem.wav`, `toque_hp.*`, `final.mp4`, `capa.jpg`, `post.json`).
 11. **Nunca apagar linha do `historico.log`.** Só acrescentar.
 12. **Nunca renomear a pasta do item** nem mudar a prioridade (`P0_`/`P1_`/`P2_`).
-13. **Trabalho pesado 1 por vez e nunca das 18h às 22h30** — transcrição e prévia respeitam o `pesado.lock`. Nem P0 fura esse horário.
+13. **Trabalho pesado 1 por vez e nunca das 18h às 22h30** — transcrição e prévia respeitam o `pesado.lock`. Exceção (decisão de 30/09/2026): P0 roda nesse horário, ainda 1 por vez.
 14. **Nada no disco C:.** Modelos, fontes, arquivos temporários: tudo no H: (ou no G:, para o que é conhecimento, como dicionários).
 15. **Nenhuma janela preta piscando na tela do Antônio.** Rotina automática roda sem console (`pythonw` + `CREATE_NO_WINDOW`, que a função `rodar()` do `hpbase` já faz).
 16. **Nunca emoji dentro da legenda queimada.** Vira quadradinho.

@@ -126,6 +126,17 @@ def candidatos_metricas() -> list[Path]:
     ]
 
 
+def candidatos_agendados() -> list[Path]:
+    """Onde procurar o agendados.json do plantão (o primeiro que existir vale)."""
+    return [
+        raiz_local() / "agendados.json",
+        raiz_local() / "app" / "agendados.json",
+        raiz_drive() / "06 Projeto" / "agendados.json",
+        raiz_drive() / "06 Projeto" / "app" / "agendados.json",
+        raiz_drive() / "agendados.json",
+    ]
+
+
 # ------------------------------------------------------------ configuração
 @dataclass
 class Config:
@@ -142,7 +153,9 @@ class Config:
     timeout_carregar_seg: int = 90       # quanto espera o WhatsApp Web carregar
     grupo_padrao: str = GRUPO_COMISSAO   # para onde vão avisos/resumos sem grupo
     grupo_por_canal: dict = field(default_factory=dict)  # {"GTA 6 | HP": "HP | GTA 6"}
-    arquivo_agendados: str | None = None # se preenchido, o vigiar monta o "no ar" sozinho
+    # decisão 30/09: o aviso "no ar" é montado AQUI (a esteira fica com o dela desligado).
+    # "auto" = procura o agendados.json do plantão (candidatos_agendados); None desliga.
+    arquivo_agendados: str | None = "auto"
     janela_no_ar_horas: int = 24         # posts mais velhos que isso não viram aviso
     hora_resumo_dia: str | None = None   # "08:00" = o vigiar monta o resumo de ontem
     hora_resumo_sabado: str | None = None  # "10:00" = o vigiar monta o resumo no sábado

@@ -174,15 +174,18 @@ Pela regra da empresa, só depois de **7 dias de sombra com paridade** trocar pa
   Arquivo aberto em outro programa: o movimento é adiado, não perde nada.
 - Pedido novo nasce em `.criando_<nome>` e só aparece completo.
 
-## 9. Pesado e horário — **ponto para o Antônio decidir**
+## 9. Pesado e horário — **P0 liberado (decisão do Antônio, 30/09/2026)**
 
 Baixar, conferir, legendar/dublar e editar vídeo usam `TravaPesada` (1 por vez,
-`pesado.lock`) e **nunca rodam das 18h às 22h30**, como manda o CLAUDE.md —
-**inclusive P0**. Um gol às 20h só é baixado/editado às 22h30. Estáticos,
-revisão, agendamento e aviso são leves e rodam a qualquer hora.
-**Decisão pendente**: liberar P0 na janela (ex.: só P0 de futebol, só o
-download, ou só com o PC ocioso)? Hoje não libera. Mudar é trocar uma linha em
-`motor.py` (`ciclo`) — não foi feito de propósito.
+`pesado.lock`) e **não rodam das 18h às 22h30 — exceto P0** (gol, placar,
+lançamento, bombástica). Um gol às 20h é baixado e editado na hora; um P1/P2
+espera 22h30. O P0 continua respeitando o `pesado.lock` (1 pesado por vez).
+Estáticos, revisão, agendamento e aviso são leves e rodam a qualquer hora.
+Chave `p0_na_janela` no `config.json` (padrão `true`; `false` volta à regra antiga).
+**O CLAUDE.md da empresa precisa ganhar essa exceção** (a sessão HP GESTÃO atualiza).
+
+Aviso "no ar": `aviso_no_ar_habilitado` fica **false** — decisão de 30/09: quem
+monta o aviso é o `whatsapp_local` (a partir do `agendados.json` + `AVISO.md`).
 
 ## 10. Suposições da nuvem (conferir no PC antes de ligar)
 
