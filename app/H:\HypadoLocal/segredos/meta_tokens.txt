@@ -1,2 +1,0 @@
-# x
-IG_TOKEN=valorsecreto

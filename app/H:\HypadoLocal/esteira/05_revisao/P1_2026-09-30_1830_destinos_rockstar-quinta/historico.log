@@ -1,7 +1,0 @@
-2026-09-30T18:45:26-03:00 [01_pedidos] pedido criado (reel, P1, redes: instagram, tiktok)
-2026-09-30T18:45:26-03:00 [01_pedidos] -> 02_baixados: bruto pronto: bruto.mp4 (0.0 MB)
-2026-09-30T18:45:26-03:00 [02_baixados] -> 03_legenda_dublagem: bruto ok: 15.0s 1080x1920, com áudio
-2026-09-30T18:45:26-03:00 [03_legenda_dublagem] -> 04_edicao: legenda gerada; dublagem ok; narração Toque HP ok
-2026-09-30T18:45:26-03:00 [04_edicao] -> 05_revisao: final.mp4 1080x1920 15.0s -14.0 LUFS
-2026-09-30T18:45:26-03:00 [05_revisao] material de revisão pronto (rodada 1): aguardando aprovado.json ou refazer.json
-2026-09-30T18:45:26-03:00 [05_revisao] aguardando aprovado.json ou refazer.json

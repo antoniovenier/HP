@@ -1,9 +1,0 @@
-{
-  "etapa": "01_pedidos",
-  "trabalho": "importar",
-  "mensagem": "pedido solto solto.json inválido: pedido inválido: id obrigatório (letras, números, _ . -); canal tem que ser um de gta, futebol, filmes, receitas, carros, destinos; tipo tem que ser um de reel, carrossel, story, threads_texto, estatico; titulo obrigatório; redes obrigatório (lista, ex.: [\"instagram\", \"tiktok\"]); horario_alvo obrigatório no formato 2026-09-30T18:30:00-03:00",
-  "traceback": "",
-  "tentativas": 1,
-  "permanente": true,
-  "em": "2026-09-30T18:45:27-03:00"
-}

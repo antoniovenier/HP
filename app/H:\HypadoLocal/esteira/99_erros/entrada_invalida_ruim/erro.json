@@ -1,9 +1,0 @@
-{
-  "etapa": "01_pedidos",
-  "trabalho": "importar",
-  "mensagem": "pedido solto ruim.json inválido: pedido inválido: futebol nunca leva voz sintética: dublar e narrar_toque_hp têm que ser false (usa o áudio original do vídeo oficial); futebol: só vídeo/foto oficial de clube, CBF ou liga (nunca transmissão de TV) — confirme com fonte_oficial=true",
-  "traceback": "",
-  "tentativas": 1,
-  "permanente": true,
-  "em": "2026-09-30T18:45:26-03:00"
-}
