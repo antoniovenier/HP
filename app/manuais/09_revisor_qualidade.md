@@ -836,3 +836,649 @@ data;item;canal;tipo;revisao_n;media;classe;criterio_menor;trava;motivo
 2026-10-02T15:30:44-03:00;P2_2026-10-03_1200_carros_5-mais-baratos-2026;carros;reel;3;6.60;Médio;imagem_nitidez;limite_voltas;fonte só em 480p
 ```
 
+---
+
+## 3. Passo a passo numerado para leigo
+
+São **62 passos** em 10 partes. Um reel usa as partes A a I; um estático usa A, B, E (só o texto), F, G, H, I e J.
+
+| Parte | Passos | O quê |
+|---|---|---|
+| A — Preparar | 1–6 | PowerShell, atalhos, ferramentas, fila |
+| B — Pegar o item | 7–12 | escolher, conferir peças, contar voltas, ler pedido e histórico |
+| C — Medidas automáticas | 13–22 | duração, tamanho, volume, tela preta, silêncio, formato, capa, textos |
+| D — Os 3 quadros | 23–28 | tirar início/meio/fim, montar a folha, olhar cada um |
+| E — O texto | 29–34 | legenda do vídeo, textos do post, verdade, regras |
+| F — Dar as notas | 35–42 | nota por critério, obs com número |
+| G — Calcular o veredito | 43–47 | média, classe, destino, ações, motivo |
+| H — Gravar | 48–53 | o JSON, a conferência, o histórico, o registro de descarte |
+| I — Mover | 54–58 | com e sem o app |
+| J — Estáticos e casos especiais | 59–62 | carrossel, story, enquete, Threads, P0 |
+
+### Parte A — Preparar
+
+#### Passo 1 — Abrir o PowerShell
+- **Abra:** `Windows + X` → **Terminal**.
+- **Deve aparecer:** o cursor piscando.
+
+#### Passo 2 — Criar os atalhos da sessão
+- **Rode:**
+```powershell
+$py = "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"
+$E  = "H:\HypadoLocal\esteira"
+$env:PYTHONIOENCODING = "utf-8"
+$ci = [Globalization.CultureInfo]::InvariantCulture
+Set-Location "G:\Meu Drive\Hypado"
+```
+- **Confira:** o `$ci` serve para os números com ponto (19.2) não virarem vírgula (19,2) nos comandos do ffmpeg — o Windows em português usa vírgula e o ffmpeg só entende ponto.
+- **Deve aparecer:** `PS G:\Meu Drive\Hypado>`.
+
+#### Passo 3 — Conferir o Python
+- **Rode:** `& $py --version`
+- **Deve aparecer:** `Python 3.12.x`.
+
+#### Passo 4 — Conferir o ffmpeg
+- **Rode:** `ffmpeg -version | Select-Object -First 1`
+- **Deve aparecer:** `ffmpeg version …`. (O `ffprobe` pode não existir; este manual usa só o `ffmpeg`.)
+
+#### Passo 5 — Hora e trava
+- A revisão é **trabalho leve** (medir e tirar 3 quadros leva segundos): **não pega** o `pesado.lock` e **pode** ser feita a qualquer hora, inclusive das 18h às 22h30 (é quando sai P0 de futebol). Não rode nada pesado daqui (nada de renderizar vídeo).
+- **Deve aparecer:** nada a fazer.
+
+#### Passo 6 — Ver a fila da revisão
+- **Rode:**
+```powershell
+Get-ChildItem "$E\05_revisao" -Directory | Sort-Object Name | ForEach-Object {
+  $v = @(Get-ChildItem $_.FullName -Filter "refazer_volta*.json").Count
+  $x = if (Test-Path "$($_.FullName)\aprovado.json") {"aprovado"} elseif (Test-Path "$($_.FullName)\refazer.json") {"refazer"} elseif (Test-Path "$($_.FullName)\descartado.json") {"descartado"} else {"-"}
+  "{0,-60} voltas={1} veredito={2}" -f $_.Name, $v, $x
+}
+```
+- **Confira:** os itens com `veredito=-` esperam por você. De cima para baixo (P0 primeiro).
+- **Deve aparecer:** por exemplo:
+```
+P0_2026-09-30_2147_futebol_gol-flamengo-pedro                voltas=0 veredito=-
+P1_2026-09-30_1830_gta_rockstar-quinta                       voltas=0 veredito=-
+P1_2026-10-01_1130_receitas_pao-queijo-frigideira            voltas=1 veredito=-
+```
+
+### Parte B — Pegar o item
+
+#### Passo 7 — Escolher o item
+- **Rode** (troque pelo nome):
+```powershell
+$item = "$E\05_revisao\P1_2026-09-30_1830_gta_rockstar-quinta"
+$pedido = Get-Content "$item\pedido.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$pedido | Select-Object canal, conta, tipo, prioridade, postar_em, tema, voz | Format-List
+$pedido.redes
+```
+- **Deve aparecer:** os dados do pedido (canal `gta`, tipo `reel`, redes…).
+- **Anote o relógio** (para o `duracao_revisao_s`): `$inicio = Get-Date`
+
+#### Passo 8 — Conferir que todas as peças chegaram
+- **Rode:**
+```powershell
+$lista = switch ($pedido.tipo) {
+  "reel"           { "final.mp4","capa.jpg","post.json","design.json" }
+  "carrossel"      { "lamina_01.jpg","post.json","design.json" }
+  "feed"           { "lamina_01.jpg","post.json","design.json" }
+  "story"          { "story.jpg","design.json" }
+  "story_enquete"  { "story.jpg","post.json","design.json" }
+  "story_contagem" { "story.jpg","design.json" }
+  "pin"            { "pin.jpg","post.json","design.json" }
+  "threads_imagem" { "threads.jpg","post.json","design.json" }
+  "threads_texto"  { "post.json" }
+}
+$lista | ForEach-Object { "{0,-14} {1}" -f $_, (Test-Path "$item\$_") }
+if ($pedido.redes -contains "pinterest") { "pin.jpg        $(Test-Path "$item\pin.jpg")" }
+if (Test-Path "$item\transcricao.json") { "legenda.srt    $(Test-Path "$item\legenda.srt")" }
+```
+- **Deve aparecer:** `True` em todas as linhas.
+- **Se algum `False`:** o item chegou incompleto — **não revise** (não é reprovação, não conta volta). Com o app isso não acontece (ele só move com tudo pronto). Sem o app, devolva: `Move-Item $item "$E\04_edicao\"` e anote no histórico: `Add-Content "$item\historico.log" ("{0} [revisor] devolvido sem revisar: faltava peça" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz")) -Encoding UTF8` (rode o `Add-Content` **antes** do `Move-Item`, ou use o caminho novo).
+
+#### Passo 9 — Contar as voltas
+- **Rode:**
+```powershell
+$voltas = @(Get-ChildItem $item -Filter "refazer_volta*.json").Count
+"voltas antes desta revisão: $voltas  ->  esta é a revisão nº $($voltas + 1)"
+Test-Path "$item\refazer.json"
+```
+- **Deve aparecer:** `voltas antes desta revisão: 0 -> esta é a revisão nº 1` e `False`.
+- **Se** o `Test-Path` der `True`: sobrou um `refazer.json` de antes que não foi renomeado (sem o app). Renomeie agora (passo 58) e rode de novo.
+- **Se `voltas` = 2:** esta é a **última** revisão. Se reprovar, descarta.
+
+#### Passo 10 — Ler o histórico
+- **Rode:** `Get-Content "$item\historico.log" -Encoding UTF8 -Tail 15`
+- **Confira:** por onde o item passou, quem fez o quê, se houve erro no caminho.
+- **Deve aparecer:** as últimas linhas (`[curador]`, `[legendador]`, `[editor]`, `[designer]`, `[redator]`…).
+
+#### Passo 11 — Se é volta: ler o que foi pedido da última vez
+- **Rode** (só se `voltas` ≥ 1):
+```powershell
+$ult = Get-ChildItem $item -Filter "refazer_volta*.json" | Sort-Object Name | Select-Object -Last 1
+$ant = Get-Content $ult.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+$ant.motivo
+$ant.o_que_refazer | Format-Table criterio, cargo, instrucao -Wrap
+```
+- **Confira:** **cada** ação pedida foi feita? Você vai conferir uma por uma nos passos seguintes. Ação pedida e não feita = a nota daquele critério **não pode subir**.
+- **Deve aparecer:** o motivo e a lista de ações da volta anterior.
+
+#### Passo 12 — Decidir a lista de critérios
+- **Confira** na seção 2.6 qual lista usar: vídeo (20 critérios), estático (até 13) ou texto do Threads (4 a 6). Anote quais **não se aplicam** (ex.: `traducao_dublagem` quando `voz` é `nenhuma`; `valores` quando não há dinheiro; `musica_direitos` quando não há música adicionada).
+
+### Parte C — Medidas automáticas (vídeo)
+
+#### Passo 13 — Duração, tamanho da imagem, quadros por segundo e formatos
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -i "$item\final.mp4" 2>&1 | Select-String "Duration|Video:|Audio:"
+```
+- **Deve aparecer:** algo como:
+```
+  Duration: 00:00:38.40, start: 0.000000, bitrate: 4431 kb/s
+  Stream #0:0: Video: h264 (High) ..., yuv420p, 1080x1920 [SAR 1:1 DAR 9:16], ..., 30 fps, ...
+  Stream #0:1: Audio: aac (LC) ..., 48000 Hz, stereo, ...
+```
+- **Confira:** `h264`, `1080x1920`, `30 fps` (23 a 60 aceito), `aac`. Sem a linha `Audio:` = vídeo sem som (nota 0 em `audio_loudness`).
+
+#### Passo 14 — Guardar a duração em número
+- **Rode:**
+```powershell
+$info = ffmpeg -hide_banner -i "$item\final.mp4" 2>&1 | Out-String
+$m = [regex]::Match($info, 'Duration: (\d+):(\d+):(\d+\.\d+)')
+$dur = [int]$m.Groups[1].Value * 3600 + [int]$m.Groups[2].Value * 60 + [double]::Parse($m.Groups[3].Value, $ci)
+$dur.ToString($ci)
+```
+- **Deve aparecer:** `38.4`.
+- **Confira:** padrão HP de 7 a 90 s. Acima de 90 s só com pedido explícito do Curador (e nunca acima de 180 s).
+
+#### Passo 15 — Tamanho do arquivo
+- **Rode:** `"{0:N1} MB" -f ((Get-Item "$item\final.mp4").Length / 1MB)`
+- **Deve aparecer:** por exemplo `21,3 MB`. Meta HP: até 100 MB.
+
+#### Passo 16 — Volume (loudness) e pico
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -nostats -i "$item\final.mp4" -vn -af ebur128=peak=true:framelog=quiet -f null - 2>&1 | Select-String "I:|Peak:"
+```
+- **Deve aparecer:** duas linhas, por exemplo:
+```
+    I:         -14.2 LUFS
+    Peak:       -1.4 dBFS
+```
+  (`I` = volume integrado do vídeo todo; `Peak` = pico real, que o ffmpeg escreve como dBFS mas é o pico real — dBTP.)
+- **Confira** na tabela de nota automática do critério `audio_loudness` (seção 5).
+
+#### Passo 17 — Tela preta
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -nostats -i "$item\final.mp4" -an -vf blackdetect=d=0.3:pix_th=0.10 -f null - 2>&1 | Select-String "black_start"
+```
+- **Deve aparecer:** **nada** (nenhum trecho preto de 0,3 s ou mais). Se aparecer `black_start:36.9 black_end:38.4 black_duration:1.5`, há 1,5 s de tela preta no fim → `final_retencao` perde nota.
+
+#### Passo 18 — Silêncio
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -nostats -i "$item\final.mp4" -vn -af silencedetect=n=-45dB:d=1.5 -f null - 2>&1 | Select-String "silence_"
+```
+- **Deve aparecer:** **nada**. Se aparecer `silence_start` / `silence_end`, há 1,5 s ou mais de silêncio — confira se foi intencional (quase nunca é).
+
+#### Passo 19 — Formato por rede
+- **Confira** com as medidas dos passos 13–15:
+
+| Item | Certo | Nota do critério `formato_rede` |
+|---|---|---|
+| Contêiner/codecs | MP4, vídeo H.264, áudio AAC | outro codec = 0 (a rede pode recusar) |
+| Proporção | 9:16 (1080x1920) | 720x1280 = 7; outra proporção = 0 |
+| Duração | 7–90 s | 90–180 s sem pedido = 5; > 180 s = 0 |
+| Tamanho | ≤ 100 MB | 100–300 MB = 7; > 300 MB = 0 |
+| Pinterest | só Receitas, Carros, Destinos | Pinterest em outro canal = 5 |
+
+#### Passo 20 — Capa (pelo recibo do Designer)
+- **Rode:**
+```powershell
+$d = Get-Content "$item\design.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+$d.status; $d.versao
+$d.checagens | Format-List
+$d.pecas | Format-Table arquivo, largura, altura, kb, contraste, safe_zone_ok -AutoSize
+```
+- **Deve aparecer:** `pronto`, a versão e as checagens todas `True`/`ok`/`nao_se_aplica`; a capa `1080 x 1920`, contraste ≥ 4,5, `safe_zone_ok True`.
+- **Abra** a conferência visual que o Designer deixou: `Invoke-Item "$item\conferencia_capa.jpg"` (se não existir, o critério `capa` não pode passar de 7 — o Designer pulou a conferência).
+
+#### Passo 21 — Textos do post (os contadores do Redator)
+Estes são os mesmos comandos do manual 08 (passos 50 a 55). **Rode** um de cada vez:
+```powershell
+& $py -c "import json,sys;p=json.load(open(sys.argv[1],encoding='utf-8-sig'));[print(k,{c:len(x) for c,x in v.items() if isinstance(x,str)}) for k,v in p['redes'].items() if v]" "$item\post.json"
+& $py -c "import json,sys,re;p=json.load(open(sys.argv[1],encoding='utf-8-sig'));[print(k,len(re.findall(r'#\w+',v.get('texto_final') or v.get('descricao') or ''))) for k,v in p['redes'].items() if v]" "$item\post.json"
+& $py -c "import json,sys,re;s=json.dumps(json.load(open(sys.argv[1],encoding='utf-8-sig')),ensure_ascii=False).lower();print(sorted(set(m.group(0) for m in re.finditer(r'flow ?games|vaz(ou|amento|ado)|leak|datamin|comenta sim|marca [0-9a-z]+ amig|compartilha se|curte se|digita [0-9]',s))) or 'nenhuma')" "$item\post.json"
+& $py -c "import json,sys;p=json.load(open(sys.argv[1],encoding='utf-8-sig'));[print(k,'ok' if any(r in (v.get('texto_final') or v.get('descricao') or '') for r in ('Vídeo:','Vídeos:','Foto:','Fotos:','Imagem:','Imagens:')) else 'SEM CREDITO') for k,v in p['redes'].items() if v and k!='pinterest']" "$item\post.json"
+& $py -c "import json,sys,re;p=json.load(open(sys.argv[1],encoding='utf-8-sig'));[print(k,'FALTA AVISO DE VALORES' if re.search(r'R\x24|reais|US\x24|d[oó]lar',t) and 'Valores aproximados' not in t else 'ok') for k,v in p['redes'].items() if v for t in [' '.join(x for x in v.values() if isinstance(x,str))]]" "$item\post.json"
+```
+- **Deve aparecer:** caracteres dentro dos limites do manual 08 (tabela 2.5); hashtags na quantidade certa; `nenhuma` palavra proibida; `ok` no crédito de todas as redes (ou `SEM CREDITO` só se o material é 100% próprio); `ok` nos valores.
+
+#### Passo 22 — Guardar as medidas
+- **Rode** (troque pelos números que apareceram nos passos 13–21):
+```powershell
+$medidas = [ordered]@{
+  duracao_s = $dur; largura = 1080; altura = 1920; fps = 30; codec_video = "h264"; codec_audio = "aac"
+  lufs = -14.2; pico_dbtp = -1.4; tamanho_mb = 21.3; tela_preta_s = 0; silencio_s = 0
+  caracteres = [ordered]@{ instagram = 284; facebook = 218; tiktok = 128; youtube_titulo = 52; youtube_descricao = 268; threads = 165 }
+  hashtags   = [ordered]@{ instagram = 5; facebook = 2; tiktok = 4; youtube = 3; threads = 0 }
+  laminas = $null; capa = "1080x1920"
+}
+```
+- **Deve aparecer:** nada (silêncio = gravado na memória da janela).
+
+### Parte D — Os 3 quadros
+
+#### Passo 23 — Calcular os 3 instantes
+- **Rode:**
+```powershell
+$tIni  = "0.5"
+$tMeio = [math]::Round($dur / 2, 2).ToString($ci)
+$tFim  = [math]::Max(0, [math]::Round($dur - 0.5, 2)).ToString($ci)
+"início $tIni s · meio $tMeio s · fim $tFim s"
+```
+- **Deve aparecer:** para 38,4 s: `início 0.5 s · meio 19.2 s · fim 37.9 s`.
+- **Por que 0,5 s e não 0:** o quadro 0 costuma ser uma transição; 0,5 s mostra o que a pessoa vê de verdade ao parar o dedo.
+
+#### Passo 24 — Tirar os 3 quadros
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -loglevel error -y -ss $tIni  -i "$item\final.mp4" -frames:v 1 -q:v 2 "$item\quadro_inicio.jpg"
+ffmpeg -hide_banner -loglevel error -y -ss $tMeio -i "$item\final.mp4" -frames:v 1 -q:v 2 "$item\quadro_meio.jpg"
+ffmpeg -hide_banner -loglevel error -y -ss $tFim  -i "$item\final.mp4" -frames:v 1 -q:v 2 "$item\quadro_fim.jpg"
+Get-ChildItem "$item\quadro_*.jpg" | Select-Object Name, Length
+```
+- **Deve aparecer:** os 3 arquivos, cada um com algumas centenas de KB.
+
+#### Passo 25 — Montar a folha de revisão (3 quadros + capa numa imagem só)
+- **Rode:**
+```powershell
+ffmpeg -hide_banner -loglevel error -y -i "$item\quadro_inicio.jpg" -i "$item\quadro_meio.jpg" -i "$item\quadro_fim.jpg" -i "$item\capa.jpg" -filter_complex "[0]scale=360:640[a];[1]scale=360:640[b];[2]scale=360:640[c];[3]scale=360:640[d];[a][b][c][d]hstack=inputs=4" "$item\folha_revisao.jpg"
+Invoke-Item "$item\folha_revisao.jpg"
+```
+- **Deve aparecer:** uma imagem larga (1440 x 640) com, da esquerda para a direita: início, meio, fim e capa.
+- **Economia de token:** o Claude olha **esta** imagem (uma só) em vez de 4. Só abra os quadros grandes se precisar ler um detalhe (legenda, crédito pequeno).
+
+#### Passo 26 — Olhar o quadro do início (gancho)
+- **Confira:**
+  - [ ] Tem **ação ou imagem forte** (rosto, lance, prato, carro, paisagem) — não é logo parado, tela preta, "oi gente".
+  - [ ] Tem **texto de gancho** na tela (o `gancho_tela` do `post.json`) ou legenda de uma fala que cria curiosidade.
+  - [ ] Texto dentro da zona segura (nada em x > 930 nem em y > 1500 nem em y < 250).
+  - [ ] Futebol: **não** é imagem de TV (sem logo de emissora, sem placar de emissora). Modo gol: começa com o cartão de 2 s (é o padrão do Futebol).
+  - [ ] GTA: nada que pareça material não oficial.
+  - [ ] Narração "Toque HP" (Destinos, Receitas, Carros, Filmes próprios): a pergunta começa até 2 s (confira no `legenda.srt`, bloco 1).
+- **Deve aparecer:** todos marcados → `gancho` 9–10.
+
+#### Passo 27 — Olhar o quadro do meio (qualidade)
+- **Confira:**
+  - [ ] Nítido (sem borrão de ampliação, sem blocos de compressão).
+  - [ ] Sem barras pretas em cima/embaixo ou dos lados (vídeo horizontal "encaixado" sem tratamento).
+  - [ ] Sem marca d'água de outro perfil ou rede (ex.: logo do TikTok com @ de outra pessoa).
+  - [ ] Legenda legível, até 2 linhas, dentro da zona segura.
+  - [ ] Crédito visível ("Vídeo: @criador") em algum lugar da tela (se não estiver neste quadro, confira no início ou no fim).
+  - [ ] Textos na tela sem erro, com o selo/cores do canal.
+- **Deve aparecer:** todos marcados.
+
+#### Passo 28 — Olhar o quadro do fim (fecho)
+- **Confira:**
+  - [ ] Termina em imagem com sentido (não no meio de um movimento/fala).
+  - [ ] Tem a pergunta/CTA (falada, na legenda ou na tela).
+  - [ ] Não é tela preta (confirme com o passo 17).
+  - [ ] Confira com a transcrição: o último trecho termina perto do fim do vídeo (diferença ≤ 0,5 s):
+```powershell
+$tr = Get-Content "$item\transcricao.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+($tr.trechos | Select-Object -Last 1) | Format-List inicio, fim, texto
+"duração do final.mp4: $($dur.ToString($ci)) s"
+```
+  (Se o vídeo tem cartão de abertura, some os segundos do cartão ao `fim` da transcrição antes de comparar.)
+- **Quando assistir o vídeo inteiro** (`Invoke-Item "$item\final.mp4"`): só se um quadro levantou dúvida que o texto não resolve — suspeita de imagem de TV, música com direito autoral, voz estranha, corte brusco. Anote em `obs` que assistiu.
+
+### Parte E — O texto
+
+#### Passo 29 — Ler a legenda do vídeo inteira
+- **Rode:**
+```powershell
+Get-Content "$item\legenda.srt" -Encoding UTF8 | Where-Object { $_ -and $_ -notmatch '^\d+$' -and $_ -notmatch '-->' }
+```
+- **Confira:** ortografia, nomes próprios, números, pontuação, palavrão (não pode), e se o texto bate com a transcrição.
+- **Deve aparecer:** só as falas, uma por linha.
+
+#### Passo 30 — Conferir a sincronia por amostra
+- **Rode:**
+```powershell
+Get-Content "$item\legenda.srt" -Encoding UTF8 -TotalCount 12
+$tr.trechos | Select-Object -First 3 | Format-Table inicio, fim, texto -AutoSize
+```
+- **Confira:** o começo dos 3 primeiros blocos da legenda (`00:00:04,200`) e o começo dos 3 primeiros trechos da transcrição (`4.2`) — diferença de até **0,2 s** é sincronia boa. Diferença igual em todos os blocos (ex.: sempre 1 s) = legenda deslocada → `legenda` ≤ 4.
+- **Atenção:** se o vídeo começa com cartão (ex.: 2 s no modo gol do Futebol), a legenda começa 2 s depois da transcrição de propósito — some os 2 s.
+
+#### Passo 31 — Linhas longas demais na legenda
+- **Rode:**
+```powershell
+Get-Content "$item\legenda.srt" -Encoding UTF8 | Where-Object { $_ -and $_ -notmatch '^\d+$' -and $_ -notmatch '-->' -and $_.Length -gt 42 }
+```
+- **Deve aparecer:** **nada**. O limite de caracteres por linha é o do manual 04 (Legendador) — aqui usamos 42 como referência; se o manual 04 disser outro número, vale o dele.
+
+#### Passo 32 — Ler os textos do post, rede por rede
+- **Rode:**
+```powershell
+$post = Get-Content "$item\post.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+"TÍTULO DA CAPA: $($post.titulo_capa)"
+"GANCHO DE TELA: $($post.gancho_tela)"
+$post.redes.PSObject.Properties | Where-Object { $_.Value } | ForEach-Object {
+  "===== $($_.Name) ====="
+  if ($_.Value.texto_final) { $_.Value.texto_final } else { $_.Value.titulo; $_.Value.descricao }
+}
+```
+- **Confira:** tom do canal, CTA "comenta aí" com pergunta verdadeira, crédito com o @ de cada rede, aviso de valores, hashtags no fim, sem isca de engajamento.
+- **Deve aparecer:** o título, o gancho e o texto de cada rede.
+
+#### Passo 33 — A pergunta mais importante: é verdade?
+- **Confira**, com a transcrição (`$tr.texto`) e os 3 quadros ao lado:
+  - [ ] O título da capa e a primeira linha prometem **só** o que o vídeo mostra/diz.
+  - [ ] Todo número (placar, preço, data, "faltam X dias") está certo. Contagem do GTA: `((Get-Date "2026-11-19") - (Get-Date).Date).Days`.
+  - [ ] Rumor está escrito como rumor, com fonte.
+- Promessa falsa = `titulo_capa` ou `texto_post` com nota 0 **e** `regras_conteudo` abaixo de 10 (clickbait mentiroso é regra inviolável) → trava.
+
+#### Passo 34 — Checklist das regras de conteúdo (todas "não")
+- [ ] Vazamento de GTA 6 (imagem, texto, "suposto vazamento", material de fórum)? → **irreparável: descartar**.
+- [ ] Qualquer coisa do Flow Games? → **irreparável: descartar**.
+- [ ] Futebol com imagem de transmissão de TV? → **irreparável: descartar**.
+- [ ] Futebol com narração sintética, ou vídeo oficial sem o áudio original? → `regras_conteudo` 0 → volta (03/04).
+- [ ] Voz clonada? Voz sintética que não seja a Piper pt-BR? Voz sintética em GTA ou Futebol, ou em vídeo que não é próprio? → `regras_conteudo` 0 → volta para `03_legenda_dublagem`.
+- [ ] Trailer puro (só o trailer, sem nada da HP)? → `regras_conteudo` 0 → volta ao Curador.
+- [ ] Música com direito autoral? → `musica_direitos` 0 → volta para `04_edicao`.
+- [ ] Spoiler sem aviso? Ofensa, palavrão, provocação de torcida? Clickbait mentiroso? → `regras_conteudo` ≤ 5 → trava.
+- [ ] Link de afiliado, cupom, "publi"? (afiliados é assunto futuro) → `regras_conteudo` 5 → volta ao Redator.
+
+### Parte F — Dar as notas
+
+#### Passo 35 — Dar a nota de cada critério, na ordem da esteira
+- **Abra** a seção 5 deste manual (tabela de critérios). Vá critério por critério, na ordem da tabela 2.6, e compare o que você viu com as colunas 10 / 7 / 5 / 0.
+- Nota **entre** as colunas é permitida (8, 6, 3…), sempre de 0,5 em 0,5.
+
+#### Passo 36 — Marcar o que não se aplica
+- Critério que não se aplica recebe `$null` (e **não** entra na média). Exemplos: `traducao_dublagem` num vídeo sem voz nova; `valores` sem dinheiro; `musica_direitos` sem música; `trecho_corte` em vídeo próprio montado de fotos; `sequencia_laminas` em tudo que não é carrossel.
+- **Nunca** marque `$null` para fugir de uma nota ruim.
+
+#### Passo 37 — Na dúvida, a nota menor
+- Entre 7 e 8 sem certeza? Dê **7** e escreva a dúvida em `obs`. O Revisor que "arredonda para cima" deixa passar o que depois custa alcance.
+
+#### Passo 38 — Notas automáticas: use a tabela, não o gosto
+- Para `audio_loudness` e `formato_rede`, a nota sai **direto das medidas** (tabela da seção 5). Exemplo: −14,2 LUFS e pico −1,4 → 10; −15,3 LUFS → 8; −19,8 LUFS → 5.
+
+#### Passo 39 — Toda nota abaixo de 9 tem `obs` com número
+- `obs` boa: "legenda atrasada ~1 s no vídeo todo", "título termina em y 1480", "−19,8 LUFS", "crédito falta nas lâminas 3 e 5", "gancho de tela só em 2,5 s".
+- `obs` ruim: "legenda ruim", "capa fraca", "áudio estranho". (Ninguém consegue consertar "ruim".)
+
+#### Passo 40 — Preencher as notas na janela do PowerShell
+- **Rode** (troque os números pelas suas notas; `$null` = não se aplica). Modelo de **vídeo**:
+```powershell
+$notas = [ordered]@{
+  tema=10; fonte_direitos=9; regras_conteudo=10; trecho_corte=9; gancho=9; legenda=9.5
+  traducao_dublagem=$null; audio_loudness=10; musica_direitos=$null; imagem_nitidez=9
+  enquadramento_safe=10; texto_tela=9; credito=10; valores=$null; capa=9.5; titulo_capa=10
+  texto_post=10; formato_rede=10; final_retencao=8.5; identidade=10
+}
+```
+- Modelo de **carrossel**:
+```powershell
+$notas = [ordered]@{
+  tema=9; fonte_direitos=9; regras_conteudo=10; arte_medidas=9; texto_arte=9; sequencia_laminas=9
+  capa=9; credito=3; valores=$null; identidade=10; texto_post=9; formato_rede=10
+}
+```
+- **Deve aparecer:** nada (silêncio).
+- **Atenção:** no PowerShell o decimal é com **ponto** (`9.5`), não vírgula.
+
+#### Passo 41 — Preencher as observações e "como medi"
+- **Rode** (só os critérios que precisam; os outros ficam vazios):
+```powershell
+$obs  = @{ final_retencao = "termina na pergunta; último 0,5 s parado"; legenda = "sem erro; 1 bloco um pouco longo" }
+$como = @{ audio_loudness = "ebur128"; legenda = "legenda.srt x quadros"; capa = "capa.jpg + design.json"; final_retencao = "quadro_fim" }
+```
+
+#### Passo 42 — Marcar se é conteúdo irreparável
+- **Rode:**
+```powershell
+$irreparavel = $false   # troque para $true SÓ se for vazamento de GTA 6, Flow Games ou imagem de TV no Futebol
+```
+- Se for `$true`, as outras notas nem precisam ser dadas: basta `$notas = [ordered]@{ regras_conteudo = 0 }`.
+
+### Parte G — Calcular o veredito
+
+#### Passo 43 — Rodar o cálculo (copie o bloco inteiro)
+- **Rode:**
+```powershell
+$etapa = @{ tema="01_pedidos"; fonte_direitos="01_pedidos"; regras_conteudo="01_pedidos"; trecho_corte="02_baixados"
+  legenda="03_legenda_dublagem"; traducao_dublagem="03_legenda_dublagem"
+  gancho="04_edicao"; audio_loudness="04_edicao"; musica_direitos="04_edicao"; imagem_nitidez="04_edicao"
+  enquadramento_safe="04_edicao"; texto_tela="04_edicao"; credito="04_edicao"; valores="04_edicao"; capa="04_edicao"
+  titulo_capa="04_edicao"; texto_post="04_edicao"; formato_rede="04_edicao"; final_retencao="04_edicao"; identidade="04_edicao"
+  arte_medidas="04_edicao"; texto_arte="04_edicao"; sequencia_laminas="04_edicao"; enquete="04_edicao" }
+$minimo = @{ regras_conteudo=10; credito=7; valores=7; musica_direitos=7 }
+$ordem  = @("01_pedidos","02_baixados","03_legenda_dublagem","04_edicao")
+function Menor($lista) {
+  $mn = ($lista | Measure-Object -Property Value -Minimum).Minimum
+  @($lista | Where-Object { $_.Value -eq $mn } | Sort-Object { $ordem.IndexOf($etapa[$_.Key]) })[0].Key
+}
+$validas  = @($notas.GetEnumerator() | Where-Object { $null -ne $_.Value })
+$exata    = ($validas | Measure-Object -Property Value -Sum).Sum / $validas.Count
+$media    = [math]::Floor($exata * 100 + 0.000001) / 100
+$classe   = if ($exata -ge 9) {"Excelente"} elseif ($exata -ge 7) {"Bom"} elseif ($exata -ge 5) {"Médio"} else {"Razoável"}
+$travados = @($validas | Where-Object { ($minimo.ContainsKey($_.Key) -and $_.Value -lt $minimo[$_.Key]) -or $_.Value -lt 5 })
+$menor    = Menor $validas
+if     ($irreparavel)          { $veredito = "descartar"; $destino = "99_erros" }
+elseif ($exata -lt 5)          { $veredito = "refazer";   $destino = "01_pedidos" }
+elseif ($exata -lt 7)          { $veredito = "refazer";   $destino = $etapa[$menor] }
+elseif ($travados.Count -gt 0) { $menor = Menor $travados; $veredito = "refazer"; $destino = $etapa[$menor] }
+else                           { $veredito = "aprovado";  $destino = "06_agendados" }
+if ($veredito -eq "refazer" -and $voltas -ge 2) { $veredito = "descartar"; $destino = "99_erros" }
+"média $($media.ToString($ci)) | $classe | $veredito | menor: $menor | destino: $destino | voltas antes: $voltas"
+```
+- **Deve aparecer** (com as notas do modelo de vídeo do passo 40): `média 9.55 | Excelente | aprovado | menor: final_retencao | destino: 06_agendados | voltas antes: 0`.
+
+#### Passo 44 — Conferir o resultado com a regra (de cabeça)
+Antes de gravar, confira que o resultado faz sentido:
+
+| Se apareceu… | Confira que… |
+|---|---|
+| `aprovado` | a média é ≥ 7 e nenhum eliminatório está abaixo do mínimo e nenhuma nota < 5 |
+| `refazer` com destino `01_pedidos` | a média é < 5 (ou o critério de menor nota é do Curador) |
+| `refazer` com outro destino | a média é 5–6,99 **ou** há trava; o destino é a etapa do critério mostrado em `menor` |
+| `descartar` | é irreparável **ou** `voltas antes: 2` |
+
+Resultados dos exemplos da seção 2.10 (para treinar): GTA → `9.55 Excelente aprovado`; Destinos → `8.39 Bom aprovado`; Receitas → `6.55 Médio refazer legenda 03_legenda_dublagem`; Futebol → `4.58 Razoável refazer tema 01_pedidos`; Filmes → `8.72 Bom refazer credito 04_edicao`; Carros (voltas 2) → `6.6 Médio descartar imagem_nitidez 99_erros`.
+
+#### Passo 45 — Escrever as ações (`o_que_refazer`)
+Só quando o veredito é `refazer`. Regras da seção 2.5: a ação do critério de menor nota **mais** uma para cada critério com nota < 7 cuja etapa seja igual ou depois do destino. Em Razoável, **uma** ação só, para o Curador.
+- **Cada instrução tem 4 coisas:** a **peça** (arquivo), **o que** mudar, **onde/quando** (posição, segundo, lâmina) e o **alvo com número**.
+- **Rode** (modelo — troque pelas suas ações):
+```powershell
+$acoes = @(
+  [ordered]@{ criterio="legenda"; peca="legenda.srt / legenda.ass"; cargo="legendador"; instrucao="Adiantar todos os blocos em ~1,0 s (conferir com o áudio); corrigir 'povilho' para 'polvilho'." },
+  [ordered]@{ criterio="audio_loudness"; peca="final.mp4"; cargo="editor"; instrucao="Normalizar para -14 LUFS (±1) com pico ≤ -1 dBTP; está em -19,8." },
+  [ordered]@{ criterio="capa"; peca="capa.jpg"; cargo="designer"; instrucao="Subir o título para a faixa y 420–1000; hoje termina em y 1480." }
+)
+```
+- Instruções **proibidas** (vagas): "melhorar a legenda", "capa mais bonita", "áudio melhor".
+
+#### Passo 46 — Escrever o motivo
+- Até 600 caracteres, começando pela classe e a média, dizendo **o principal** em uma frase.
+- **Rode:**
+```powershell
+$motivo = "Médio (6,55): a legenda está atrasada cerca de 1 s no vídeo todo e com erro de ortografia; volta ao Legendador. Na passagem pela edição, corrigir também áudio e capa."
+```
+
+#### Passo 47 — Criar a tabela de cargos e acertar crédito, valores e narração
+- **Rode** sempre (é a tabela padrão critério → cargo da seção 2.7):
+```powershell
+$cargo = @{ tema="curador"; fonte_direitos="curador"; regras_conteudo="curador"; trecho_corte="editor"
+  legenda="legendador"; traducao_dublagem="tradutor_dublador"; gancho="editor"; audio_loudness="editor"
+  musica_direitos="editor"; imagem_nitidez="editor"; enquadramento_safe="editor"; texto_tela="editor"
+  credito="editor"; valores="redator"; capa="designer"; titulo_capa="redator"; texto_post="redator"
+  formato_rede="editor"; final_retencao="editor"; identidade="designer"; arte_medidas="designer"
+  texto_arte="redator"; sequencia_laminas="designer"; enquete="redator" }
+```
+- O crédito, o aviso de valores e a voz podem falhar em peças diferentes. **Rode** também a linha que servir (tire o `#` do começo):
+```powershell
+# crédito faltando na ARTE (capa/lâminas):  $cargo["credito"] = "designer"
+# crédito faltando no TEXTO do post:        $cargo["credito"] = "redator"
+# valor sem aviso na TELA do vídeo:         $cargo["valores"] = "editor"
+# valor sem aviso na ARTE:                  $cargo["valores"] = "designer"
+# narração do "Toque HP" (não tradução):    $cargo["traducao_dublagem"] = "narrador"
+```
+- **Deve aparecer:** nada (silêncio).
+
+### Parte H — Gravar
+
+#### Passo 48 — Conferir que tudo está na janela
+- **Rode:** `"$($notas.Count) notas · voltas $voltas · veredito $veredito · medidas $($medidas.Count) campos"`
+- **Deve aparecer:** por exemplo `20 notas · voltas 0 · veredito aprovado · medidas 15 campos`.
+
+#### Passo 49 — Gravar o arquivo do veredito (copie o bloco inteiro)
+- **Rode** (depende do `$cargo` do passo 47):
+```powershell
+if (-not $obs)   { $obs = @{} }
+if (-not $como)  { $como = @{} }
+if (-not $acoes) { $acoes = @() }
+$notasJson = [ordered]@{}
+foreach ($k in $notas.Keys) {
+  $n = $notas[$k]
+  $notasJson[$k] = [ordered]@{ nota=$n; aplica=($null -ne $n); etapa=$etapa[$k]; cargo=$cargo[$k]; como_medi=[string]$como[$k]; obs=[string]$obs[$k] }
+}
+$cargoDestino = if ($veredito -eq "aprovado") {"publicador"} elseif ($veredito -eq "descartar") {"nenhum"} elseif ($classe -eq "Razoável") {"curador"} else {$cargo[$menor]}
+$travas = @()
+if ($irreparavel) { $travas += [ordered]@{ tipo="conteudo_irreparavel"; criterio="regras_conteudo"; descricao="escreva aqui: vazamento de GTA 6 / Flow Games / imagem de TV" } }
+elseif ($exata -ge 7) { foreach ($t in $travados) {
+  $tipo = if ($minimo.ContainsKey($t.Key) -and $t.Value -lt $minimo[$t.Key]) {"eliminatorio"} else {"nota_minima"}
+  $travas += [ordered]@{ tipo=$tipo; criterio=$t.Key; descricao="nota $($t.Value)" } } }
+if ($veredito -eq "descartar" -and -not $irreparavel) { $travas += [ordered]@{ tipo="limite_voltas"; criterio=$menor; descricao="reprovado na 3a revisao (voltas = 2)" } }
+$quadros = @(Get-ChildItem $item -Filter "quadro_*.jpg" | ForEach-Object Name)
+$v = [ordered]@{
+  esquema="hp.revisao/1"; item=(Split-Path $item -Leaf); canal=$pedido.canal; tipo=$pedido.tipo; prioridade=$pedido.prioridade
+  revisao_n=$voltas+1; voltas=$voltas; voltas_max=2; notas=$notasJson; media=$media; classe=$classe; veredito=$veredito
+  criterio_menor=$menor; etapa_destino=$destino; cargo_destino=$cargoDestino; motivo=$motivo
+  o_que_refazer=@(if ($veredito -eq "refazer") { $acoes }); travas=@($travas); medidas=$medidas
+  quadros=$quadros; textos_conferidos=@("post.json","legenda.srt","capa.jpg","design.json")
+  revisor="claude"; versao_manual="09 v1.0"; modo="valendo"; data=(Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz")
+  duracao_revisao_s=[int]((Get-Date) - $inicio).TotalSeconds
+  anteriores=@(Get-ChildItem $item -Filter "refazer_volta*.json" | ForEach-Object Name); observacoes=""
+}
+$arquivo = @{ aprovado="aprovado.json"; refazer="refazer.json"; descartar="descartado.json" }[$veredito]
+$v | ConvertTo-Json -Depth 8 | Set-Content "$item\$arquivo" -Encoding UTF8
+"gravado: $arquivo"
+```
+- **Deve aparecer:** `gravado: aprovado.json` (ou `refazer.json` / `descartado.json`).
+- **Confira:** o `-Depth 8` é obrigatório (sem ele o PowerShell 5.1 corta as notas — erro V09). Para escrever sugestões em `observacoes`, troque o `""` antes de rodar.
+
+#### Passo 50 — Conferir o arquivo gravado (média, classe, destino, voltas, ações)
+- **Rode:**
+```powershell
+& $py -c "import json,sys,math;d=json.load(open(sys.argv[1],encoding='utf-8-sig'));v=[x['nota'] for x in d['notas'].values() if x['aplica']];m=math.floor(sum(v)/len(v)*100+1e-6)/100;c='Excelente' if sum(v)/len(v)>=9 else 'Bom' if sum(v)/len(v)>=7 else 'Médio' if sum(v)/len(v)>=5 else 'Razoável';print('media', 'ok' if abs(m-d['media'])<0.001 else 'ERRADA '+str(m), '| classe', 'ok' if c==d['classe'] else 'ERRADA '+c, '| destino', 'ok' if {'aprovado':'06_agendados','descartar':'99_erros'}.get(d['veredito'],d['etapa_destino'])==d['etapa_destino'] and (d['veredito']!='refazer' or d['etapa_destino'] in ('01_pedidos','02_baixados','03_legenda_dublagem','04_edicao')) else 'ERRADO', '| voltas', 'ok' if d['revisao_n']==d['voltas']+1 else 'ERRADO', '| acoes', 'ok' if (d['veredito']=='refazer')==(len(d['o_que_refazer'])>0) else 'ERRADO')" "$item\$arquivo"
+```
+- **Deve aparecer:** `media ok | classe ok | destino ok | voltas ok | acoes ok`. Qualquer `ERRADA`/`ERRADO`: corrija (seção 6) e grave de novo.
+- **Com o app (a criar — etapa 3):** o app valida o arquivo contra o esquema completo da seção 2.9 e recusa se não passar.
+
+#### Passo 51 — Anotar no histórico
+- **Rode:**
+```powershell
+$linha = "{0} [revisor] {1} media={2} classe={3} menor={4} destino={5} revisao={6}{7} - claude" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), $veredito, $media.ToString($ci), $classe, $menor, $destino, ($voltas + 1), $(if ($travas.Count) { " trava=" + $travas[0].tipo } else { "" })
+Add-Content "$item\historico.log" $linha -Encoding UTF8
+Get-Content "$item\historico.log" -Encoding UTF8 -Tail 1
+```
+- **Deve aparecer:** a linha nova, no formato da seção 2.11.
+
+#### Passo 52 — Anotar no log do dia
+- **Rode:**
+```powershell
+$log = "H:\HypadoLocal\app\logs\revisor_$(Get-Date -Format 'yyyy-MM-dd').log"
+New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
+Add-Content $log ("{0} {1}" -f (Split-Path $item -Leaf), $linha) -Encoding UTF8
+```
+- **Deve aparecer:** nada. (Com o app, o `obter_logger("revisor")` do `hpbase` faz isso sozinho.)
+
+#### Passo 53 — Se foi descarte: registrar em `descartes.csv`
+- **Rode** (só se `$veredito` é `descartar`):
+```powershell
+$csv = "$E\99_erros\descartes.csv"
+New-Item -ItemType Directory -Force "$E\99_erros" | Out-Null
+if (-not (Test-Path $csv)) { Set-Content $csv "data;item;canal;tipo;revisao_n;media;classe;criterio_menor;trava;motivo" -Encoding UTF8 }
+Add-Content $csv ("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}" -f (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"), (Split-Path $item -Leaf), $pedido.canal, $pedido.tipo, ($voltas + 1), $media.ToString("0.00", $ci), $classe, $menor, $travas[0].tipo, ($motivo -replace ';', ',')) -Encoding UTF8
+Get-Content $csv -Encoding UTF8 -Tail 1
+```
+- **Deve aparecer:** a linha do descarte.
+- **Irreparável** (vazamento, Flow Games, TV): avise o Curador no `observacoes` para **bloquear a fonte** — o mesmo criador/fonte não pode voltar a ser pedido.
+
+### Parte I — Mover
+
+#### Passo 54 — Com o app ligado: não mova nada
+- **(a criar — etapa 3):** o vigia da esteira lê o arquivo de veredito em até 1 minuto e move a pasta: `aprovado.json` → `06_agendados`; `refazer.json` → `etapa_destino`; `descartado.json` → `99_erros`. Confira na tela `http://127.0.0.1:8770`.
+
+#### Passo 55 — Sem o app, aprovado
+- **Rode:**
+```powershell
+Move-Item $item "$E\06_agendados\"
+Test-Path "$E\06_agendados\$(Split-Path $item -Leaf)"
+```
+- **Deve aparecer:** `True`. Lembrete: o TikTok não tem API — o Claude agenda pelo Chrome e grava `tiktok_ok.json` na pasta.
+
+#### Passo 56 — Sem o app, refazer
+- **Rode:**
+```powershell
+Move-Item $item "$E\$destino\"
+Test-Path "$E\$destino\$(Split-Path $item -Leaf)"
+```
+- **Deve aparecer:** `True`. Avise (no mesmo plantão) o cargo do `cargo_destino`.
+
+#### Passo 57 — Sem o app, descartar
+- **Rode:**
+```powershell
+Move-Item $item "$E\99_erros\"
+Test-Path "$E\99_erros\$(Split-Path $item -Leaf)"
+```
+- **Deve aparecer:** `True`. **Nunca apague** um item descartado: ele é o registro.
+
+#### Passo 58 — Sem o app, quando um item volta para `05_revisao`: renomear o `refazer.json`
+- **Rode** (antes de começar a revisão do item que voltou):
+```powershell
+$n = @(Get-ChildItem $item -Filter "refazer_volta*.json").Count + 1
+Rename-Item "$item\refazer.json" "refazer_volta$n.json"
+Get-ChildItem $item -Filter "refazer*.json" | Select-Object Name
+```
+- **Deve aparecer:** `refazer_volta1.json` (ou `refazer_volta2.json` na segunda volta) e **nenhum** `refazer.json`.
+
+### Parte J — Estáticos e casos especiais
+
+#### Passo 59 — Carrossel, arte de feed, imagem do Threads e pin
+- Não há vídeo: pule as Partes C (menos os passos 20 e 21) e D.
+- **Rode** (se o Designer não deixou a folha pronta):
+```powershell
+ffmpeg -hide_banner -loglevel error -y -framerate 1 -start_number 1 -i "$item\lamina_%02d.jpg" -vf "scale=270:338,tile=4x2:padding=6:color=white" -frames:v 1 "$item\folha_revisao.jpg"
+Invoke-Item "$item\folha_revisao.jpg"
+```
+  (9 ou 10 lâminas: troque `tile=4x2` por `tile=5x2`.)
+- **Confira** com a lista 2.6.2: medidas (pelo `design.json`), numeração "n/N" e ordem, lâmina 1 como gancho, última com CTA, crédito em toda imagem de terceiro, rodapé "Valores aproximados…" em toda lâmina com valor, identidade, texto do post.
+- No JSON: `quadros` = `[]` e `textos_conferidos` = `["post.json","design.json","pedido.json"]`.
+
+#### Passo 60 — Story, story de enquete e contagem regressiva
+- **Story:** abra `story.jpg` e a conferência `conferencia_story.jpg` (zona y 250–1580).
+- **Enquete (GTA 16h):** confira no `post.json` → `enquete.pergunta` com até 25 caracteres (`$post.enquete.pergunta.Length`), 2 opções curtas, e na arte a caixa vazia em x 140–940, y 1050–1450. Nota no critério `enquete`.
+- **Contagem regressiva:** confira o número com `((Get-Date "2026-11-19") - (Get-Date).Date).Days` (em 30/09/2026 = 50; 1 dia = "FALTA 1 DIA"; 0 = "É HOJE!"). Número errado = `texto_arte` 0.
+
+#### Passo 61 — Texto puro do Threads (`threads_texto`)
+- Só `post.json`. **Rode** o contador do passo 21 (primeira linha) e confira: até 500 caracteres (meta 120–300), 1 `topico`, **nenhuma** hashtag no texto, termina com pergunta, regras de conteúdo.
+- Critérios: `tema`, `regras_conteudo`, `texto_post`, `formato_rede` (e `credito`/`valores` se houver).
+
+#### Passo 62 — P0 (gol, placar, lançamento, bombástica): a revisão expressa em 3 minutos
+A regra é a **mesma**; muda só a **ordem**, para achar logo o que mata o post:
+1. **Regras de conteúdo** (passo 34) — 20 s. Futebol: vídeo oficial do clube/CBF/liga, com áudio original, sem TV, sem narração sintética, cartão de 2 s + caixa `legenda_video` + "Vídeo: @clube".
+2. **Crédito** (tela e texto) — 20 s.
+3. **Volume** (passo 16) — 15 s.
+4. **Folha de revisão** (passos 23–25) — 40 s.
+5. **Textos** (passo 32) — 40 s.
+6. **Notas e veredito** (passos 40–49) — 45 s.
+- Se der `refazer`, o prefixo `P0_` continua no nome: o item fura a fila de novo na etapa de destino.
+

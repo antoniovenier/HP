@@ -76,7 +76,8 @@ TIMEOUTS_PADRAO = {
     "dublar": 1800,
     "falar": 600,
     "estaticos": 600,
-    "ffmpeg": 3600,
+    "ffmpeg": 3600,        # edição do vídeo final
+    "ffmpeg_curto": 300,   # narração, quadros, capa
 }
 
 

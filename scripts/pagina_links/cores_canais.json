@@ -1,0 +1,12 @@
+{
+  "_leia": "Cores de cada canal para a página de links. São as MESMAS do painel HP (identidade única). O texto do botão precisa de contraste WCAG AA >= 4,5:1 com a cor do botão: o gerar_fundos.py recalcula e recusa se não passar (e confere se o número em 'contraste' bate). Para trocar uma cor: mude 'cor', rode 'python scripts\\pagina_links\\gerar_fundos.py contraste' e siga a sugestão de texto que ele der.",
+  "versao": 1,
+  "canais": [
+    {"slug": "gta",      "nome": "GTA 6 | HP",           "conta": "@hpgta6",      "cor": "#FF3D8B", "cor_texto_botao": "#141413", "contraste": 5.52},
+    {"slug": "futebol",  "nome": "Futebol | HP",         "conta": "@hp.futebol",  "cor": "#1ED760", "cor_texto_botao": "#141413", "contraste": 9.61},
+    {"slug": "filmes",   "nome": "Filmes e Séries | HP", "conta": "@hp.filmes",   "cor": "#F5B301", "cor_texto_botao": "#141413", "contraste": 9.95},
+    {"slug": "receitas", "nome": "Receitas | HP",        "conta": "@hp.receitas", "cor": "#FF7A1A", "cor_texto_botao": "#141413", "contraste": 7.07},
+    {"slug": "carros",   "nome": "Carros | HP",          "conta": "@hp.carros",   "cor": "#FF3B3B", "cor_texto_botao": "#141413", "contraste": 5.21},
+    {"slug": "destinos", "nome": "Destinos | HP",        "conta": "@hp.destinos", "cor": "#00C2D1", "cor_texto_botao": "#141413", "contraste": 8.46}
+  ]
+}

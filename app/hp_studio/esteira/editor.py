@@ -99,7 +99,8 @@ class EditorFFmpeg:
             partes.append(f"[{idx}:a]{fmt}[sil]")
             base = "sil"
             idx += 1
-        partes.append(f"[{base}]apad,atrim=end={dur:.3f}[amix]")
+        # apad com whole_dur = fluxo finito (apad puro nunca termina no ffmpeg 7)
+        partes.append(f"[{base}]apad=whole_dur={dur:.3f},atrim=end={dur:.3f}[amix]")
         return entradas, ";".join(partes), silencioso
 
     def _loudnorm(self, medido: dict | None, json_saida: bool = False) -> str:
@@ -154,7 +155,7 @@ class EditorFFmpeg:
         if not silencioso:
             r = ffmpeg(["-nostats", "-y", *entrada0, *extras, "-filter_complex",
                         f"{grafo_audio};[amix]{self._loudnorm(None, True)}[med]",
-                        "-map", "[med]", "-f", "null", "-"],
+                        "-map", "[med]", "-t", f"{dur:.3f}", "-f", "null", "-"],
                        timeout=timeout, cwd=item, o_que="medição de loudness")
             medido = ler_json_loudnorm(r.stderr.decode("utf-8", "replace"))
             if medido["input_i"] <= SILENCIO_LUFS:

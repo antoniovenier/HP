@@ -289,11 +289,16 @@ class NarradorToqueHP:
                 f += f",adelay={ms}|{ms}"
             filtros.append(f + f"[p{i}]")
             rot.append(f"[p{i}]")
+        # apad SEMPRE com whole_dur (fluxo finito) + -t na saída: apad sozinho nunca
+        # termina e o ffmpeg 7 não encerra no atrim (gerava WAV infinito)
         filtros.append(f"{''.join(rot)}amix=inputs={len(rot)}:normalize=0:duration=longest,"
-                       f"apad,atrim=end={duracao:.3f}[n]")
+                       f"apad=whole_dur={duracao:.3f},atrim=end={duracao:.3f}[n]")
         tmp = item / "_tmp_narracao.wav"
+        limite = int(duracao * 48000 * 2 * 2 * 1.5) + 1_000_000  # teto do WAV em bytes
         ffmpeg(["-y", *entradas, "-filter_complex", ";".join(filtros), "-map", "[n]",
-                "-ar", "48000", "-ac", "2", str(tmp)], timeout=600, o_que="montagem da narração")
+                "-ar", "48000", "-ac", "2", "-t", f"{duracao:.3f}", "-fs", str(limite),
+                str(tmp)], timeout=self.cfg.timeouts.get("ffmpeg_curto", 300),
+               o_que="montagem da narração")
         final = item / "narracao.wav"
         os.replace(tmp, final)
         escrever_json(item / "narracao.json", {"roteiro": roteiro, "plano": plano,
