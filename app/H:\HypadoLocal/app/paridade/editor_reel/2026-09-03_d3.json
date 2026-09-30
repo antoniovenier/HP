@@ -1,0 +1,48 @@
+{
+  "versao": 1,
+  "tipo": "video",
+  "quando": "2026-09-30T18:45:17-03:00",
+  "app": {
+    "arquivo": "app.mp4"
+  },
+  "ref": {
+    "arquivo": "ref.mp4"
+  },
+  "metricas": {
+    "duracao": {
+      "nome": "duracao",
+      "aplica": true,
+      "nota": 10.0,
+      "subnotas": {
+        "diferenca": 10.0
+      },
+      "detalhes": {},
+      "resumo": "teste"
+    }
+  },
+  "nota_final": 10.0,
+  "menor_nota": {
+    "metrica": "duracao",
+    "nota": 10.0
+  },
+  "veredito": "IDENTICO",
+  "aprovado": true,
+  "metricas_reprovadas": [],
+  "pesos_usados": {
+    "duracao": 1.0
+  },
+  "criterio": "todas as métricas >= 9,0 e média >= 9,5",
+  "limites_veredito": {
+    "identico": 9.5,
+    "equivalente": 9.0,
+    "nota_minima_metrica": 9.0,
+    "aprovacao_media": 9.5,
+    "aprovacao_minima_metrica": 9.0
+  },
+  "sombra": {
+    "tarefa": "editor_reel",
+    "id": "d3",
+    "dia": "2026-09-03",
+    "quando": "2026-09-03T10:00:00-03:00"
+  }
+}

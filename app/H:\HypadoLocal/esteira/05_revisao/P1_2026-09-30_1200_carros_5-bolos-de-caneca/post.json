@@ -1,0 +1,21 @@
+{
+  "id": "2026-09-30_1200_carros_5-bolos-de-caneca",
+  "item": "P1_2026-09-30_1200_carros_5-bolos-de-caneca",
+  "canal": "carros",
+  "nome_canal": "Carros | HP",
+  "conta": "@hp.carros",
+  "tipo": "threads_texto",
+  "prioridade": "P1",
+  "redes": [
+    "threads"
+  ],
+  "horario_alvo": "2026-09-30T12:00-03:00",
+  "titulo": "5 bolos de caneca",
+  "legenda": "Qual carro você levaria?",
+  "credito": null,
+  "arquivos": [
+    "texto_threads.txt"
+  ],
+  "capa": null,
+  "gerado_em": "2026-09-30T18:45:26-03:00"
+}

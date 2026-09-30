@@ -1,0 +1,26 @@
+{
+  "tarefa": "estaticos",
+  "dias_necessarios": 7,
+  "comparacoes_minimas_por_dia": 1,
+  "dias_seguidos": 1,
+  "falta": 6,
+  "liberada": false,
+  "liberada_em": null,
+  "comparacoes": 1,
+  "dias_com_comparacao": 1,
+  "ultimo_dia": "2026-09-30",
+  "ultima_nota": 10.0,
+  "ultimo_veredito": "IDENTICO",
+  "observacao": "",
+  "dias": [
+    {
+      "dia": "2026-09-30",
+      "situacao": "aprovado",
+      "comparacoes": 1,
+      "aprovadas": 1,
+      "reprovadas": 0
+    }
+  ],
+  "atualizado_em": "2026-09-30T18:45:29-03:00",
+  "regra": "7 dias corridos seguidos, todos aprovados, no mínimo 1 comparação por dia; um reprovado zera a contagem"
+}

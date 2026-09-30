@@ -11,6 +11,16 @@ Uso rápido:
 Linha de comando: python -m esteira --help
 Motor do HP Studio: esteira.gancho.executar({"acao": "ciclo"})
 """
+import os.path as _op
+import sys as _sys
+
+# hpbase e os módulos irmãos são importados pelo nome curto (from hpbase import ...);
+# garante o hp_studio no sys.path mesmo quando este pacote é importado como
+# hp_studio.<modulo> pelo hp/motor já existente.
+_HP = _op.dirname(_op.dirname(_op.abspath(__file__)))
+if _HP not in _sys.path:
+    _sys.path.insert(0, _HP)
+
 from .config import Config, carregar_config
 from .constantes import ETAPAS, ERROS
 from .erros import ErroEsteira, ErroEtapa, ErroPermanente, PedidoInvalido

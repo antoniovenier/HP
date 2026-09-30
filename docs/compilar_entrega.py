@@ -11,8 +11,7 @@ SAIDA = RAIZ / "ENTREGA_NUVEM_HP_STUDIO.md"
 
 # (título, lista de globs relativos à raiz) na ordem do prompt
 SECOES = [
-    ("0. Base comum `hpbase` e convenções", ["docs/CONVENCOES.md", "app/conftest.py",
-                                             "app/hp_studio/hpbase/**/*"]),
+    ("0. Base comum `hpbase` e convenções", ["docs/CONVENCOES.md", "app/hp_studio/hpbase/**/*"]),
     ("A. Manuais 04–13 + índice", ["app/manuais/README.md", "app/manuais/0*.md",
                                    "app/manuais/1*.md"]),
     ("B. Etapa 3 — esteira P0/P1/P2", ["app/hp_studio/esteira/**/*"]),

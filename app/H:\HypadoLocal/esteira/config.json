@@ -1,0 +1,14 @@
+{
+  "comandos": {
+    "baixar": [
+      "{python}",
+      "{scripts}/ytdlp.py",
+      "-o",
+      "{saida}",
+      "{url}"
+    ]
+  },
+  "editor": {
+    "crf": 18
+  }
+}

@@ -40,8 +40,7 @@ TOL = 0.2
 
 @pytest.fixture(autouse=True)
 def raizes_do_teste(tmp_path, monkeypatch):
-    """Nada toca no H:/G: de verdade. Repete o que o conftest de app/ faz,
-    para o teste funcionar também quando ele não é carregado."""
+    """Nada toca no H:/G: de verdade (fixture própria: não depende de nenhum conftest)."""
     local, drive = tmp_path / "HypadoLocal", tmp_path / "Drive"
     local.mkdir(exist_ok=True)
     drive.mkdir(exist_ok=True)

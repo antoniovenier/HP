@@ -1,0 +1,19 @@
+{
+  "canal": "gta",
+  "tipo": "reel",
+  "prioridade": "P2",
+  "titulo": "Programado",
+  "fonte_url": "https://www.youtube.com/watch?v=x",
+  "credito": "@rockstargames",
+  "redes": [
+    "instagram",
+    "tiktok"
+  ],
+  "horario_alvo": "2026-09-30T07:00-03:00",
+  "dublar": false,
+  "narrar_toque_hp": false,
+  "observacoes": "",
+  "arquivos": [],
+  "id": "2026-09-30_0700_gta_programado",
+  "criado_em": "2026-09-30T18:45:26-03:00"
+}

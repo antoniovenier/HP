@@ -1,0 +1,18 @@
+{
+  "rodada": 1,
+  "quadros": [
+    {
+      "arquivo": "quadro_1_inicio.jpg",
+      "segundo": 1.0
+    },
+    {
+      "arquivo": "quadro_2_meio.jpg",
+      "segundo": 7.5
+    },
+    {
+      "arquivo": "quadro_3_fim.jpg",
+      "segundo": 14.0
+    }
+  ],
+  "em": "2026-09-30T18:45:17-03:00"
+}

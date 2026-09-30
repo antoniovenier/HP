@@ -3,6 +3,13 @@
 Vídeo base: testsrc2 180x320 (em pé, como reel), 25 fps, 3 s, com seno de
 440 Hz em ~-14 LUFS. As variações simulam os erros que o app pode cometer.
 """
+import sys as _sys
+from pathlib import Path as _Path
+
+_HP = str(_Path(__file__).resolve().parents[2])  # ...\app\hp_studio
+if _HP not in _sys.path:
+    _sys.path.insert(0, _HP)
+from hpbase.pytest_raizes import raizes_temporarias  # noqa: E402,F401  (autouse: H:/G: → pastas temporárias)
 import shutil
 
 import pytest

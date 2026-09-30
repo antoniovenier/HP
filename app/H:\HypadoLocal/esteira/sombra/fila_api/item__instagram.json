@@ -1,0 +1,17 @@
+{
+  "id": "item__instagram",
+  "origem": "hp_studio.esteira",
+  "rede": "instagram",
+  "conta": "@hpgta6",
+  "canal": "gta",
+  "tipo": "reel",
+  "midia": [
+    "H:\\HypadoLocal/esteira/sombra/fila_api/midia/item/final.mp4"
+  ],
+  "capa": "H:\\HypadoLocal/esteira/sombra/fila_api/midia/item/capa.jpg",
+  "legenda": "L",
+  "titulo": "T",
+  "agendar_para": "2026-09-30T18:30-03:00",
+  "status": "pendente",
+  "criado_em": "2026-09-30T18:45:17-03:00"
+}

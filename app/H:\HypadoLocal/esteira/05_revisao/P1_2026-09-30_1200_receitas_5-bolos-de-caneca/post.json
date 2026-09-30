@@ -1,0 +1,24 @@
+{
+  "id": "2026-09-30_1200_receitas_5-bolos-de-caneca",
+  "item": "P1_2026-09-30_1200_receitas_5-bolos-de-caneca",
+  "canal": "receitas",
+  "nome_canal": "Receitas | HP",
+  "conta": "@hp.receitas",
+  "tipo": "carrossel",
+  "prioridade": "P1",
+  "redes": [
+    "instagram",
+    "pinterest"
+  ],
+  "horario_alvo": "2026-09-30T12:00-03:00",
+  "titulo": "5 bolos de caneca",
+  "legenda": "5 bolos de caneca",
+  "credito": null,
+  "arquivos": [
+    "arte/arte_01.png",
+    "arte/arte_02.png",
+    "arte/arte_03.png"
+  ],
+  "capa": "arte/arte_01.png",
+  "gerado_em": "2026-09-30T18:45:26-03:00"
+}

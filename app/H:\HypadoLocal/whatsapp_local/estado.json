@@ -1,0 +1,22 @@
+{
+  "logado": true,
+  "precisa_login": false,
+  "ultimo_login": "2026-09-30T10:00:00-03:00",
+  "ultimo_ciclo": "2026-09-30T10:00:00-03:00",
+  "modo": "real",
+  "ultimo_resultado": {
+    "modo": "real",
+    "enviadas": 0,
+    "rejeitadas": 0,
+    "falhas": 0,
+    "para_erros": 0,
+    "adiadas": 0,
+    "sombra": 0,
+    "montadas": 0,
+    "recebidas_novas": 0,
+    "precisa_login": false,
+    "erro": "outro processo do WhatsApp está rodando (enviador.lock)",
+    "relatorios": []
+  },
+  "ultima_leitura_recebidas": "2026-09-30T10:00:20-03:00"
+}

@@ -1,0 +1,21 @@
+{
+  "data": "2026-09-29",
+  "coletado_em": "2026-09-29T06:00:00-03:00",
+  "contas": {
+    "gta": {
+      "instagram": {
+        "status": "ok",
+        "seguidores": 9900,
+        "posts": [
+          {
+            "id": "1",
+            "publicado_em": "2026-09-29T12:00:00-03:00",
+            "views": 100,
+            "curtidas": 100,
+            "comentarios": 10
+          }
+        ]
+      }
+    }
+  }
+}

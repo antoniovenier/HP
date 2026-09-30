@@ -5,7 +5,7 @@ Estrutura do repositório (espelha o PC do Antônio):
   - `app/manuais/` = manuais 04–13 + README.md
   - `app/hp_studio/hpbase/` = base comum (JÁ PRONTA, não reescrever)
   - `app/hp_studio/<modulo>/` = cada módulo novo (pacote Python) com `LEIA.md` e `testes/`
-  - `app/conftest.py` = fixture autouse que aponta HP_LOCAL e HP_DRIVE para pastas temporárias
+  - sem `conftest.py` em `app/` (o PC pode já ter um): cada `testes/` tem o seu, que importa a fixture autouse de `hpbase/pytest_raizes.py` (HP_LOCAL e HP_DRIVE → pastas temporárias)
 - `scripts/` = `G:\Meu Drive\Hypado\scripts\` (scripts avulsos novos, cada um com testes em `scripts/testes/`)
 
 Base `hpbase` (importar com `from hpbase import ...`, pois `app/hp_studio` está no sys.path; nos scripts, adicionar o caminho do app ao sys.path):
@@ -23,6 +23,6 @@ Regras de código:
 - Toda chamada de rede isolada numa função/classe injetável para os testes usarem um falso (nenhum teste acessa a internet).
 - Todo módulo que age no mundo real tem `--simular` / modo sombra.
 - Cada módulo tem CLI (`python -m <pacote> ...` ou `python scripts\x.py ...`) com `--help` em português.
-- Testes com pytest, rodando com `cd app && python -m pytest -q` (scripts: `python -m pytest -q ../scripts/testes` também a partir de `app/`, pois o conftest está em `app/`). Nenhum teste pode depender de rede, emulador ou WhatsApp reais.
+- Testes com pytest: `cd app\hp_studio && python -m pytest -q <modulo>` e `cd scripts && python -m pytest -q testes` (cada teste de script tem a própria fixture de raízes temporárias). Nenhum teste pode depender de rede, emulador ou WhatsApp reais.
 - ffmpeg está no PATH do ambiente de teste (ffprobe NÃO está: use `achar_ffprobe()` e tenha plano B).
 - LEIA.md curto por módulo: o que faz, instalação (pip), comandos, como ligar o modo sombra, como integrar ao `hp`/motor já existente (que não temos aqui — descrever o gancho: função `executar(trabalho: dict) -> dict`).

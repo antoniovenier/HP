@@ -1,0 +1,3 @@
+2026-09-30T18:45:26-03:00 [01_pedidos] pedido criado (reel, P1, redes: instagram, tiktok)
+2026-09-30T18:45:26-03:00 [01_pedidos] -> 02_baixados: bruto pronto: bruto.mp4 (0.0 MB)
+2026-09-30T18:45:26-03:00 [02_baixados] -> 03_legenda_dublagem: bruto ok: 15.0s 1080x1920, com áudio

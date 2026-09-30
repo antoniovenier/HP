@@ -1,0 +1,79 @@
+2026-09-30 21:45:36 INFO login: ok
+2026-09-30 21:45:36 INFO login: não concluído
+2026-09-30 21:45:36 WARNING WhatsApp Web sem login (QR na tela): rode 'python -m whatsapp_local login'
+2026-09-30 21:45:36 INFO ciclo: modo real · PRECISA LOGIN (rode: python -m whatsapp_local login)
+2026-09-30 21:45:36 INFO enviada: id=m1 tipo=no_ar grupo=HP | Comissão 🚀 tamanho=30
+2026-09-30 21:45:36 INFO enviada: id=a tipo=no_ar grupo=HP | Comissão 🚀 tamanho=14
+2026-09-30 21:45:36 WARNING não li as recebidas de HP | GTA 6: ConversaNaoEncontrada
+2026-09-30 21:45:36 WARNING não li as recebidas de +55 11 91234-5678: ConversaNaoEncontrada
+2026-09-30 21:45:36 INFO ciclo: modo real · enviadas: 2
+2026-09-30 21:45:36 INFO ciclo: modo sombra
+2026-09-30 21:45:36 INFO ciclo: modo sombra
+2026-09-30 21:45:36 INFO ciclo: modo sombra
+2026-09-30 21:45:36 INFO enfileirada: id=resumo_dia_2026-09-29_b8a923 tipo=resumo_dia grupo=HP | Comissão 🚀 tamanho=231
+2026-09-30 21:45:36 INFO sombra (não enviada): id=resumo_dia_2026-09-29_b8a923 tipo=resumo_dia grupo=HP | Comissão 🚀 tamanho=231
+2026-09-30 21:45:36 INFO ciclo: modo sombra · sombra: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__2.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__3.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__4.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__5.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO enviada: id=m0 tipo=no_ar grupo=HP | Comissão 🚀 tamanho=30
+2026-09-30 21:45:36 INFO enviada: id=m2 tipo=no_ar grupo=HP | Comissão 🚀 tamanho=30
+2026-09-30 21:45:36 INFO ciclo: modo real · enviadas: 2 · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=a.json motivo=id 'a' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 INFO enviada: id=b tipo=no_ar grupo=HP | Comissão 🚀 tamanho=29
+2026-09-30 21:45:36 INFO ciclo: modo real · enviadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m0.json motivo=id 'm0' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__6.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m2.json motivo=id 'm2' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO teto de 2 mensagens/hora: 1 ficam para o próximo ciclo
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 3 · adiadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__7.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 WARNING falhou: id=m3 grupo=HP | Comissão 🚀 tentativa=1 motivo=ErroEnvio: envio não confirmou (falso)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · falhas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__8.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO teto de 10 mensagens/hora: 1 ficam para o próximo ciclo
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · adiadas: 1
+2026-09-30 21:45:36 WARNING falhou: id=m3 grupo=HP | Comissão 🚀 tentativa=2 motivo=ErroEnvio: envio não confirmou (falso)
+2026-09-30 21:45:36 INFO ciclo: modo real · falhas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__9.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO teto de 10 mensagens/hora: 1 ficam para o próximo ciclo
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · adiadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__10.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 WARNING WhatsApp Web sem login (QR na tela): rode 'python -m whatsapp_local login'
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · PRECISA LOGIN (rode: python -m whatsapp_local login)
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__11.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · erro: Playwright não instalado
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__12.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO teto de 10 mensagens/hora: 1 ficam para o próximo ciclo
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1 · adiadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__13.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO enviada: id=m3 tipo=no_ar grupo=HP | Comissão 🚀 tamanho=30
+2026-09-30 21:45:36 INFO ciclo: modo real · enviadas: 1 · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__14.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 WARNING rejeitada: arquivo=m1__15.json motivo=id 'm1' já foi enviado/processado antes (duplicado)
+2026-09-30 21:45:36 INFO ciclo: modo real · rejeitadas: 1
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO enfileirada: id=no_ar_gta-0930-1830_b8a923 tipo=no_ar grupo=HP | Comissão 🚀 tamanho=151
+2026-09-30 21:45:36 INFO ler-recebidas: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ler-recebidas: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ler-recebidas: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ler-recebidas: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo sombra · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo sombra · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo sombra · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo sombra · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo sombra · erro: outro processo do WhatsApp está rodando (enviador.lock)
+2026-09-30 21:45:36 INFO ciclo: modo real · erro: outro processo do WhatsApp está rodando (enviador.lock)

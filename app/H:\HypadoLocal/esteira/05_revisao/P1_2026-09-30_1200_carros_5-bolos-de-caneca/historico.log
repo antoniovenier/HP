@@ -1,0 +1,5 @@
+2026-09-30T18:45:26-03:00 [01_pedidos] pedido criado (threads_texto, P1, redes: threads)
+2026-09-30T18:45:26-03:00 [01_pedidos] -> 04_edicao: threads_texto é estático: pula as etapas de vídeo e vai direto para a arte
+2026-09-30T18:45:26-03:00 [04_edicao] -> 05_revisao: threads_texto: 1 arquivo(s) pronto(s)
+2026-09-30T18:45:26-03:00 [05_revisao] material de revisão pronto (rodada 1): aguardando aprovado.json ou refazer.json
+2026-09-30T18:45:27-03:00 [05_revisao] aguardando aprovado.json ou refazer.json

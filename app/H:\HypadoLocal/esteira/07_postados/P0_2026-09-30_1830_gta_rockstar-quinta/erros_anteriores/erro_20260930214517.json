@@ -1,0 +1,9 @@
+{
+  "etapa": "06_agendados",
+  "trabalho": "agendar",
+  "mensagem": "instagram: o publicador marcou erro: mídia recusada",
+  "traceback": "  File \"/home/user/HP/app/hp_studio/esteira/motor.py\", line 177, in processar\n    res = trab.executar(item)\n          ^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/HP/app/hp_studio/esteira/trabalhos.py\", line 450, in executar\n    raise ErroPermanente(f\"{rede}: o publicador marcou erro: {c.get('mensagem')}\")\nesteira.erros.ErroPermanente: instagram: o publicador marcou erro: mídia recusada",
+  "tentativas": 1,
+  "permanente": true,
+  "em": "2026-09-30T18:45:17-03:00"
+}

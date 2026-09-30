@@ -1,0 +1,16 @@
+{
+  "final": "final.mp4",
+  "capa": "capa.jpg",
+  "duracao": 15.0,
+  "largura": 1080,
+  "altura": 1920,
+  "fps": 30.0,
+  "lufs": -14.0,
+  "alvo_lufs": -14.0,
+  "legenda_queimada": true,
+  "falas": 1,
+  "dublagem": false,
+  "narracao": false,
+  "simulado": true,
+  "gerado_em": "2026-09-30T18:45:17-03:00"
+}

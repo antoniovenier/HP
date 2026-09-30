@@ -1,0 +1,11 @@
+{
+  "duracao": 15.0,
+  "largura": 1080,
+  "altura": 1920,
+  "fps": 30.0,
+  "tem_video": true,
+  "tem_audio": true,
+  "codec_video": "simulado",
+  "codec_audio": "simulado",
+  "fonte": "simulado"
+}

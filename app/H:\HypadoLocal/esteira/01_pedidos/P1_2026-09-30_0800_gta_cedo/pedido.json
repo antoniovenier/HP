@@ -1,0 +1,19 @@
+{
+  "canal": "gta",
+  "tipo": "reel",
+  "prioridade": "P1",
+  "titulo": "Cedo",
+  "fonte_url": "https://www.youtube.com/watch?v=x",
+  "credito": "@rockstargames",
+  "redes": [
+    "instagram",
+    "tiktok"
+  ],
+  "horario_alvo": "2026-09-30T08:00-03:00",
+  "dublar": false,
+  "narrar_toque_hp": false,
+  "observacoes": "",
+  "arquivos": [],
+  "id": "2026-09-30_0800_gta_cedo",
+  "criado_em": "2026-09-30T18:45:26-03:00"
+}

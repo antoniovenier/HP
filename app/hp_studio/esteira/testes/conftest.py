@@ -1,6 +1,13 @@
-"""Falsos e atalhos dos testes da esteira (o conftest de app/ já aponta
-HP_LOCAL e HP_DRIVE para pastas temporárias)."""
+"""Falsos e atalhos dos testes da esteira (HP_LOCAL e HP_DRIVE apontam para
+pastas temporárias pela fixture de hpbase.pytest_raizes)."""
 from __future__ import annotations
+import sys as _sys
+from pathlib import Path as _Path
+
+_HP = str(_Path(__file__).resolve().parents[2])  # ...\app\hp_studio
+if _HP not in _sys.path:
+    _sys.path.insert(0, _HP)
+from hpbase.pytest_raizes import raizes_temporarias  # noqa: E402,F401  (autouse: H:/G: → pastas temporárias)
 
 from datetime import datetime
 from pathlib import Path
