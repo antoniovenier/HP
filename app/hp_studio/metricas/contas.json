@@ -1,0 +1,166 @@
+{
+  "_leia": "Exemplo SEM segredo. Tokens e ids ficam em H:\\HypadoLocal\\segredos\\meta_tokens.txt e youtube_tokens.txt (formato no LEIA.md). Para mudar, copie este arquivo para H:\\HypadoLocal\\metricas\\contas.json e edite lá.",
+  "versao_graph": "v21.0",
+  "host_graph": "https://graph.facebook.com",
+  "versao_threads": "v1.0",
+  "host_threads": "https://graph.threads.net",
+  "dias_posts": 7,
+  "limite_posts": 50,
+  "timeout": 30,
+  "arquivos_segredo": {
+    "meta": "meta_tokens.txt",
+    "youtube": "youtube_tokens.txt"
+  },
+  "contas": {
+    "gta": {
+      "nome": "GTA 6 | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hpgta6"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hpgta6"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hpgta6"
+      }
+    },
+    "futebol": {
+      "nome": "Futebol | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hp.futebol"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hp.futebol"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hp.futebol"
+      }
+    },
+    "filmes": {
+      "nome": "Filmes e Séries | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hp.filmes"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hp.filmes"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hp.filmes"
+      }
+    },
+    "receitas": {
+      "nome": "Receitas | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hp.receitas"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hp.receitas"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hp.receitas"
+      }
+    },
+    "carros": {
+      "nome": "Carros | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hp.carros"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hp.carros"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hp.carros"
+      }
+    },
+    "destinos": {
+      "nome": "Destinos | HP",
+      "instagram": {
+        "ativo": true,
+        "usuario": "hp.destinos"
+      },
+      "threads": {
+        "ativo": true,
+        "usuario": "hp.destinos"
+      },
+      "facebook": {
+        "ativo": true,
+        "reels": true
+      },
+      "youtube": {
+        "ativo": true,
+        "autorizado": false,
+        "analytics": true
+      },
+      "tiktok": {
+        "ativo": true,
+        "fonte": "manual",
+        "usuario": "hp.destinos"
+      }
+    }
+  }
+}
