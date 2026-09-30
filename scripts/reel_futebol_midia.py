@@ -553,11 +553,15 @@ def render_plano(plano: Plano, pasta: Path, orc: Orcamento) -> dict:
     if plano.musica:
         med = medir_loudness(_entrada_musica(plano.musica, plano.duracao), est, orc,
                              "medir música")
-        alvo = float(est["alvo_lufs"]) + float(est["musica_db_relativo"])
+        # com áudio principal (gol, debate) a música fica 20 dB abaixo dele; sem áudio
+        # principal (notícia, estatística) ela é o único som e não pode sair a −34 LUFS
+        relativo = est["musica_db_relativo"] if principal is not None else \
+            est.get("musica_sozinha_db_relativo", -6.0)
+        alvo = float(est["alvo_lufs"]) + float(relativo)
         if med and math.isfinite(med["input_i"]):
             ganho = max(-40.0, min(30.0, alvo - med["input_i"]))
         else:
-            ganho = float(est["musica_db_relativo"])
+            ganho = float(relativo)
     t0 = time.monotonic()
     rodar_ffmpeg(comando_final(plano, lista, principal, ganho), orc, "montagem final")
     tempos["montagem_final"] = round(time.monotonic() - t0, 2)

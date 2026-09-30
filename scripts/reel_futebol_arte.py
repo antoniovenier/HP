@@ -46,6 +46,7 @@ ESTILO_PADRAO: dict = {
     "true_peak": -1.5,
     "lra": 11.0,
     "musica_db_relativo": -20.0,   # música fica 20 dB abaixo do alvo
+    "musica_sozinha_db_relativo": -6.0,  # reel só com música (notícia): −20 LUFS, baixa mas audível
     "pasta_musicas": "",           # vazio = <HypadoLocal>\musicas_livres
     "video": {"preset": "veryfast", "crf": 20},
     "audio_kbps": 192,

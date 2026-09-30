@@ -265,10 +265,12 @@ padrão 10), `zonas` (`libertadores`, `pre_libertadores`, `sulamericana`,
    ```
    (ou um arquivo `trilha.mp3.licenca.json` ao lado). `licenca` vazia ou
    "desconhecida" e `fonte` vazia são recusadas.
-4. Volume: a música entra **20 dB abaixo do alvo** (−14 − 20 = ≈ −34 LUFS),
-   com entrada e saída suaves. Nos formatos sem som principal (notícia,
-   estatística…), o reel fica, portanto, em ≈ −34 LUFS integrados — é a "música
-   baixa" pedida. Para mudar, altere `musica_db_relativo` no estilo.
+4. Volume, com entrada e saída suaves:
+   - quando há áudio principal (debate com clipes), a música fica **20 dB abaixo**
+     dele (≈ −34 LUFS, `musica_db_relativo`);
+   - quando a música é o único som (notícia, estatística…), ela sai a **−20 LUFS**
+     (6 dB abaixo do alvo, `musica_sozinha_db_relativo`): baixa, mas audível —
+     a −34 LUFS o reel pareceria mudo no celular.
 
 ## Legenda automática do gol (`--legenda-auto`)
 
@@ -385,5 +387,5 @@ python -m pytest -q ..\..\scripts\testes\test_reel_futebol.py
 29 testes, ~36 s, sem rede e sem mídia real: recusas (voz sintética, TV,
 música sem licença, gol sem crédito, título vazio, vídeo mudo…), render de
 cada formato conferindo 1080x1920, duração ±0,2 s, cartão de 2 s, áudio
-original (seno de 440 Hz preservado), −14 LUFS no gol e ≈ −34 LUFS da música
+original (seno de 440 Hz preservado), −14 LUFS no gol e ≈ −20 LUFS da música
 sozinha, trava e horário proibido.

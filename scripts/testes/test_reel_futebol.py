@@ -333,8 +333,8 @@ def test_render_noticia_musica_baixa_sem_voz(roteiros, tmp_path):
     res = rf.montar(gravar(tmp_path, r), agora=MANHA)
     conferir_saida(res, 3.0)
     assert res["musica"]["licenca"]["licenca"].startswith("domínio público")
-    # música livre 20 dB abaixo do alvo de -14 LUFS (não tem voz para abafar)
-    assert res["lufs_saida"] is not None and abs(res["lufs_saida"] - (-34)) < 3
+    # música sozinha: −20 LUFS (baixa, mas audível; sem voz)
+    assert res["lufs_saida"] is not None and abs(res["lufs_saida"] - (-20)) < 3
     q0 = np.asarray(extrair_quadro(res["saida"], 0.2), dtype=np.float32)
     q1 = np.asarray(extrair_quadro(res["saida"], 2.8), dtype=np.float32)
     assert np.abs(q0 - q1).mean() > 5   # trocou de foto
