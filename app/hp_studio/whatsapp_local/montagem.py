@@ -11,7 +11,9 @@ agendados.json (lista, ou {"posts": [...]}) — cada post:
   (aceita também: conta, title, publicado_em, quando, urls, e links como
    lista [{"rede": "instagram", "url": "..."}])
 
-metricas_painel.json — dois formatos aceitos:
+Métricas — preferência para as fotos diárias do módulo metricas
+(H:\\HypadoLocal\\metricas\\AAAA-MM-DD.json, ver normalizar_fotos_diarias);
+senão, um metricas_painel.json num destes formatos:
   a) {"dias": {"2026-09-29": {"GTA 6 | HP": {"instagram": {"seguidores": 10000,
         "views": 30000, "curtidas": 1200, "comentarios": 80, "posts": 2}, ...}}}}
   b) {"registros": [{"dia": "2026-09-29", "canal": "gta", "rede": "instagram",
@@ -296,10 +298,74 @@ def normalizar_metricas(dados) -> dict:
     return saida
 
 
+_FOTO_DIA = re.compile(r"^\d{4}-\d{2}-\d{2}\.json$")
+
+
+def normalizar_fotos_diarias(pasta: Path) -> dict:
+    """Lê as fotos diárias do módulo metricas (H:\\HypadoLocal\\metricas\\AAAA-MM-DD.json).
+
+    Formato da foto: {"data": D, "contas": {"gta": {"instagram": {"seguidores": N,
+    "posts": [{"publicado_em", "views", "curtidas", "comentarios"}]}}}}.
+    - seguidores do dia d = o da foto do dia d+1 (tirada às 6h, ≈ fim do dia d);
+      sem essa foto, vale a do próprio dia d;
+    - views/curtidas/comentários/posts do dia d = soma dos posts PUBLICADOS no dia d,
+      com os números da foto mais recente que tiver cada post.
+    """
+    fotos = {}
+    for arq in sorted(Path(pasta).glob("*.json")):
+        if _FOTO_DIA.match(arq.name):
+            dados = ler_json(arq, {})
+            if isinstance(dados, dict) and isinstance(dados.get("contas"), dict):
+                fotos[arq.stem] = dados
+    saida: dict = {}
+    seguidores: dict = {}   # (dia, canal, rede) -> (prioridade, valor)
+    posts: dict = {}        # (canal, rede, id) -> (data_foto, post)
+    for dia_foto, foto in sorted(fotos.items()):
+        ontem = (date.fromisoformat(dia_foto) - timedelta(days=1)).isoformat()
+        for canal, redes in foto["contas"].items():
+            for rede, r in (redes or {}).items():
+                if not isinstance(r, dict):
+                    continue
+                seg = _numero(r.get("seguidores"))
+                if seg is not None:
+                    for dia, prio in ((ontem, 2), (dia_foto, 1)):
+                        chave = (dia, canal, rede)
+                        if prio >= seguidores.get(chave, (0, None))[0]:
+                            seguidores[chave] = (prio, seg)
+                for i, post in enumerate(r.get("posts") or []):
+                    if isinstance(post, dict):
+                        posts[(canal, rede, post.get("id") or f"{dia_foto}#{i}")] = post
+    for (dia, canal, rede), (_, seg) in seguidores.items():
+        saida.setdefault(dia, {}).setdefault(nome_canal(canal), {}).setdefault(
+            rede, {})["seguidores"] = seg
+    for (canal, rede, _), post in posts.items():
+        quando = ler_datahora(post.get("publicado_em"))
+        if not quando:
+            continue
+        v = saida.setdefault(quando.date().isoformat(), {}).setdefault(
+            nome_canal(canal), {}).setdefault(rede, {})
+        v["posts"] = v.get("posts", 0) + 1
+        for campo in ("views", "curtidas", "comentarios"):
+            n = _numero(post.get(campo))
+            if n is not None:
+                v[campo] = v.get(campo, 0) + n
+    return saida
+
+
 def carregar_metricas(caminho: Path | None, candidatos: list[Path]) -> dict | None:
-    for p in ([Path(caminho)] if caminho else candidatos):
-        if p.exists():
-            return normalizar_metricas(ler_json(p, {}))
+    """Preferência: as fotos diárias do módulo metricas (pasta com AAAA-MM-DD.json);
+    depois um arquivo nos formatos a) ou b) acima."""
+    alvos = [Path(caminho)] if caminho else candidatos
+    for p in alvos:
+        pasta = p if p.is_dir() else p.parent
+        if pasta.is_dir() and any(_FOTO_DIA.match(a.name) for a in pasta.glob("*.json")):
+            dados = normalizar_fotos_diarias(pasta)
+            if dados:
+                return dados
+        if p.is_file():
+            dados = normalizar_metricas(ler_json(p, {}))
+            if dados:
+                return dados
     return None
 
 

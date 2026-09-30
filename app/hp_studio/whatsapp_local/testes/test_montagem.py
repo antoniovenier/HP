@@ -180,3 +180,32 @@ def test_tarefas_automaticas_do_vigia(tmp_path):
     assert tarefas_automaticas(cfg, datetime(2026, 9, 30, 7, 0, tzinfo=FUSO)) == 0   # nada no ar, cedo
     assert tarefas_automaticas(cfg, AGORA) == 2          # no ar do GTA + resumo de ontem
     assert tarefas_automaticas(cfg, AGORA) == 0          # sem duplicar
+
+
+def _foto(data, seguidores, posts):
+    """Foto diária no formato gravado pelo módulo metricas (etapa 6)."""
+    return {"data": data, "coletado_em": f"{data}T06:00:00-03:00",
+            "contas": {"gta": {"instagram": {"status": "ok", "seguidores": seguidores,
+                                             "posts": posts}}}}
+
+
+def test_resumo_a_partir_das_fotos_diarias_do_modulo_metricas():
+    from whatsapp_local.montagem import montar_resumo_dia, normalizar_fotos_diarias
+    pasta = raiz_local() / "metricas"
+    p1 = {"id": "1", "publicado_em": "2026-09-29T12:00:00-03:00", "views": 1000,
+          "curtidas": 100, "comentarios": 10}
+    p2 = {"id": "2", "publicado_em": "2026-09-29T19:00:00-03:00", "views": 500,
+          "curtidas": 50, "comentarios": 5}
+    escrever_json(pasta / "2026-09-29.json", _foto("2026-09-29", 9900, [dict(p1, views=100)]))
+    escrever_json(pasta / "2026-09-30.json", _foto("2026-09-30", 10000, [p1, p2]))
+    escrever_json(pasta / "metricas_painel.json", {"versao": 1, "contas": {}})  # ignorado
+    m = normalizar_fotos_diarias(pasta)
+    dia = m["2026-09-29"]["GTA 6 | HP"]["instagram"]
+    # seguidores do dia 29 = foto das 6h do dia 30; views = posts publicados no dia 29,
+    # com os números da foto mais recente
+    assert dia == {"seguidores": 10000, "posts": 2, "views": 1500, "curtidas": 150,
+                   "comentarios": 15}
+    assert m["2026-09-28"]["GTA 6 | HP"]["instagram"]["seguidores"] == 9900
+    m2 = enfileirar_resumo_dia(Config(), datetime(2026, 9, 30, 8, 0, tzinfo=FUSO))
+    assert m2 and m2["tipo"] == "resumo_dia" and m2["texto"].startswith(PREFIXO)
+    assert montar_resumo_dia(m, date(2026, 9, 29))
