@@ -25,7 +25,7 @@ from typing import Callable
 import numpy as np
 from PIL import Image
 
-from reel_futebol_arte import Sprite, compor, hex_ffmpeg
+from reel_futebol_arte import Sprite, hex_ffmpeg
 from reel_futebol_base import (ALTURA, FPS, LARGURA, SEM_JANELA, TAXA_AUDIO,
                                ErroReel, achar_ffmpeg, dur_exata, log,
                                n_quadros, rodar)
@@ -290,6 +290,10 @@ class SegQuadros:
                 cod = proc.wait(timeout=max(5.0, orc.restante()))
             except BrokenPipeError:
                 cod = proc.wait()
+            except subprocess.TimeoutExpired as e:
+                proc.kill()
+                proc.wait()
+                raise ErroReel(f"{self.nome}: passou do tempo limite do render") from e
             except BaseException:
                 proc.kill()
                 proc.wait()
@@ -560,8 +564,3 @@ def render_plano(plano: Plano, pasta: Path, orc: Orcamento) -> dict:
     return {"tempos_s": tempos, "loudnorm_passadas": passadas,
             "loudness_principal_medida": principal.get("input_i") if principal else None,
             "ganho_musica_db": round(ganho, 2) if ganho is not None else None}
-
-
-def composto_png(sprites, caminho: Path) -> Path:
-    compor(sprites).save(caminho)
-    return caminho

@@ -105,6 +105,7 @@ class Config:
     timeouts: dict = field(default_factory=lambda: dict(TIMEOUTS_PADRAO))
     criterio_etapa: dict = field(default_factory=lambda: dict(CRITERIO_ETAPA))
     largura_quadro_revisao: int = 540        # quadros menores = menos token
+    arquivar_postados_dias: int = 7          # 07_postados -> _arquivo\AAAA-MM (0 = nunca)
 
     def __post_init__(self):
         self.raiz = Path(self.raiz)
@@ -150,7 +151,7 @@ class Config:
                   "grupos_permitidos", "max_voltas", "max_tentativas",
                   "copiar_midia_para_fila", "redes_api", "redes_manuais",
                   "comandos", "editor", "legendador", "narrador", "timeouts",
-                  "criterio_etapa", "largura_quadro_revisao"):
+                  "criterio_etapa", "largura_quadro_revisao", "arquivar_postados_dias"):
             d[k] = copy.deepcopy(getattr(self, k))
         d["pasta_scripts"] = str(self.pasta_scripts)
         d["fila_api"] = str(self.fila_api)

@@ -22,15 +22,16 @@ import shutil
 import time
 import traceback
 from contextlib import nullcontext
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from hpbase import (TravaOcupada, TravaPesada, agora_iso, escrever_json,
                     janela_proibida, ler_json, obter_logger)
+from hpbase import agora as hp_agora
 
 from .config import Config, carregar_config
 from .constantes import (ARQ_ERRO, ARQ_MARCADOR, ARQ_PEDIDO, ERROS, ETAPAS,
-                         PEDIDOS)
+                         PEDIDOS, POSTADOS)
 from .erros import ErroEtapa, ErroPermanente, PedidoInvalido
 from .pastas import (chave_ordem, eh_item, historico, indice_etapa, ler_estado,
                      ler_nome, listar, mover, nome_livre, salvar_estado)
@@ -72,7 +73,8 @@ class Esteira:
         """Uma passada: importa pedidos soltos e processa o que der, em ordem
         de prioridade, respeitando a trava do pesado e a janela 18h-22h30."""
         resumo = {"inicio": agora_iso(), "simular": self.simular, "modo": self.cfg.modo,
-                  "importados": self.importar_pedidos_soltos(), "executados": [],
+                  "importados": self.importar_pedidos_soltos(),
+                  "arquivados": self.arquivar_postados(), "executados": [],
                   "avancaram": [], "aguardando": [], "erros": [], "adiados_pesado": [],
                   "motivo_pesado": None}
         bloqueio = None
@@ -269,6 +271,27 @@ class Esteira:
         st = ERRO if destino == ERROS else AVANCAR
         return Resultado(st, destino, mensagem, {"item": str(novo)})
 
+    # --- 07_postados antigos vão para _arquivo (o vigia não relê para sempre) ----
+    def arquivar_postados(self) -> list[str]:
+        dias = int(self.cfg.arquivar_postados_dias or 0)
+        if dias <= 0:
+            return []
+        limite = hp_agora() - timedelta(days=dias)
+        pasta = self.cfg.pasta(POSTADOS)
+        feitos = []
+        for item in listar(pasta):
+            fim = ler_estado(item).get("concluido_em")
+            try:
+                quando = datetime.fromisoformat(fim) if fim else None
+            except ValueError:
+                quando = None
+            if quando is None or quando.tzinfo is None or quando > limite:
+                continue
+            destino = pasta / "_arquivo" / quando.strftime("%Y-%m")
+            mover(item, destino, nome_livre(destino, item.name) if destino.exists() else None)
+            feitos.append(item.name)
+        return feitos
+
     # --- pedidos soltos e pastas fora do padrão em 01_pedidos -------------------
     def importar_pedidos_soltos(self) -> list[str]:
         """O Claude pode largar só um .json em 01_pedidos: vira item aqui.
@@ -295,7 +318,7 @@ class Esteira:
             dados = ler_json(arq)
             try:
                 novo = criar_pedido(dados, raiz=self.cfg.raiz)
-            except PedidoInvalido as e:
+            except PedidoInvalido:
                 ja = self._ja_importado(dados)
                 if ja is None:
                     raise

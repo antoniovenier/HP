@@ -7,7 +7,7 @@ from hpbase import pasta_app
 
 from esteira.constantes import AGENDADOS, EDICAO, PEDIDOS, REVISAO
 from esteira.pedido import criar_pedido
-from esteira.testes.conftest import MANHA, NOITE, pedido_carrossel, pedido_reel
+from esteira.testes.conftest import NOITE, pedido_carrossel, pedido_reel
 
 
 def test_janela_proibida_segura_o_pesado_ate_do_p0(amb):

@@ -6,7 +6,6 @@ trilha sintética, tudo gerado na hora. Sem ffprobe (só ffmpeg).
 """
 from __future__ import annotations
 
-import copy
 import json
 import shutil
 import subprocess
@@ -30,7 +29,7 @@ from reel_futebol_base import ErroReel, RoteiroInvalido  # noqa: E402
 from reel_futebol_exemplos import (gerar_clipe, gerar_midia_sintetica,  # noqa: E402
                                    roteiro_exemplo)
 from reel_futebol_midia import (extrair_audio, extrair_quadro, ffmpeg,  # noqa: E402
-                                info_midia, loudness_arquivo, medir_volume)
+                                info_midia, medir_volume)
 from reel_futebol_modos import arte_cartao_gol  # noqa: E402
 from reel_futebol_roteiro import normalizar, obter_legenda_auto  # noqa: E402
 

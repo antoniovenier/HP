@@ -26,11 +26,11 @@ from hpbase import agora, agora_iso, escrever_json, garantir, ler_json
 from .constantes import (AGENDADOS, ARQ_AGENDADOS, ARQ_AGUARDANDO_CURADOR,
                          ARQ_APROVADO, ARQ_AVISO, ARQ_CONFIRMACOES, ARQ_PEDIDO,
                          ARQ_POST, ARQ_REFAZER, ARQ_TEXTO_REVISAO, BAIXADOS,
-                         CANAIS_COM_VOZ, CONTAS, CRITERIO_ETAPA, EDICAO, ERROS,
+                         CANAIS_COM_VOZ, CONTAS, EDICAO, ERROS,
                          EXT_IMAGEM, EXT_VIDEO, LEGENDA, NOMES_CANAIS, PEDIDOS,
                          POSTADOS, REVISAO)
 from .conteudo import achar_bruto, janela_corte, montar_post
-from .erros import ErroEtapa, ErroPermanente, PedidoInvalido
+from .erros import ErroPermanente, PedidoInvalido
 from .pastas import historico, ler_estado, salvar_estado
 from .pedido import (eh_estatico, ler_pedido, normalizar_pedido,
                      validar_ou_erro)

@@ -269,6 +269,10 @@ def _validar_video(c: _Coletor, v, onde: str, base: Path, conferir: bool) -> dic
     if not info["tem_video"] or not info["largura"]:
         c.erro(f"{onde}: o arquivo não tem imagem de vídeo: {p.name}")
         return None
+    for campo in ("inicio", "fim"):
+        if v.get(campo) is not None and _num(v.get(campo)) is None:
+            c.erro(f"{onde}.{campo} precisa ser número (segundos)")
+            return info
     ini = _num(v.get("inicio")) or 0.0
     fim = _num(v.get("fim")) if v.get("fim") is not None else info["duracao"]
     if info["duracao"] and fim is not None:

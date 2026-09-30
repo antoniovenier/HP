@@ -1,5 +1,4 @@
 """Adaptadores de subprocesso (sem rodar os scripts de verdade) e Legendador."""
-import json
 import subprocess
 import sys
 from pathlib import Path
@@ -17,7 +16,7 @@ from esteira.midia import gerar_audio_teste, info_midia
 from esteira.pedido import criar_pedido
 from esteira.plugins import (BaixadorYtdlp, DesignerScript, DubladorScript,
                              LegendadorWhisper, NarradorToqueHP, montar_comando)
-from esteira.testes.conftest import TIMEOUTS_TESTE, pedido_carrossel, pedido_reel
+from esteira.testes.conftest import TIMEOUTS_TESTE, pedido_reel
 
 
 @pytest.fixture

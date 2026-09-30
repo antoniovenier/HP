@@ -263,3 +263,19 @@ def test_simular_nao_chama_nada_externo(amb, monkeypatch):
     vigia.ciclo(amb.cfg, simular=True, agora=MANHA)
     assert amb.itens(POSTADOS) == [item.name]
     assert not amb.cfg.fila_api.exists()
+
+
+def test_postados_antigos_vao_para_o_arquivo(amb):
+    from esteira.pastas import ler_estado, salvar_estado
+    velho = amb.pasta(POSTADOS) / "P1_2026-09-01_1000_gta_velho"
+    novo = amb.pasta(POSTADOS) / "P1_2026-09-30_1000_gta_novo"
+    for p, quando in ((velho, "2026-09-01T10:30:00-03:00"), (novo, None)):
+        p.mkdir()
+        (p / "aviso_no_ar.json").write_text('{"status": "sombra"}')
+        est = ler_estado(p)
+        est["concluido_em"] = quando or __import__("hpbase").agora_iso()
+        salvar_estado(p, est)
+    r = amb.ciclo(max_trabalhos=0)
+    assert r["arquivados"] == [velho.name]
+    assert (amb.pasta(POSTADOS) / "_arquivo" / "2026-09" / velho.name).exists()
+    assert amb.itens(POSTADOS) == [novo.name]

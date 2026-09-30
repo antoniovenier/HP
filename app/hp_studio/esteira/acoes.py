@@ -17,7 +17,7 @@ from hpbase import agora_iso, escrever_json, garantir, ler_json
 from .config import Config, carregar_config
 from .constantes import (AGENDADOS, ARQ_AGUARDANDO_CURADOR, ARQ_APROVADO,
                          ARQ_CONFIRMACOES, ARQ_ERRO, ARQ_MARCADOR, ARQ_PEDIDO,
-                         ARQ_REFAZER, ERROS, ETAPAS, PEDIDOS, POSTADOS,
+                         ARQ_REFAZER, ERROS, ETAPAS, POSTADOS,
                          PRIORIDADES, REDES, REVISAO, TODAS_AS_PASTAS)
 from .erros import ErroEsteira, PedidoInvalido
 from .pastas import (achar_item, historico, ler_estado, ler_nome, listar, mover,

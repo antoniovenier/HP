@@ -7,7 +7,7 @@ from hpbase import escrever_json, ler_json
 from esteira import acoes
 from esteira.agendador import AgendadorFilaApi, ler_confirmacao
 from esteira.aviso import AvisadorWhatsApp, montar_aviso
-from esteira.constantes import AGENDADOS, ERROS, POSTADOS, REVISAO
+from esteira.constantes import AGENDADOS, ERROS, POSTADOS
 from esteira.erros import ErroPermanente
 from esteira.pedido import criar_pedido
 from esteira.testes.conftest import MANHA, pedido_reel
