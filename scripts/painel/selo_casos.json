@@ -1,0 +1,34 @@
+{
+  "_leia": "Casos do selo das abas. O teste em Python roda selo_abas.py e o teste com node roda selo_abas.js com ESTES MESMOS casos: as duas versões têm de dar o mesmo número.",
+  "casos": [
+    {"nome": "lista vazia", "itens": [], "aba": null, "esperado": 0},
+    {"nome": "nulo", "itens": null, "aba": null, "esperado": 0},
+    {"nome": "um item de verdade", "itens": [{"texto": "Criar o TikTok do Futebol"}], "aba": null, "esperado": 1},
+    {"nome": "texto vazio vindo de split", "itens": [""], "aba": null, "esperado": 0},
+    {"nome": "só espaços e quebra", "itens": ["  ", "\n"], "aba": null, "esperado": 0},
+    {"nome": "placeholder Nenhum item", "itens": ["Nenhum item"], "aba": null, "esperado": 0},
+    {"nome": "placeholder do painel", "itens": ["Nada aqui.", "Nada urgente para hoje.", "Nada na fila.", "carregando…"], "aba": null, "esperado": 0},
+    {"nome": "placeholder com acento", "itens": ["Nenhuma pendência", "Sem pendências", "—"], "aba": null, "esperado": 0},
+    {"nome": "objeto marcado como placeholder", "itens": [{"texto": "Tudo em dia", "placeholder": true}], "aba": null, "esperado": 0},
+    {"nome": "objeto com texto vazio", "itens": [{"texto": ""}, {"texto": null}, {}], "aba": null, "esperado": 0},
+    {"nome": "mistura", "itens": [{"texto": ""}, {"titulo": "Revisar legenda"}, "Nenhum item", "Pagar o domínio"], "aba": null, "esperado": 2},
+    {"nome": "frase real que começa com Nada", "itens": ["Nada de trailer puro no GTA: conferir os 3 cortes de amanhã"], "aba": null, "esperado": 1},
+    {"nome": "frase real que começa com Nenhum", "itens": ["Nenhum post do Futebol pode sair sem o crédito do clube"], "aba": null, "esperado": 1},
+    {"nome": "texto solto vazio (bug do split)", "itens": "", "aba": null, "esperado": 0},
+    {"nome": "texto solto com linhas", "itens": "Primeira\n\nSegunda\n", "aba": null, "esperado": 2},
+    {"nome": "grupos: aba vazia", "itens": {"hoje": [{"texto": "x"}], "nao": []}, "aba": "nao", "esperado": 0},
+    {"nome": "grupos: aba só com vazio", "itens": {"hoje": [{"texto": "x"}], "nao": [""]}, "aba": "nao", "esperado": 0},
+    {"nome": "grupos: aba inexistente", "itens": {"hoje": [{"texto": "x"}]}, "aba": "nao", "esperado": 0},
+    {"nome": "grupos: aba com 2", "itens": {"hoje": ["a", "b"], "nao": []}, "aba": "hoje", "esperado": 2},
+    {"nome": "lista com campo aba", "itens": [{"texto": "a", "aba": "nao"}, {"texto": "b", "aba": "hoje"}, {"texto": "", "aba": "nao"}], "aba": "nao", "esperado": 1},
+    {"nome": "números contam", "itens": [0, 7], "aba": null, "esperado": 2}
+  ],
+  "selos": [
+    {"n": 0, "texto": ""},
+    {"n": -3, "texto": ""},
+    {"n": 1, "texto": "1"},
+    {"n": 42, "texto": "42"},
+    {"n": 99, "texto": "99"},
+    {"n": 100, "texto": "99+"}
+  ]
+}
