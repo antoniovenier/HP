@@ -1,39 +1,34 @@
-"""Adaptador da fila da API (H:\\HypadoLocal\\fila_api\\) — ISOLADO de propósito.
+"""Adaptador da fila REAL da API (H:\\HypadoLocal\\fila_api\\) — ISOLADO de propósito.
 
 Quem publica é o scripts\\publicador_meta.py, que JÁ EXISTE e NÃO pode ser
-reescrito. O formato exato da fila dele não estava disponível na nuvem, então
-o formato abaixo é SUPOSTO. Para casar com o formato real, mude só as duas
-funções `montar_registro_fila` e `ler_confirmacao` (o resto da esteira não
-sabe nada da fila).
+reescrito. O formato da fila é o REAL (Seção 4.1 do enunciado da rodada 2) e mora
+em `hpbase.fila_api_pc`: este arquivo só traduz o post.json da esteira para
+`fila_api_pc.montar_item` (que valida como o publicador valida) e lê a resposta
+com `fila_api_pc.ler_confirmacao`. O resto da esteira não sabe nada da fila.
 
-FORMATO SUPOSTO — 1 arquivo JSON por post e por rede:
-  fila_api\\<item>__<rede>.json
+FORMATO REAL — 1 arquivo JSON por post e por rede, <id>.json na raiz da fila:
   {
-    "id": "P1_2026-09-30_1830_gta_rockstar-quinta__instagram",
-    "origem": "hp_studio.esteira",
-    "rede": "instagram",              instagram | threads | facebook | youtube
-    "conta": "@hpgta6",
-    "canal": "gta",
-    "tipo": "reel",                   reel | carrossel | story | estatico | threads_texto
-    "midia": ["H:\\\\HypadoLocal\\\\fila_api\\\\midia\\\\<item>\\\\final.mp4"],
-    "capa": "H:\\\\...\\\\capa.jpg" ou null,
+    "id": "gta_2026-09-30_ig_reel_1830",       canais: <canal>_<data>_<HHMM>_<slug>_<ig|th>_<tipo>
+    "conta": "hpgta6",                          handle sem @
+    "rede": "instagram",                        só instagram | threads (Facebook fica no Business Suite)
+    "tipo": "reel",                             feed | carrossel | reel | story | texto
+    "arquivos": ["H:\\\\HypadoLocal\\\\fila_api\\\\midia\\\\<item>\\\\final.mp4"],
     "legenda": "texto do post (com crédito e hashtags)",
-    "titulo": "...",
-    "agendar_para": "2026-09-30T18:30-03:00",
-    "status": "pendente",
-    "criado_em": "2026-09-30T15:02:11-03:00"
+    "quando": "2026-09-30 18:30",               hora de Brasília, sem fuso
+    "canal": "gta", "grupo_whatsapp": "HP | Comissão 🚀", "titulo": "...", "capa": "..." (reel)
   }
 A mídia é copiada para fila_api\\midia\\<item>\\ (config copiar_midia_para_fila),
-para o caminho continuar valendo mesmo depois que a pasta do item andar na
-esteira.
+para o caminho continuar valendo mesmo depois que a pasta do item andar na esteira.
 
-CONFIRMAÇÃO SUPOSTA: o publicador_meta.py muda "status" para "publicado"
-(ou "agendado"/"ok"/"feito") e grava "permalink"/"link"/"url" no mesmo
-arquivo, OU move o arquivo para fila_api\\feitos\\ (ou publicados\\,
-enviados\\, ok\\). "status": "erro"/"falhou" = falha definitiva.
+CONFIRMAÇÃO REAL: o publicador move o arquivo para fila_api\\feitos\\ (ganha
+"status": "no_ar" e "resultado" {media_id, permalink, publicado_em}) ou para
+fila_api\\erros\\ ("erro" de validação/atraso, ou "ultimo_erro" + "tentativas").
 
-Modo sombra (padrão): grava em esteira\\sombra\\fila_api\\ (o publicador nunca
-lê) e confirma na hora com status "sombra" — nada vai ao ar.
+Modo real: rede fora de instagram/threads é RECUSADA (ErroPermanente) — o item vai
+para 99_erros com a mesma mensagem do publicador. Modo sombra (padrão): grava o
+mesmo formato em esteira_sombra\\sombra\\fila_api\\ (o publicador nunca lê) e
+confirma na hora com status "sombra"; rede fora da API ganha um "aviso" no
+registro em vez de erro — nada vai ao ar.
 """
 from __future__ import annotations
 
@@ -41,58 +36,77 @@ import os
 import shutil
 from pathlib import Path
 
-from hpbase import agora_iso, escrever_json, garantir, ler_json
+from hpbase import FUSO, agora_iso, escrever_json, garantir
+from hpbase import fila_api_pc as fa
 
-STATUS_OK = ("publicado", "agendado", "ok", "feito", "postado", "sucesso", "publicada")
-STATUS_FALHA = ("erro", "falhou", "falha", "cancelado")
-SUBPASTAS_FEITOS = ("feitos", "publicados", "enviados", "ok")
+from .erros import ErroPermanente
+from .pastas import ler_nome
+from .pedido import ler_horario
+
+# tipo da esteira -> tipo da fila (os demais — reel, carrossel, story — têm o mesmo nome)
+TIPO_FILA = {"estatico": "feed", "threads_texto": "texto"}
+
+
+def tipo_fila(post: dict) -> str:
+    return TIPO_FILA.get(post["tipo"], post["tipo"])
+
+
+def quando_fila(horario_alvo):
+    """horario_alvo da esteira (ISO com fuso) -> datetime de Brasília sem fuso (o que a fila usa)."""
+    return ler_horario(horario_alvo).astimezone(FUSO).replace(tzinfo=None)
+
+
+def slug_do_post(post: dict) -> str:
+    """Slug do nome do item (P1_<data>_<hora>_<canal>_<slug>) ou, sem ele, do título."""
+    info = ler_nome(str(post.get("item") or ""))
+    return info.slug if info else fa.slug(post.get("titulo") or "post")
 
 
 def id_fila(post: dict, rede: str) -> str:
-    return f"{post['item']}__{rede}"
+    """Id na convenção real: gta_<data>_<ig|th>_<tipo>_<HHMM> ou <canal>_<data>_<HHMM>_<slug>_<ig|th>_<tipo>."""
+    return fa.id_padrao(post["canal"], rede, tipo_fila(post), quando_fila(post["horario_alvo"]),
+                        slug_=slug_do_post(post))
 
 
-def montar_registro_fila(post: dict, rede: str, midia: list[str],
-                         capa: str | None) -> dict:
-    """ÚNICO lugar que conhece o formato da fila do publicador_meta.py."""
-    return {
-        "id": id_fila(post, rede),
-        "origem": "hp_studio.esteira",
-        "rede": rede,
-        "conta": post["conta"],
-        "canal": post["canal"],
-        "tipo": post["tipo"],
-        "midia": midia,
-        "capa": capa,
-        "legenda": post["legenda"],
-        "titulo": post["titulo"],
-        "agendar_para": post["horario_alvo"],
-        "status": "pendente",
-        "criado_em": agora_iso(),
-    }
+def montar_registro_fila(post: dict, rede: str, midia: list[str], capa: str | None,
+                         pasta_fila=None, existe=None, validar: bool = True) -> dict:
+    """ÚNICO lugar que traduz post.json -> item da fila real (fila_api_pc.montar_item).
+
+    Valida com as regras e mensagens do publicador (ErroPermanente se não passa).
+    `validar=False` (só o modo sombra, para redes fora da fila) monta sem validar.
+    """
+    tipo = tipo_fila(post)
+    kw = dict(conta=post["conta"], rede=rede, tipo=tipo,
+              arquivos=[] if tipo == "texto" else list(midia),   # texto do Threads: arquivos vazio
+              legenda=post.get("legenda") or "", quando=quando_fila(post["horario_alvo"]),
+              canal=post["canal"], titulo=post.get("titulo"),
+              capa=capa if tipo == "reel" else None,               # capa só existe para reel
+              id_=id_fila(post, rede))
+    if not validar:
+        return fa.montar_bruto(**kw)
+    try:
+        return fa.montar_item(pasta_fila=pasta_fila, existe=existe, **kw)
+    except fa.ErroFilaApi as e:
+        raise ErroPermanente(f"{rede}: {e}") from None
 
 
-def ler_confirmacao(dados: dict) -> dict | None:
-    """ÚNICO lugar que sabe ler a resposta do publicador. None = ainda não."""
-    if not isinstance(dados, dict):
-        return None
-    st = str(dados.get("status") or "").strip().lower()
-    if st in STATUS_OK:
-        return {"status": st,
-                "link": dados.get("permalink") or dados.get("link") or dados.get("url"),
-                "em": dados.get("publicado_em") or dados.get("atualizado_em") or agora_iso(),
-                "fonte": "fila_api"}
-    if st in STATUS_FALHA:
-        return {"status": "erro", "mensagem": str(dados.get("erro") or dados.get("mensagem")
-                                                  or "publicador marcou erro"),
-                "fonte": "fila_api"}
+def ler_confirmacao(id_: str, pasta_fila) -> dict | None:
+    """ÚNICO lugar que lê a resposta do publicador (feitos\\ e erros\\ via fila_api_pc).
+    None = ainda não (na raiz, em story_clicavel\\, reserva_largada\\ ou sumiu)."""
+    c = fa.ler_confirmacao(id_, pasta_fila)
+    if c["estado"] == "no_ar":
+        return {"status": "publicado", "link": c["link"], "em": c["publicado_em"] or agora_iso(),
+                "media_id": c["media_id"], "fonte": "fila_api/feitos"}
+    if c["estado"] == "erro":
+        return {"status": "erro", "mensagem": str(c["erro"]), "fonte": f"fila_api/{c['pasta']}"}
     return None
 
 
 class AgendadorFilaApi:
-    def __init__(self, cfg, forcar_sombra: bool = False):
+    def __init__(self, cfg, forcar_sombra: bool = False, existe=None):
         self.cfg = cfg
         self.sombra = forcar_sombra or not cfg.real
+        self.existe = existe  # função injetável "arquivo existe?" (padrão Path.exists)
 
     @property
     def pasta(self) -> Path:
@@ -117,11 +131,22 @@ class AgendadorFilaApi:
 
     def agendar(self, item: Path, post: dict, rede: str) -> dict:
         pasta = garantir(self.pasta)
-        arq = pasta / f"{id_fila(post, rede)}.json"
-        if not arq.exists():  # idempotente: nunca regrava o que o publicador já pegou
+        id_ = id_fila(post, rede)
+        arq = pasta / f"{id_}.json"
+        # idempotente: nunca regrava o que o publicador já pegou — o item pode ter saído da raiz
+        # (feitos\, erros\, story_clicavel\, reserva_largada\, removidos\), então olha todas
+        if fa.ler_confirmacao(id_, pasta)["estado"] == "desconhecido":
+            if rede not in fa.REDES and not self.sombra:
+                raise ErroPermanente(f"{rede}: {fa.MSG_REDE}")
             midia, capa = self._midia(item, post)
-            escrever_json(arq, montar_registro_fila(post, rede, midia, capa))
-        return {"arquivo_fila": str(arq), "id_fila": id_fila(post, rede),
+            if rede in fa.REDES:
+                registro = montar_registro_fila(post, rede, midia, capa, pasta_fila=pasta,
+                                                existe=self.existe)
+            else:  # sombra: registra o que iria, sem validar como item da API
+                registro = montar_registro_fila(post, rede, midia, capa, validar=False)
+                registro["aviso"] = f"{fa.MSG_REDE}; gravado só na sombra"
+            escrever_json(arq, registro)
+        return {"arquivo_fila": str(arq), "id_fila": id_,
                 "modo": "sombra" if self.sombra else "real", "em": agora_iso()}
 
     def conferir(self, item: Path, post: dict, rede: str, registro: dict) -> dict | None:
@@ -129,14 +154,4 @@ class AgendadorFilaApi:
             return {"status": "sombra", "link": None, "em": agora_iso(),
                     "fonte": "modo sombra (nada foi publicado)"}
         arq = Path(registro["arquivo_fila"])
-        for c in [arq] + [arq.parent / sub / arq.name for sub in SUBPASTAS_FEITOS]:
-            d = ler_json(c, None)
-            if d is None:
-                continue
-            conf = ler_confirmacao(d)
-            if conf is None and c != arq:
-                conf = {"status": "publicado", "link": d.get("permalink") or d.get("link"),
-                        "em": agora_iso(), "fonte": f"fila_api/{c.parent.name}"}
-            if conf:
-                return conf
-        return None
+        return ler_confirmacao(registro.get("id_fila") or arq.stem, arq.parent)

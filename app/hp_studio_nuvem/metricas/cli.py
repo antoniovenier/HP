@@ -69,6 +69,13 @@ def montar_parser() -> argparse.ArgumentParser:
 
     a = novo("agendar-6h", "imprime o comando schtasks para agendar a coleta diária (não executa)")
     a.add_argument("--hora", default="06:00", help="HH:MM (padrão 06:00)")
+
+    k = novo("chaves", "mostra quais chaves de token existem em segredos\\ (só os nomes, nunca o valor)")
+    k.add_argument("--conta", action="append", help="só esta conta; pode repetir")
+    k.add_argument("--rede", action="append", choices=REDES, help="só esta rede; pode repetir")
+    k.add_argument("--json", action="store_true", help="imprime o inventário em JSON")
+    k.add_argument("--contas", help="outro contas.json")
+    k.add_argument("--segredos", help=r"outra pasta de segredos (padrão H:\HypadoLocal\segredos)")
     return ap
 
 
@@ -169,6 +176,18 @@ def main(argv=None) -> int:
             return 0
         if args.comando == "agendar-6h":
             print("\n".join(comando_schtasks(args.hora)))
+            return 0
+        if args.comando == "chaves":
+            from hpbase import pasta_segredos
+            from .chaves_pc import inventario, resumo
+            cfg = carregar_config(args.contas)
+            inv = inventario(args.segredos or pasta_segredos(), cfg, args.conta, args.rede)
+            if args.json:
+                print(json.dumps(inv, ensure_ascii=False, indent=2))
+            else:
+                print("Chaves em segredos\\ (só os nomes; o valor nunca é lido aqui):")
+                for linha in resumo(inv):
+                    print("  " + linha)
             return 0
     except (ValueError, FileNotFoundError) as e:
         log.warning(f"{args.comando}: {e}")

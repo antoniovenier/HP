@@ -1,7 +1,7 @@
 """limites.json: padrão, ajuste local e --limites."""
 import json
 
-from hpbase import escrever_json, pasta_app
+from hpbase import escrever_json, pasta_paridade
 from qa_paridade.cli import main
 from qa_paridade.limites import PADRAO, carregar_limites
 from qa_paridade.relatorio import calcular_veredito
@@ -19,7 +19,7 @@ def test_padrao_documentado_e_sem_comentarios():
 
 
 def test_ajuste_local_mescla_por_cima():
-    escrever_json(pasta_app() / "paridade" / "limites.json",
+    escrever_json(pasta_paridade() / "limites.json",
                   {"pesos": {"ssim": 5}, "sombra": {"dias_necessarios": 10}})
     lim = carregar_limites()
     assert lim["pesos"]["ssim"] == 5 and lim["pesos"]["duracao"] == 1.0

@@ -74,6 +74,7 @@ from hpbase import (FUSO, TravaOcupada, TravaPesada, agora, anexar_linha,  # noq
                     escrever_json, garantir, ler_json, mascarar, obter_logger,
                     raiz_drive, raiz_local, rodar)
 import story_post_seletores as SEL  # noqa: E402
+import story_post_lote as LOTE  # noqa: E402  (lote real de estáticos: chave "interativo", §4.5)
 
 PACOTE = SEL.PACOTE
 
@@ -1980,30 +1981,51 @@ def _validar_caixa(v) -> list:
 def carregar_enquete(cfg: dict, dia: str, cortar: bool | None = None) -> dict:
     """Lê lotes\\<dia>_estaticos.json e devolve a enquete validada.
 
-    Formato suposto (item da lista "itens"/"items" ou a própria lista):
-      {"tipo": "story_enquete", "arquivo": "arte.png", "pergunta": "...",
-       "opcoes": ["Sim", "Não"], "caixa_enquete": [540, 1500],
-       "canal": "gta", "destaque": "Enquetes"}
+    Formato REAL (§4.5, rodada 2): a chave "interativo" do lote de estáticos do GTA
+      {"arquivo": "H:\\...\\story_interativo_2026-10-01.jpg",
+       "rede": "Instagram @hpgta6 (compartilhar no Facebook)", "horario": "16:00",
+       "figurinha": "enquete", "pergunta": "Furacão chegando em Leonida. O que você faz?",
+       "pergunta_curta": "O que você faz?" (opcional), "opcoes": [...], "destaque": "Enquetes"}
+    A pergunta da figurinha vem do story_post_lote: pergunta_curta se couber, senão a última
+    oração com "?" (sem vocativo/emoji); se nada couber em 25 -> PerguntaLonga. Com --cortar
+    (ou cortar_pergunta no config) vale o plano B antigo: corte por palavra em 25.
+    Formato antigo (rodada 1) continua aceito: item {"tipo": "story_enquete", "arquivo",
+    "pergunta", "opcoes", "caixa_enquete", "canal", "destaque"} na lista "itens"/"items".
     """
     cortar = cfg.get("cortar_pergunta") if cortar is None else cortar
-    it, p = _item_do_lote(cfg, dia, "story_enquete")
+    p = _achar_estaticos(cfg, dia)
     if not p:
         raise DadosInvalidos(f"não achei lotes\\{dia}_estaticos.json em "
                              + ", ".join(str(x) for x in pastas_lotes(cfg)))
+    try:
+        it = LOTE.ler_interativo(p)
+    except LOTE.LoteInvalido as e:
+        raise DadosInvalidos(str(e)) from e
     if not it:
-        raise DadosInvalidos(f"{p.name} não tem item com tipo 'story_enquete'")
-    pergunta = validar_texto_curto(it.get("pergunta"), int(cfg["limite_pergunta"]),
-                                   bool(cortar), "pergunta")
-    opcoes = [validar_texto_curto(o, int(cfg["limite_opcao"]), False, "opção")
-              for o in (it.get("opcoes") or [])]
-    if not 2 <= len(opcoes) <= 4:
-        raise DadosInvalidos("a enquete precisa de 2 a 4 opções")
+        raise DadosInvalidos(f"{p.name} não tem a chave 'interativo' nem item com tipo 'story_enquete'")
+    if it["figurinha"] != LOTE.FIGURINHA_PADRAO:
+        raise DadosInvalidos(f"{p.name}: figurinha '{it['figurinha']}' não é enquete")
+    limite = int(cfg["limite_pergunta"])
+    try:
+        pergunta, origem = LOTE.decidir_pergunta(it, limite)
+    except LOTE.PerguntaImpossivel as e:
+        if not cortar:
+            raise PerguntaLonga(f"{e} (ou rode com --cortar)") from e
+        # plano B antigo (--cortar): corta por palavra em `limite`
+        pergunta = validar_texto_curto(it.get("pergunta") or it.get("pergunta_curta"), limite,
+                                       True, "pergunta")
+        origem = "cortada"
+    try:
+        opcoes = LOTE.opcoes_da_figurinha(it, int(cfg["limite_opcao"]))
+    except LOTE.OpcoesInvalidas as e:
+        raise DadosInvalidos(str(e)) from e
     handle = resolver_conta(cfg, {"canal": it.get("canal") or cfg["enquete_canal"],
                                   "conta": it.get("conta")})
-    return {"arte": _resolver_arte(it.get("arquivo"), p), "pergunta": pergunta,
-            "opcoes": opcoes, "handle": handle,
+    return {"arte": _resolver_arte(LOTE.traduzir_caminho_pc(it.get("arquivo")), p),
+            "pergunta": pergunta, "origem_pergunta": origem, "opcoes": opcoes, "handle": handle,
             "caixa": _validar_caixa(it.get("caixa_enquete") or cfg["caixa_enquete"]),
-            "destaque": it.get("destaque", cfg["destaque_enquetes"])}
+            "destaque": it.get("destaque") or cfg["destaque_enquetes"],
+            "horario": it.get("horario")}
 
 
 def _dia(ctx: Contexto, dia: str | None) -> str:

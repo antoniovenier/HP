@@ -13,10 +13,11 @@ import json
 from pathlib import Path
 
 from hpbase import agora as agora_brasilia, escrever_json, ler_json, obter_logger
+from hpbase import pasta_segredos as hp_pasta_segredos
 
-from . import calculos, facebook, instagram, painel, threads, youtube
+from . import calculos, chaves_pc, facebook, instagram, painel, threads, youtube
 from .cliente import ClienteHTTP, ErroNaoAutorizado
-from .config import (REDES, Contexto, Credenciais, carregar_config, chaves,
+from .config import (REDES, Contexto, Credenciais, carregar_config,
                      pasta_metricas)
 from .modelos import SemToken
 
@@ -125,36 +126,44 @@ def coletar(contas=None, redes=None, cliente=None, config: dict | None = None,
     return foto
 
 
+def _onde(e: dict) -> str:
+    nomes = e.get("nomes") or [e.get("chave_token")]
+    antigo = next((n for n in nomes[1:] if n.upper() != nomes[0].upper()), None)
+    return f"{nomes[0]}{f' (ou o antigo {antigo})' if antigo else ''} em {e.get('arquivo')}"
+
+
 def plano(contas=None, redes=None, config: dict | None = None, pasta_segredos=None) -> list:
-    """O que o `coletar` faria (modo --simular): não chama API nem grava nada."""
+    """O que o `coletar` faria (modo --simular): não chama API nem grava nada. Usa o
+    inventário de chaves_pc (só NOMES das chaves; nenhum valor é lido)."""
     cfg = config if config is not None else carregar_config()
-    cred = Credenciais(cfg["arquivos_segredo"], pasta_segredos)
+    inv = chaves_pc.inventario(pasta_segredos or hp_pasta_segredos(), cfg,
+                               escolher(contas, cfg["contas"], "conta"),
+                               escolher(redes, REDES, "rede"))
     linhas = []
-    for conta in escolher(contas, cfg["contas"], "conta"):
-        cfg_conta = cfg["contas"].get(conta) or {}
-        for rede in escolher(redes, REDES, "rede"):
-            cr = cfg_conta.get(rede)
-            if not isinstance(cr, dict) or not cr.get("ativo", True):
+    for conta, por_rede in inv.items():
+        for rede, e in por_rede.items():
+            st = e["status"]
+            if st == "inativo":
                 continue
-            if rede == "tiktok":
+            if st == "manual":
                 situacao = "manual (use importar-tiktok)"
             elif rede == "youtube":
-                k = chaves("youtube", conta, cr)
-                if not cr.get("autorizado", False):
+                if st == "nao_autorizado":
                     situacao = 'pularia: nao_autorizado ("autorizado": false)'
                 else:
-                    canal = bool(cr.get("id")) or cred.tem("youtube", *k["canal"])
-                    chave = cred.tem("youtube", *k["chave_api"])
-                    oauth = cred.tem("youtube", *k["refresh"])
-                    situacao = ("coletaria" if canal and (chave or oauth) else "sem_token") + \
-                        f" (canal: {'ok' if canal else 'falta'}, chave: {'ok' if chave else 'falta'}," \
-                        f" analytics: {'ok' if oauth else 'nao_autorizado'})"
+                    o = e["oauth"]
+                    oauth = all(o.values())
+                    canal = bool(e.get("id"))
+                    situacao = ("coletaria" if st == "ok" else "sem_token") + \
+                        f" (canal: {'ok' if canal else 'falta ' + e['nomes_id'][0]}," \
+                        f" chave: {'ok' if e['api_key'] else 'falta'}," \
+                        f" analytics: {'ok' if oauth else 'nao_autorizado'}" \
+                        f"{'' if oauth else ' — falta ' + _onde(e)})"
             else:
-                k = chaves(rede, conta, cr)
-                tok = cred.tem("meta", *k["token"])
-                ident = bool(cr.get("id")) or cred.tem("meta", *k["id"])
-                situacao = ("coletaria" if tok and ident else "sem_token") + \
-                    f" (token: {'ok' if tok else 'falta ' + k['token'][1]}," \
-                    f" id: {'ok' if ident else 'falta ' + k['id'][1]})"
+                tok = "token" not in e["falta"]
+                ident = "id" not in e["falta"]
+                situacao = ("coletaria" if st == "ok" else "sem_token") + \
+                    f" (token: {'ok' if tok else 'falta ' + _onde(e)}," \
+                    f" id: {'ok' if ident else 'falta ' + e['nomes_id'][0]})"
             linhas.append(f"{conta}/{rede}: {situacao}")
     return linhas

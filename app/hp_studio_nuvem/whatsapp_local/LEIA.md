@@ -275,3 +275,12 @@ python -m pytest -q hp_studio/whatsapp_local
 ```
 Nenhum teste usa internet, navegador ou WhatsApp de verdade (usam o `NavegadorFalso`
 e um relógio falso).
+
+## Fila real do PC e aviso literal (rodada 2)
+
+O plantão de hoje usa `H:\HypadoLocal\temp\whatsapp_fila.json` (uma lista) e o
+aviso "no ar" tem o texto fixo do `06 Projeto\AVISO.md`. O módulo `fila_pc.py`
+faz a ponte nos dois sentidos, valida (`*Claude - *`, os 6 grupos, `enviar_apos`),
+segura tudo de madrugada (0h–7h30) e lê os 6 `agendados.json` reais. Veja
+`LEIA_fila_pc.md`; comando rápido:
+`python -m whatsapp_local.fila_pc importar --agora "AAAA-MM-DD HH:MM" --so-mostrar`.

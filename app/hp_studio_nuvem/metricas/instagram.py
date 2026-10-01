@@ -24,8 +24,14 @@ def tipo_ig(m: dict) -> str:
 
 
 def base_url(cfg_rede: dict, ctx) -> str:
-    host = (cfg_rede.get("host") or ctx.cfg["host_graph"]).rstrip("/")
-    return f"{host}/{ctx.cfg['versao_graph']}"
+    """https://graph.instagram.com/v21.0 (host_instagram/versao_instagram do contas.json;
+    "host"/"versao" na conta sobrepõem). Antes falava com o host do Facebook."""
+    if cfg_rede.get("host") or cfg_rede.get("versao"):
+        host = (cfg_rede.get("host") or ctx.cfg.get("host_instagram")
+                or "https://graph.instagram.com").rstrip("/")
+        versao = cfg_rede.get("versao") or ctx.cfg.get("versao_instagram") or "v21.0"
+        return f"{host}/{versao}"
+    return ctx.base_instagram
 
 
 def coletar(cliente, conta: str, cfg_rede: dict, cred, ctx) -> dict:

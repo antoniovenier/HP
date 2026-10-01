@@ -124,7 +124,7 @@ def test_fluxo_real_com_ffmpeg(amb):
     from esteira.pedido import criar_pedido
 
     class BaixadorSintetico:
-        def baixar(self, url, destino):
+        def baixar(self, url, destino, pedido=None):
             destino.mkdir(parents=True, exist_ok=True)
             return gerar_video_teste(destino / "v.mp4", 2.0, 320, 180)
 

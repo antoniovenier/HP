@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from hpbase import agora, ler_json, pasta_app
+from hpbase import agora, ler_json, pasta_app, pasta_paridade
 from qa_paridade import executar
 from qa_paridade.cli import main
 
@@ -34,7 +34,7 @@ def test_video_com_tarefa_registra_e_status(midia, capsys):
     assert rc == 0
     assert "IDENTICO" in saida and "passa no dia: SIM" in saida
     hoje = agora().date().isoformat()
-    pasta = pasta_app() / "paridade" / "editor_reel"
+    pasta = pasta_paridade() / "editor_reel"
     assert (pasta / f"{hoje}_t1.json").exists()
     assert (pasta / f"{hoje}_t1.md").exists()
     assert ler_json(pasta / "resumo.json")["dias_seguidos"] == 1
@@ -55,7 +55,7 @@ def test_video_diferente_sai_com_1_e_json(midia, capsys):
     assert rc == 1
     rel = json.loads(capsys.readouterr().out)
     assert rel["veredito"] == "DIFERENTE"
-    assert list((pasta_app() / "paridade" / "_avulsos").glob("*.json"))
+    assert list((pasta_paridade() / "_avulsos").glob("*.json"))
 
 
 def test_video_com_legendas_pela_cli(midia, capsys):

@@ -1,6 +1,8 @@
 {
-  "_leia": "Exemplo SEM segredo. Tokens e ids ficam em H:\\HypadoLocal\\segredos\\meta_tokens.txt e youtube_tokens.txt (formato no LEIA.md). Para mudar, copie este arquivo para H:\\HypadoLocal\\metricas\\contas.json e edite lá.",
-  "versao_graph": "v21.0",
+  "_leia": "Exemplo SEM segredo. Tokens ficam em H:\\HypadoLocal\\segredos\\ (meta_tokens.txt: IG_<handle>= e TH_<handle>=; facebook_tokens.txt: FB_<canal>=; youtube.json: oauth/refresh_tokens/<canal>); ids em meta_tokens_meta.json, facebook_paginas.json, youtube.json (canais) ou youtube_canais.json. Nomes antigos (IG_GTA_TOKEN, IG_GTA_ID, youtube_tokens.txt) continuam valendo depois dos reais. Para mudar, copie este arquivo para H:\\HypadoLocal\\metricas\\contas.json e edite lá.",
+  "versao_instagram": "v21.0",
+  "host_instagram": "https://graph.instagram.com",
+  "versao_graph": "v26.0",
   "host_graph": "https://graph.facebook.com",
   "versao_threads": "v1.0",
   "host_threads": "https://graph.threads.net",
@@ -9,6 +11,11 @@
   "timeout": 30,
   "arquivos_segredo": {
     "meta": "meta_tokens.txt",
+    "meta_meta": "meta_tokens_meta.json",
+    "facebook": "facebook_tokens.txt",
+    "facebook_paginas": "facebook_paginas.json",
+    "youtube_oauth": "youtube.json",
+    "youtube_canais": "youtube_canais.json",
     "youtube": "youtube_tokens.txt"
   },
   "contas": {

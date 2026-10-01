@@ -1,0 +1,330 @@
+{
+ "canal": "futebol",
+ "verificado_em": "2026-10-01T01:59:46-03:00",
+ "rss": [
+  {
+   "nome": "Atlético-MG",
+   "url": "https://atletico.com.br/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://atletico.com.br/feed/ (feed WordPress do site oficial; a home responde 403 sem cabeçalhos de navegador)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Bahia",
+   "url": "https://www.esporteclubebahia.com.br/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.esporteclubebahia.com.br/ (<link rel=alternate type=application/rss+xml>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Chapecoense",
+   "url": "https://chapecoense.com/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://chapecoense.com/ (<link rel=alternate type=application/rss+xml>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Santos",
+   "url": "https://www.santosfc.com.br/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.santosfc.com.br/ (<link rel=alternate type=application/rss+xml>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "São Paulo FC",
+   "url": "https://www.saopaulofc.net/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.saopaulofc.net/ (<link rel=alternate type=application/rss+xml>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Vitória",
+   "url": "https://ecvitoria.com.br/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.ecvitoria.com.br/ (<link rel=alternate type=application/rss+xml>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "CONMEBOL",
+   "url": "https://www.conmebol.com/feed/",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.2,
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.conmebol.com/ (site WordPress; feed em /feed/, em espanhol e de todas as competições — por isso filtrar: true)",
+   "verificado_por": "rss"
+  }
+ ],
+ "youtube": [
+  {
+   "nome": "Athletico Paranaense",
+   "url": "https://www.youtube.com/@AthleticoParanaense",
+   "channel_id": "UCUN1ASH969TSwnuUUU56TmA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.athletico.com.br/ (rodapé linka youtube.com/athleticoparanaense, que resolve para este id)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Red Bull Bragantino",
+   "url": "https://www.youtube.com/@MassaBrutaTV",
+   "channel_id": "UC0x9Ypk2Z1lUdR4a88jMC2Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.redbullbragantino.com/br-pt (rodapé linka youtube.com/redbullbragantinotvoficial, que resolve para este id)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Chapecoense (ChapeTV)",
+   "url": "https://www.youtube.com/@ChapeTv",
+   "channel_id": "UC5of5voGUqec9K9JqL9al4Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://chapecoense.com/ (rodapé linka youtube.com/channel/UC5of5voGUqec9K9JqL9al4Q e youtube.com/c/ChapeTvOficial)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Coritiba",
+   "url": "https://www.youtube.com/@coritibaoficial",
+   "channel_id": "UCbCD35_3aBxTYcpm8M2LviA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.youtube.com/@coritibaoficial (links da própria página do canal: coritiba.com.br e sociocoxa.com.br; o site coritiba.com.br não renderiza sem JavaScript)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Mirassol",
+   "url": "https://www.youtube.com/@CanalMirassolFC",
+   "channel_id": "UCiz7EFM1alBWxE2hM8k4f4Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://mirassolfc.com.br/ (rodapé linka youtube.com/@CanalMirassolFC)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Remo",
+   "url": "https://www.youtube.com/@RemoTV",
+   "channel_id": "UCsLGx5V5iv-JHbG10oDZOcw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://clubedoremo.com.br/ (rodapé linka youtube.com/@RemotV; a página do canal declara o handle canônico @RemoTV)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Vitória",
+   "url": "https://www.youtube.com/@tvvitoria1899",
+   "channel_id": "UCT2ACrmb364amkLW8L8IhBA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.ecvitoria.com.br/ (rodapé linka youtube.com/@tvvitoria1899)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "CONMEBOL",
+   "url": "https://www.youtube.com/@conmebol",
+   "channel_id": "UCzU8-lZlRfkV3nj0RzAZdrQ",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.conmebol.com/ (rodapé linka youtube.com/c/conmebol, que resolve para este id)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "CONMEBOL Sudamericana",
+   "url": "https://www.youtube.com/@Sudamericana",
+   "channel_id": "UCw7eDYHnA-2PIr-qIldYeBQ",
+   "peso": 1.3,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://gol.conmebol.com/sudamericana/es (site oficial da Sul-Americana linka youtube.com/@Sudamericana)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "CONMEBOL Sudamericana BR",
+   "url": "https://www.youtube.com/@SudamericanaBR",
+   "channel_id": "UCFHE5FRBeksxt7YoFPGeKPw",
+   "peso": 1.3,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.youtube.com/@SudamericanaBR (canal em português com selo verificado na busca do YouTube; links da página do canal: conmebolsudamericana.com)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "FIFA",
+   "url": "https://www.youtube.com/@FIFA",
+   "channel_id": "UCpcTrCXblq78GZrTUTLWeBw",
+   "peso": 1.0,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.youtube.com/@FIFA (selo verificado na busca do YouTube, 35,8 mi de inscritos; fifa.com não expõe o link sem JavaScript)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "CBF (Confederação Brasileira de Futebol)",
+   "url": "https://www.youtube.com/@brasil",
+   "channel_id": "UCdQuDaRww5NkKpQQ1BJBWww",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.youtube.com/@brasil (selo verificado na busca do YouTube; links da página do canal: cbf.com.br; o cbf.com.br não abre daqui por erro de certificado)",
+   "verificado_por": "pagina_canal",
+   "ja_existe": true,
+   "nota_conferir": "provavelmente é a entrada 'CBF TV' da tabela de 4.10 (o canal hoje se chama 'Confederação Brasileira de Futebol', handle @brasil); conferir o id no 07 Canais/radar/futebol.json e só então trocar/ignorar"
+  },
+  {
+   "nome": "CONMEBOL Libertadores BR",
+   "url": "https://www.youtube.com/@LibertadoresBR",
+   "channel_id": "UCyuLjFPzlkMSYJpIpY8M6qA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
+   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "evidencia": "https://www.youtube.com/@LibertadoresBR (canal em português da Libertadores, 1,16 mi de inscritos)",
+   "verificado_por": "pagina_canal",
+   "ja_existe": true,
+   "nota_conferir": "a tabela de 4.10 já tem 'CONMEBOL Libertadores'; se o id lá for o do canal em espanhol (@Libertadores), este é o canal em português — conferir no 07 Canais/radar/futebol.json"
+  }
+ ],
+ "descartadas": [
+  {
+   "nome": "Palmeiras (RSS)",
+   "url": "https://www.palmeiras.com.br/feed/",
+   "motivo": "sem item nos últimos 30 dias (mais novo: 2009-11-03) — o feed WordPress existe mas está abandonado"
+  },
+  {
+   "nome": "Athletico Paranaense (RSS)",
+   "url": "https://www.athletico.com.br/feed/",
+   "motivo": "feed sem itens (WordPress com feed vazio)"
+  },
+  {
+   "nome": "Corinthians (RSS)",
+   "url": "https://www.corinthians.com.br/feed/",
+   "motivo": "feed sem itens (o site declara o feed, mas ele vem vazio)"
+  },
+  {
+   "nome": "Flamengo (RSS)",
+   "url": "https://www.flamengo.com.br/feed/",
+   "motivo": "sem conexão: connection reset (urllib) e HTTP 403 (curl); o site não declara feed RSS/Atom no HTML"
+  },
+  {
+   "nome": "Fluminense (RSS)",
+   "url": "https://www.fluminense.com.br/feed/",
+   "motivo": "não é XML (veio uma página HTML); /rss idem; o site não declara feed"
+  },
+  {
+   "nome": "Internacional (RSS)",
+   "url": "https://www.internacional.com.br/feed/",
+   "motivo": "HTTP 404 (/rss também 404); o site não declara feed"
+  },
+  {
+   "nome": "Botafogo (RSS)",
+   "url": "https://www.botafogo.com.br/feed/",
+   "motivo": "HTTP 404 (/rss também 404); o site não declara feed"
+  },
+  {
+   "nome": "Vasco (RSS)",
+   "url": "https://vasco.com.br/feed/",
+   "motivo": "HTTP 404; a home responde 403 daqui (bloqueio de robô)"
+  },
+  {
+   "nome": "Grêmio (RSS)",
+   "url": "https://gremio.net/",
+   "motivo": "não verificado: gremio.net responde 200 com corpo vazio daqui (com e sem --compressed); sem feed para testar"
+  },
+  {
+   "nome": "Cruzeiro (RSS)",
+   "url": "https://www.cruzeiro.com.br/feed/",
+   "motivo": "não é XML (veio uma página HTML — o site é um app React sem feed)"
+  },
+  {
+   "nome": "Coritiba (RSS)",
+   "url": "https://www.coritiba.com.br/feed/",
+   "motivo": "não é XML (veio uma página HTML — o site não renderiza sem JavaScript e não declara feed)"
+  },
+  {
+   "nome": "Remo (RSS)",
+   "url": "https://clubedoremo.com.br/feed/",
+   "motivo": "HTTP 404; o site não declara feed"
+  },
+  {
+   "nome": "Mirassol (RSS)",
+   "url": "https://mirassolfc.com.br/feed/",
+   "motivo": "HTTP 404; o site não declara feed"
+  },
+  {
+   "nome": "Red Bull Bragantino (RSS)",
+   "url": "https://www.redbullbragantino.com/br-pt/feed",
+   "motivo": "não é XML (veio uma página HTML); /br-pt/rss idem; o site não declara feed"
+  },
+  {
+   "nome": "CBF (RSS e página da Série A)",
+   "url": "https://www.cbf.com.br/",
+   "motivo": "não verificado: cbf.com.br não abre daqui (erro de certificado no proxy: 'unable to get local issuer certificate', com curl e urllib); feed de notícias da CBF fica para o PC testar"
+  },
+  {
+   "nome": "CONMEBOL Sudamericana (RSS)",
+   "url": "https://www.conmebol.com/sudamericana/feed/",
+   "motivo": "feed sem itens (só feed de comentários); /libertadores/feed/ idem — use o feed geral https://www.conmebol.com/feed/"
+  },
+  {
+   "nome": "CONMEBOL Sudamericana (YouTube, handle errado)",
+   "url": "https://www.youtube.com/@CONMEBOLSudamericana",
+   "motivo": "página do canal: HTTP 404 — o handle certo é @Sudamericana (e @SudamericanaBR em português), ambos verificados"
+  },
+  {
+   "nome": "FIFA (RSS)",
+   "url": "https://www.fifa.com/",
+   "motivo": "não verificado (tempo): fifa.com não expõe RSS/Atom no HTML"
+  }
+ ]
+}

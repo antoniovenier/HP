@@ -1,7 +1,9 @@
-"""Configuração da esteira (H:\\HypadoLocal\\esteira\\config.json).
+"""Configuração da esteira (H:\\HypadoLocal\\esteira_sombra\\config.json).
 
-Tudo tem valor padrão seguro: modo "sombra" (não publica nada de verdade) e
-aviso "no ar" desligado. O arquivo config.json só precisa ter o que muda.
+A raiz é `hpbase.pasta_esteira()` (HP_ESTEIRA_NOME, padrão "esteira_sombra"), porque
+H:\\HypadoLocal\\esteira já é a esteira do PC, com outro conteúdo. Tudo tem valor padrão
+seguro: modo "sombra" (não publica nada de verdade) e aviso "no ar" desligado. O arquivo
+config.json só precisa ter o que muda.
 """
 from __future__ import annotations
 
@@ -10,23 +12,18 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from hpbase import escrever_json, garantir, ler_json, raiz_drive, raiz_local
+from hpbase import escrever_json, garantir, ler_json, pasta_esteira, raiz_drive, raiz_local
 
+from .comandos_pc import MODELOS
 from .constantes import CRITERIO_ETAPA, TODAS_AS_PASTAS
 
-# Modelos de comando dos scripts que já existem no PC. SUPOSIÇÃO: os
-# parâmetros abaixo são o palpite da nuvem; se o script real usar outros
-# nomes, ajuste só em config.json -> "comandos" (sem mexer no código).
-# Marcadores: {python} {scripts} {url} {entrada} {saida} {item} {idioma}
-COMANDOS_PADRAO = {
-    "baixar": ["{python}", "{scripts}/ytdlp.py", "{url}", "--saida", "{saida}"],
-    "dublar": ["{python}", "{scripts}/dublar.py", "--srt", "{entrada}",
-               "--saida", "{saida}"],
-    "falar": ["{python}", "{scripts}/dublar.py", "--texto-arquivo", "{entrada}",
-              "--saida", "{saida}"],
-    "estaticos": ["{python}", "{scripts}/estaticos.py", "--pedido", "{entrada}",
-                  "--saida", "{saida}"],
-}
+# Modelos de comando dos scripts REAIS do PC (§4.4 da rodada 2), como lista com marcadores
+# {python} {scripts} {url} {entrada} {saida} {inicio} {fim} {gancho} {streamer} {transcricao}
+# {tipo} {script} {subcomando} {acao}. A fonte é esteira/comandos_pc.MODELOS (as funções argv_*
+# preenchem exatamente estes modelos); config.json -> "comandos" sobrepõe um modelo quando o
+# script mudar. Não há "falar": o dublar.py do PC não sintetiza frase avulsa (--texto-arquivo
+# não existe) — configure comandos.falar no config.json se tiver um sintetizador.
+COMANDOS_PADRAO = copy.deepcopy(MODELOS)
 
 EDITOR_PADRAO = {
     "largura": 1080,
@@ -71,6 +68,13 @@ def _python_padrao() -> str:
     return str(exe)
 
 
+def pasta_scripts_padrao() -> Path:
+    """<Drive>\\06 Projeto\\scripts quando existe (é onde os scripts do PC moram, §3.2);
+    senão o antigo <Drive>\\scripts (que não existe no PC, mas era o padrão da rodada 1)."""
+    nova = raiz_drive() / "06 Projeto" / "scripts"
+    return nova if nova.is_dir() else raiz_drive() / "scripts"
+
+
 TIMEOUTS_PADRAO = {
     "baixar": 1800,
     "dublar": 1800,
@@ -111,7 +115,7 @@ class Config:
     def __post_init__(self):
         self.raiz = Path(self.raiz)
         if self.pasta_scripts is None:
-            self.pasta_scripts = raiz_drive() / "scripts"
+            self.pasta_scripts = pasta_scripts_padrao()
         if self.fila_api is None:
             self.fila_api = raiz_local() / "fila_api"
         if self.whatsapp_fila is None:
@@ -165,8 +169,8 @@ _DICIONARIOS = ("comandos", "editor", "legendador", "narrador", "timeouts",
 
 
 def carregar_config(raiz: Path | None = None, **sobrepor) -> Config:
-    """Lê esteira\\config.json (se existir) por cima dos padrões."""
-    raiz = Path(raiz) if raiz else raiz_local() / "esteira"
+    """Lê esteira_sombra\\config.json (se existir) por cima dos padrões."""
+    raiz = Path(raiz) if raiz else pasta_esteira()
     base = Config(raiz=raiz)
     dados = ler_json(raiz / "config.json", {}) or {}
     dados.update(sobrepor)

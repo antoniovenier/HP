@@ -1,0 +1,103 @@
+# Candidatos verificados pela tarefa F3 (rodada 2, 01/10/2026) — canal carros (28 montadoras da rotina hp-carros-lancamentos).
+# Uma linha por candidato: tipo|nome|url|oficial|reutilizavel|resultado
+# ATENÇÃO: a 6ª coluna aqui é o RESULTADO da pesquisa (formato pedido na tarefa F3); no comando
+# "verificar_fontes.py candidatos" a 6ª coluna é o channel_id, então este arquivo é documentação,
+# não entrada da CLI. O JSON final é radar_fontes/carros_fontes_novas.json (provado com "verificar", saída 0).
+# Resultados: ENTROU · DESCARTADA · JA NA TABELA · NAO VERIFICADO (tempo)
+# Todo canal de YouTube marcado ENTROU foi provado pela ferramenta (pagina_canal: o feed do YouTube responde 404 nesta nuvem).
+# "selo" = selo de canal verificado visto na página do canal e/ou na busca do YouTube.
+#
+# --- YouTube GLOBAL: os 6 que faltavam + os que só tinham o canal BR na tabela ---
+youtube|Ram Trucks|https://www.youtube.com/@RamTrucks|true|false|ENTROU id UCNfZNOb3jq-iWdL0d9OMf9Q (selo; 1º da busca "Ram Trucks", 163 mil)
+youtube|Nissan|https://www.youtube.com/@Nissan|true|false|ENTROU id UCIpK0Bh0wFnC-QqgJs6hx5w (selo; título exato "Nissan")
+youtube|Peugeot|https://www.youtube.com/@Peugeot|true|false|ENTROU id UC1VOZroPEnEaDDEqnMtdgiw (selo; 1º da busca "Peugeot")
+youtube|Citroën|https://www.youtube.com/@theofficialcitroen|true|false|ENTROU id UCg3Rudz_2uKktAfTywXsIvQ (selo; título "Citroën")
+youtube|Honda|https://www.youtube.com/@Honda|true|false|ENTROU id UC22zQ9nBEk6KOjUWqR5XXZg (selo; 677 mil; a tabela só tinha Honda Automóveis = BR)
+youtube|Chevrolet|https://www.youtube.com/@Chevrolet|true|false|ENTROU id UCSVpCNZzOeMekuMiFze3fnQ (selo; 787 mil; a tabela só tinha Chevrolet Brasil)
+youtube|Jeep|https://www.youtube.com/@Jeep|true|false|ENTROU id UCMWLdSdAyDcCy_OVzONKm0w (selo; a tabela só tinha Jeep Brasil)
+youtube|BYD Global|https://www.youtube.com/@BYDGlobal|true|false|ENTROU id UCHlKiZpRUfYpxgiNrFzpjbA (selo; a tabela só tinha BYD Brasil)
+youtube|GWM Global|https://www.youtube.com/@greatwallmotor1853|true|false|ENTROU id UCs5oqkMf9GqH4Lui1rbM-HA (gwm-global.com linka /channel/UCs5oqkMf9GqH4Lui1rbM-HA; sem selo; CUIDADO: a heurística da ferramenta vê "motor1" no handle e, no "verificar --gravar", troca oficial para false — falso positivo, ver F3.md seção 8)
+youtube|Renault Group|https://www.youtube.com/@renaultgroup|true|false|ENTROU id UCjpe-FourUgOLzzPu9qV4qg (renaultgroup.com linka @renaultgroup; renault.com redireciona para renaultgroup.com; selo; canal corporativo do grupo)
+youtube|Mitsubishi Motors (MitsubishiMotorsTV)|https://www.youtube.com/@MitsubishiMotorsTV|true|false|ENTROU id UCtxwcyCF62zCXPaBj-QybMA (único canal global da marca com selo na busca; mitsubishi-motors.com não linka YouTube)
+# --- YouTube BRASIL: os que faltavam ---
+youtube|Ram do Brasil|https://www.youtube.com/@RamdoBrasil|true|false|ENTROU id UCiAZZYxqS0FFshJU0EO5CCw (ram.com.br linka youtube.com/user/RAMdoBrasil → este id; selo)
+youtube|Nissan Brasil|https://www.youtube.com/@nissanbrasil|true|false|ENTROU id UChpihrq2RRLyzgLtpcoMVbw (selo; 1,12 mi)
+youtube|Peugeot Brasil|https://www.youtube.com/@peugeotbrasil|true|false|ENTROU id UCtDew4iI18GOrvPXrvhXzhw (selo; peugeot.com.br responde 403)
+youtube|Citroën do Brasil|https://www.youtube.com/@citroen|true|false|ENTROU id UC8YKpC9NJy3BKPoWYYWc6EA (citroen.com.br linka youtube.com/user/citroen → este id)
+youtube|Mitsubishi Motors BR|https://www.youtube.com/@MitsubishiMotors|true|false|ENTROU id UCEmi0v44ZknNFkzc2_a2Uhw (mitsubishimotors.com.br linka youtube.com/user/MitsubishiMotors → este id; selo)
+youtube|Ford Brasil|https://www.youtube.com/@fordbrasil|true|false|ENTROU id UCV1aAz5q_yh3jMOnLa-lk7Q (selo; 346 mil)
+youtube|Audi Brasil|https://www.youtube.com/@AudiBRAudiBrasil|true|false|ENTROU id UCdlSVdgDNGRTRljyk-hhWSQ (selo; audi.com.br responde 403)
+youtube|Hyundai Motor Brasil|https://www.youtube.com/@hyundaibr|true|false|ENTROU id UCnBYf03jmMPiABvbSYbxMcA (hyundai-csa-news.com, sala de imprensa BR, linka youtube.com/user/hyundaibr → este id)
+youtube|Kia Brasil|https://www.youtube.com/@KiaBrasilOficial|true|false|ENTROU id UCdYujnKF7ND-7mLhLxsE9uw (kia.com.br linka youtube.com/KiaBrasilOficial; selo)
+youtube|Land Rover Brasil|https://www.youtube.com/@landroverbr|true|false|ENTROU id UCcL1xAFzwrWEMqOzHkoT6Zg (landrover.com.br linka youtube.com/landroverbr → este id)
+# --- YouTube: descartados (sem prova de oficial ou em dúvida; o id da página fica anotado) ---
+youtube|Fiat (global, @fiat1253)|https://www.youtube.com/@fiat1253|true|false|DESCARTADA: dois canais verificados com o título "Fiat" (@fiat1253 = UCpQS0xnrCfJfdLHwTSQxOGA, 721 mil; @Fiat = UC_nBvBIV0K6P5C3tA27Hwrg, 78,8 mil); fiat.com e fiat.it respondem 403 — não achei o oficial global com certeza
+youtube|Fiat (global, @Fiat)|https://www.youtube.com/@Fiat|true|false|DESCARTADA: idem (ver linha acima)
+youtube|Renault (global, @Renault)|https://www.youtube.com/@Renault|true|false|DESCARTADA: selo, mas só 3,69 mil inscritos e renault.com leva a renaultgroup.com, que linka @renaultgroup (este entrou); em dúvida
+youtube|MITSUBISHI MOTORS Global|https://www.youtube.com/@MitsubishiMotorsGlobal|true|false|DESCARTADA: id UCRFlVtvzVnLEiRk9AScqjpg, sem selo e sem link no site oficial; entrou o @MitsubishiMotorsTV (verificado)
+youtube|CAOA Chery|https://www.youtube.com/@CAOAChery|true|false|DESCARTADA: id UCo3iqVlz3pzmXlSoipcAWEw e título "CAOA Chery" (41,6 mil), mas sem selo e caoachery.com.br (home e /noticias) não expõe link de YouTube sem JavaScript — não achei o oficial com certeza
+youtube|BMW Brasil|https://www.youtube.com/@BMWTVBrasil|true|false|DESCARTADA: id UCNdmMv0UNG470K6YHYznwKA, sem selo; press.bmwgroup.com/brazil linka só o canal global BMW Group; bmw.com.br não abre daqui
+youtube|Mercedes-Benz Brasil|https://www.youtube.com/@MercedesBenzBrasil|true|false|DESCARTADA: id UC1yLUcwlC_f2vaSBoaOLcgg, sem selo; mercedes-benz.com.br não abre daqui — não verificado (tempo)
+youtube|Porsche Brasil|https://www.youtube.com/@PorscheBrasilOficial|true|false|DESCARTADA: id UCBfvceulEkHn9XaFTJ1-ckA, sem selo (5,15 mil); porsche.com/brazil não linka YouTube
+youtube|Volvo Car Brasil|https://www.youtube.com/@VolvoCarBrasil|true|false|DESCARTADA: id UCeoxJyBwpgNhAB8ZQEhyb9w, sem selo; volvocars.com/br responde 403
+youtube|Mitsubishi Motors BR (handle citado no site)|https://www.youtube.com/@MitsubishiMotorsBR|true|false|DESCARTADA: página HTTP 404; o certo é @MitsubishiMotors (entrou)
+youtube|Chery (global)|https://www.youtube.com/results?search_query=Chery|true|false|NAO VERIFICADO (tempo): a busca só mostra canais regionais (UK, Romania, Czech); a tarefa pede Caoa Chery (BR)
+# --- YouTube: já na tabela de 4.10 (vistos de passagem nos sites oficiais; NÃO verificados pela CLI, sem fetch extra) ---
+youtube|Chevrolet Brasil|https://www.youtube.com/@chevroletbrasil|true|false|JA NA TABELA — chevrolet.com.br linka youtube.com/chevroletbrasil; a busca mostra id UCRojKYdkvZcRQX1Vu7wEU5g (não verificado pela CLI)
+youtube|GWM Brasil|https://www.youtube.com/@gwm_brasil|true|false|JA NA TABELA — gwmmotors.com.br linka /channel/UClEDz-QJFtkZJ5dKEAEW7zg (não verificado pela CLI)
+youtube|Porsche|https://www.youtube.com/@Porsche|true|false|JA NA TABELA — newsroom.porsche.com linka @Porsche
+youtube|Mercedes-Benz|https://youtube.com/user/MercedesBenzTV|true|false|JA NA TABELA — media.mercedes-benz.com linka youtube.com/user/MercedesBenzTV
+youtube|Ferrari|https://www.youtube.com/user/ferrariworld|true|false|JA NA TABELA — ferrari.com/en-US/media-centre linka youtube.com/user/ferrariworld
+youtube|BMW (BMW Group)|https://www.youtube.com/user/BMWGroupView|true|false|JA NA TABELA — press.bmwgroup.com/brazil linka youtube.com/user/BMWGroupView (canal do grupo; a tabela tem "BMW")
+youtube|Land Rover (sub-marcas)|https://www.youtube.com/@rangerover|true|false|JA NA TABELA — media.jlr.com/landrover linka @rangerover, @defender e @landroverdiscovery (sub-marcas; "Land Rover" já está; não verificados pela CLI)
+youtube|Fiat Brasil|https://www.youtube.com/@fiatbr|true|false|JA NA TABELA — busca "Fiat": "Fiat Automóveis Brasil" verificado, id UCww4HYJZlIk3fRgqTWEW4cA (não verificado pela CLI)
+youtube|Volvo Cars|https://www.youtube.com/@VolvoCars|true|false|JA NA TABELA — busca: verificado, id UCaY-4ndPCRKp60qXF7zBJ0w (não verificado pela CLI)
+youtube|Renault Brasil|https://www.youtube.com/@RenaultBrasil|true|false|JA NA TABELA — busca: verificado, 951 mil, id UC1ZHtRLTK0Lrl1N6DVGshgg (não verificado pela CLI)
+youtube|Honda Automóveis|https://www.youtube.com/@hondabr|true|false|JA NA TABELA — página do canal: id UCFy0Z7HS5OQGHeb-sTnjsNA, título "Honda Automóveis" (visto de passagem)
+youtube|Jeep | Brasil|https://www.youtube.com/@jeepdobrasil|true|false|JA NA TABELA — busca: id UCZuERLdGT7WEPKgEPTmbSHg (não verificado pela CLI)
+# --- RSS / salas de imprensa: entraram ---
+rss|Volkswagen Newsroom|https://www.volkswagen-newsroom.com/en/feeds/press-releases|true|false|ENTROU (100 itens, mais novo 2026-09-28; <link rel=alternate> em volkswagen-newsroom.com/en)
+rss|Audi Media Center|https://www.audi-mediacenter.com/en/feeds/press-releases|true|false|ENTROU (100 itens, mais novo 2026-09-11; <link rel=alternate> em audi-mediacenter.com/en; audi.com/en/feeds/press-releases é o mesmo feed)
+rss|BMW Group PressClub Brazil|https://www.press.bmwgroup.com/pressclub/p/br/rss.html?locale=pt&outputChannelId=43|true|false|ENTROU (20 itens, mais novo 2026-09-30; página press.bmwgroup.com/brazil/info/rss; filtrar=true: BMW + MINI + Motorrad)
+rss|Nissan Global Newsroom|https://global.nissannews.com/en/rss|true|false|ENTROU (26 itens, mais novo 2026-09-29; sala global.nissannews.com/en)
+rss|Hyundai CSA News (Brasil)|https://hyundai-csa-news.com/feed/|true|false|ENTROU (10 itens, mais novo 2026-09-23; hyundai.com.br/imprensa redireciona para hyundai-csa-news.com, que declara o feed)
+rss|Toyota Comunica (Brasil)|https://www.toyotacomunica.com.br/feed/|true|false|ENTROU (9 itens, mais novo 2026-09-22; WordPress; a home só abre com User-Agent completo)
+# --- RSS / salas de imprensa: descartadas (motivo) ---
+rss|Mercedes-Benz Group Media (global)|https://group-media.mercedes-benz.com/|true|false|DESCARTADA: HTTP 403; media.mercedes-benz.com abre mas não declara RSS (/rss devolve HTML)
+rss|Mercedes-Benz Brasil (imprensa)|https://www.mercedes-benz.com.br/imprensa|true|false|DESCARTADA: não abre daqui (HTTP/2 INTERNAL_ERROR; www2 sem resposta)
+rss|Porsche Newsroom|https://newsroom.porsche.com/en.html|true|false|DESCARTADA: sem feed declarado; /en.rss HTML, /rss/en.xml HTTP 500, /en/rss.xml 404; /pt_BR.html 404
+rss|Toyota global newsroom|https://global.toyota/en/newsroom/|true|false|DESCARTADA: sem feed declarado; /rss/ e /feed/ HTTP 403 (Toyota Pressroom já está na tabela)
+rss|Stellantis media (global)|https://www.media.stellantis.com/em-en|true|false|DESCARTADA: HTTP 403 mesmo com User-Agent completo (vale para Fiat, Jeep, Ram, Peugeot, Citroën)
+rss|Stellantis media Brasil|https://www.media.stellantis.com/br-pt|true|false|DESCARTADA: HTTP 403 (idem /br-pt/rss)
+rss|Ford Media (global)|https://media.ford.com/content/fordmedia/fna/us/en.html|true|false|DESCARTADA: HTTP 403
+rss|Ford Media Brasil|https://media.ford.com/content/fordmedia/fsa/br/pt.html|true|false|DESCARTADA: HTTP 403
+rss|GM Newsroom (Chevrolet global)|https://news.gm.com/|true|false|DESCARTADA: home 200 sem feed; /rss e /home.rss HTTP 403
+rss|GM/Chevrolet Brasil|https://media.gm.com/media/br/pt/chevrolet/home.html|true|false|DESCARTADA: HTTP 403; chevrolet.com.br/imprensa 404
+rss|Kia Newscenter (global)|https://www.kianewscenter.com/|true|false|DESCARTADA: erro de certificado no proxy da nuvem (não desliguei TLS); PC testar
+rss|Kia Brasil (área de imprensa)|https://www.kia.com.br/areaimprensa|true|false|DESCARTADA: só kits .zip, sem feed; /imprensa e /noticias 404; /kianews não testado (tempo)
+rss|Honda global newsroom|https://global.honda/en/newsroom/|true|false|DESCARTADA: sem feed declarado; /rss/ e /feed/ 404
+rss|Honda News Brasil|https://www.hondanews.com.br/|true|false|DESCARTADA: não abre daqui (proxy: CONNECT tunnel failed 502, 2 tentativas)
+rss|Nissan Global Newsroom (en-US)|https://global.nissannews.com/en-US/rss|true|false|DESCARTADA: HTTP 404 (o válido é /en/rss)
+rss|Nissan Brasil newsroom|https://brasil.nissannews.com/pt-BR|true|false|DESCARTADA: redireciona em laço (303 /en/en/en/…); nissannews.com/pt-BR cai na página global de regiões
+rss|Renault Group media|https://media.renaultgroup.com/en/|true|false|DESCARTADA: 200 (WordPress) mas /en/feed/ e /feed/?lang=eng HTTP 403
+rss|Renault Brasil imprensa|https://imprensa.renault.com.br/|true|false|DESCARTADA: aplicação JavaScript; /feed e /rss devolvem HTML; renault.com.br/imprensa.html 404
+rss|BYD (global)|https://www.byd.com/|true|false|DESCARTADA: byd.com/eu/news 404; byd.com → /us sem RSS
+rss|BYD Brasil|https://www.byd.com.br/|true|false|DESCARTADA: página só JavaScript (298 bytes); /feed/ 404
+rss|GWM global news|https://www.gwm-global.com/news/|true|false|DESCARTADA: connection reset em /news/; home sem feed
+rss|GWM Brasil|https://www.gwmmotors.com.br/pt|true|false|DESCARTADA: sem feed nem página de imprensa
+rss|CAOA Chery (notícias)|https://caoachery.com.br/noticias|true|false|DESCARTADA: sem feed; /noticias/feed 404; home 403 sem User-Agent completo
+rss|Mitsubishi Motors global newsroom|https://www.mitsubishi-motors.com/en/newsroom/newsrelease/index.html|true|false|DESCARTADA: 200 sem feed declarado
+rss|Mitsubishi Motors Brasil (imprensa)|https://www.mitsubishimotors.com.br/imprensa|true|false|DESCARTADA: /feed/ 404 e /imprensa/feed devolve HTML
+rss|Volvo Cars media (global e BR)|https://www.volvocars.com/intl/media/|true|false|DESCARTADA: HTTP 403 (media.volvocars.com redireciona para cá; /br também 403)
+rss|JLR News Feed - Corporate|https://media.jlr.com/corporate/en/feed/news/corporate|true|false|DESCARTADA: feed sem itens (XML válido, 0 itens)
+rss|JLR News Feed - Land Rover|https://media.jlr.com/corporate/en/feed/news/landrover|true|false|DESCARTADA: feed sem itens (achado em media.jlr.com/landrover/)
+rss|Ferrari media centre|https://www.ferrari.com/en-US/media-centre|true|false|DESCARTADA: 200 sem feed (o /en-EN/media do SKILL responde 404; media.ferrari.com redireciona para cá)
+rss|Lamborghini media|https://media.lamborghini.com/|true|false|DESCARTADA: HTTP 202 com desafio anti-robô
+rss|McLaren press|https://cars.mclaren.press/|true|false|DESCARTADA: HTTP 404 (também /en) — não verificado (tempo)
+rss|Tesla blog|https://www.tesla.com/blog|true|false|DESCARTADA: HTTP 403; /blog/feed idem
+rss|Volkswagen News Brasil|https://www.vwnews.com.br/|true|false|DESCARTADA: aplicação JavaScript; /feed/ devolve HTML
+rss|Audi Brasil (site)|https://www.audi.com.br/|true|false|DESCARTADA: HTTP 403
+rss|Hyundai Motor Brasil (URL do enunciado)|https://www.hyundai-motor.com.br/imprensa|true|false|DESCARTADA: redireciona para a home; a sala certa é hyundai.com.br/imprensa → hyundai-csa-news.com (entrou)
+rss|Porsche Brasil newsroom|https://newsroom.porsche.com/pt_BR.html|true|false|DESCARTADA: HTTP 404 (não há edição BR)
+rss|Land Rover Brasil (site)|https://www.landrover.com.br/|true|false|DESCARTADA: 200 sem feed (/feed/ 404); só confirma o link do YouTube
+# --- Já na tabela de 4.10 (RSS), não repetidos: BMW Group PressClub, Hyundai News, Toyota Pressroom

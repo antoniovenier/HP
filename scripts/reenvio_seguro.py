@@ -47,7 +47,14 @@ def _por_hp_studio_no_caminho() -> None:
 _por_hp_studio_no_caminho()
 
 from hpbase import (FUSO, SegredoAusente, agora, agora_iso, escrever_json,  # noqa: E402
-                    ler_json, ler_segredo, mascarar, obter_logger, raiz_local)
+                    ler_json, mascarar, obter_logger, raiz_local)
+from hpbase import fila_api_pc as fa  # noqa: E402  (fila REAL: handle, chave do token, id, adaptador)
+
+# a Graph API do Instagram (login do Instagram, como o publicador_meta) e a do Threads (4.2)
+IG_VER = os.environ.get("HP_IG_VER", "v21.0")
+TH_VER = "v1.0"
+IG_BASE = "https://graph.instagram.com"
+TH_BASE = "https://graph.threads.net"
 
 ESPERAS_PADRAO = (60, 300, 900)   # 1, 5 e 15 minutos
 ESPERA_FINAL = 60                 # última conferida depois da 4ª falha
@@ -139,8 +146,8 @@ def ja_publicado(cliente, ig_id, legenda, desde_ts, rede: str = "instagram",
 class ClienteGraph:
     """GET simples na Graph API (Instagram ou Threads). O token nunca sai em erro."""
 
-    def __init__(self, token: str, versao: str = "v21.0",
-                 host: str = "https://graph.facebook.com", timeout: float = 30, sessao=None):
+    def __init__(self, token: str, versao: str = IG_VER,
+                 host: str = IG_BASE, timeout: float = 30, sessao=None):
         self._token = token
         self.versao, self.host, self.timeout = versao, host.rstrip("/"), timeout
         self._sessao = sessao
@@ -280,7 +287,7 @@ def publicar_com_reenvio(publicar_fn, conferir_fn, esperas=ESPERAS_PADRAO, simul
 # ---------------------------------------------------------------- fila da API
 CAMPOS_LEGENDA = ("legenda", "caption", "texto", "text")
 CAMPOS_INICIO = ("tentativa_inicio", "inicio_tentativa", "tentado_em", "iniciado_em",
-                 "agendado_para")
+                 "agendado_para", "quando")   # "quando" é o campo real da fila (4.1): vale como início
 
 
 def pasta_fila_padrao() -> Path:
@@ -309,51 +316,55 @@ def legenda_do_item(item: dict) -> str:
 
 
 def inicio_do_item(item: dict, agora_=None) -> datetime:
+    """Início da tentativa: o campo mais preciso que o item tiver; `quando` ("AAAA-MM-DD HH:MM",
+    hora de Brasília, sem fuso — o formato real da fila) vale como início."""
     for k in CAMPOS_INICIO:
         if item.get(k):
             try:
+                if k == "quando":
+                    return fa.inicio(item).replace(tzinfo=FUSO)
                 return para_datetime(item[k])
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):   # fa.ErroFilaApi é ValueError
                 continue
     return (agora_ or agora()) - timedelta(hours=24)  # sem data: janela larga (a legenda decide)
 
 
-def cliente_e_id(item: dict, arquivo_segredo: str = "meta_tokens.txt"):
-    """Monta o ClienteGraph da conta do item lendo o token (nunca mostrado)."""
+def cliente_e_id(item: dict, arquivo_segredo: str = "meta_tokens.txt", meta: dict | None = None,
+                 pasta=None):
+    """ClienteGraph da conta do item + id da conta, no formato REAL dos segredos (4.3):
+
+    - token: linha `IG_<handle>=` ou `TH_<handle>=` de meta_tokens.txt (chave por
+      `fila_api_pc.chave_token`; lido por `fila_api_pc.leitor_de_tokens`, nunca mostrado);
+    - id: `contas[chave].id` de meta_tokens_meta.json (`fila_api_pc.id_da_conta`, só leitura)
+      ou, se o item trouxer, `ig_id`/`conta_id`;
+    - host: Instagram fala com graph.instagram.com (v21.0); Threads com graph.threads.net (v1.0).
+    `meta` e `pasta` (dos segredos) são injetáveis para os testes.
+    """
     rede = (item.get("rede") or "instagram").lower()
-    conta = str(item.get("conta") or "").upper()
-    pref = "TH" if rede == "threads" else "IG"
-
-    def ler(*chaves):
-        for c in chaves:
-            if not c:
-                continue
-            try:
-                return ler_segredo(arquivo_segredo, c)
-            except SegredoAusente:
-                continue
-        return None
-
-    token = ler(item.get("chave_token"), f"{pref}_{conta}_TOKEN", f"{pref}_TOKEN",
-                "META_TOKEN" if pref == "IG" else None)
-    ident = item.get("ig_id") or item.get("conta_id") or ler(item.get("chave_id"),
-                                                              f"{pref}_{conta}_ID")
-    if not token or not ident:
-        raise SegredoAusente(f"{arquivo_segredo}:{pref}_{conta}_TOKEN/{pref}_{conta}_ID")
+    alvo = {**item, "rede": rede}
+    chave = fa.chave_token(alvo)
+    token = fa.token_do_item(alvo, fa.leitor_de_tokens(arquivo_segredo, pasta))
+    ident = item.get("ig_id") or item.get("conta_id") or fa.id_da_conta(
+        chave, meta if meta is not None else fa.ler_meta(pasta))
+    if not ident:
+        raise SegredoAusente(f"meta_tokens_meta.json:contas.{chave}.id")
     if rede == "threads":
-        return ClienteGraph(token, versao="v1.0", host="https://graph.threads.net"), str(ident)
-    return ClienteGraph(token), str(ident)
+        return ClienteGraph(token, versao=TH_VER, host=TH_BASE), str(ident)
+    return ClienteGraph(token, versao=IG_VER, host=IG_BASE), str(ident)
 
 
-def achar_publicador():
-    """Função do publicador_meta.py que publica UM item da fila e devolve o id."""
+def achar_publicador(simular: bool = False):
+    """`publicar(item) -> {"media_id", "permalink", "publicado_em"}` em cima do `publicar_item`
+    real do publicador_meta.py (scripts\\, ao lado), pelo adaptador `fila_api_pc.publicador_adaptado`:
+    tokens lidos na hora pelo `ler_tokens` dele, meta só leitura, "limite" -> LimiteDaConta,
+    ErroAPI -> ErroPublicador (sem token). O real NUNCA é chamado com simular=True."""
     import publicador_meta  # noqa: PLC0415 — está em scripts\, ao lado deste arquivo
-    for nome in ("publicar_item", "publicar_da_fila", "publicar"):
-        fn = getattr(publicador_meta, nome, None)
-        if callable(fn):
-            return fn
-    raise RuntimeError("publicador_meta.py não tem publicar_item(item) -> id; "
-                       "veja LEIA_reenvio_seguro.md, passo 'Integração'")
+    fn = getattr(publicador_meta, "publicar_item", None)
+    ler_tokens = getattr(publicador_meta, "ler_tokens", None)
+    if not callable(fn) or not callable(ler_tokens):
+        raise RuntimeError("publicador_meta.py não tem publicar_item(item, toks, meta, simular) e "
+                           "ler_tokens(); veja LEIA_reenvio_seguro.md, passo 'Integração'")
+    return fa.publicador_adaptado(fn, ler_tokens=ler_tokens, meta=fa.ler_meta, simular=simular)
 
 
 def _marcar(arq: Path, item: dict, **reenvio) -> None:

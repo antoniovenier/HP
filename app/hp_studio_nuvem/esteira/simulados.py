@@ -22,7 +22,7 @@ def _falso(p: Path) -> Path:
 
 
 class BaixadorSimulado:
-    def baixar(self, url: str, destino: Path) -> Path:
+    def baixar(self, url: str, destino: Path, pedido: dict | None = None) -> Path:
         return _falso(Path(destino) / "bruto.mp4")
 
 

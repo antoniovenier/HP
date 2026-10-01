@@ -4,14 +4,14 @@ from __future__ import annotations
 import copy
 from pathlib import Path
 
-from hpbase import ler_json, pasta_app
+from hpbase import ler_json, pasta_paridade
 
 PADRAO = Path(__file__).with_name("limites.json")
 
 
 def arquivo_local() -> Path:
-    """Ajuste local opcional: H:\\HypadoLocal\\app\\paridade\\limites.json."""
-    return pasta_app() / "paridade" / "limites.json"
+    """Ajuste local opcional: H:\\HypadoLocal\\app\\paridade_nuvem\\limites.json (hpbase.pasta_paridade)."""
+    return pasta_paridade() / "limites.json"
 
 
 def _limpar(d):

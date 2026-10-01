@@ -2,15 +2,18 @@
 
 Cada etapa usa plugins injetáveis (os testes passam falsos; o --simular usa
 os de simulados.py). Os reais chamam os scripts que JÁ EXISTEM no PC por
-subprocesso (hpbase.rodar, sem janela), com a linha de comando montada a
-partir de config.json -> "comandos" (dá para ajustar sem mexer no código).
+subprocesso (hpbase.rodar, sem janela), com o argv montado por
+esteira/comandos_pc.py (a linha de comando REAL de cada script, §4.4). Se o
+config.json -> "comandos" sobrepuser um modelo, vale o modelo (montar_comando).
 
-  Baixador    -> scripts\\ytdlp.py (ou yt-dlp do PATH)
+  Baixador    -> scripts\\ytdlp.py com o trecho (argv_baixar) ou yt-dlp do PATH
   Legendador  -> faster-whisper (se instalado; senão erro claro)
-  Dublador    -> scripts\\dublar.py (Piper pt-BR)
-  Narrador    -> scripts\\dublar.py para cada frase + montagem com ffmpeg
+  Dublador    -> scripts\\dublar.py sobre um corte JÁ renderizado (argv_dublar_avulso);
+                 na esteira a dublagem do gringo sai pelo cortar.py --dublar
+  Narrador    -> frase a frase por um sintetizador injetado/configurado + montagem com ffmpeg
+                 (o dublar.py do PC NÃO tem --texto-arquivo)
   Editor      -> ffmpeg (editor.py)
-  Designer    -> scripts\\estaticos.py
+  Designer    -> scripts\\estaticos.py (GTA: carrossel/story) e posts_<canal>.py render (canais)
   Agendador   -> fila da API (agendador.py)
   Avisador    -> fila do WhatsApp (aviso.py)
   Midia       -> ffmpeg (midia.py): confere bruto, extrai áudio, quadros
@@ -25,6 +28,7 @@ from typing import Any, Callable, Protocol
 
 from hpbase import escrever_json, garantir, mascarar, rodar
 
+from . import comandos_pc as cp
 from .constantes import EXT_IMAGEM, EXT_VIDEO
 from .erros import ErroEtapa, ErroPermanente
 from .legendas import Fala, escrever_srt, quebrar_falas
@@ -32,7 +36,7 @@ from .legendas import Fala, escrever_srt, quebrar_falas
 
 # --- interfaces ------------------------------------------------------------
 class Baixador(Protocol):
-    def baixar(self, url: str, destino: Path) -> Path: ...
+    def baixar(self, url: str, destino: Path, pedido: dict | None = None) -> Path: ...
 
 
 class Legendador(Protocol):
@@ -87,20 +91,24 @@ class Plugins:
 
 # --- utilidades -----------------------------------------------------------
 def montar_comando(cfg, nome: str, **valores) -> list[str]:
-    """Troca {python} {scripts} {url} {entrada} {saida} {item} no modelo."""
+    """Preenche o modelo de config.json -> "comandos" (marcadores {python} {scripts} {url}
+    {entrada} {saida} {inicio} {fim} ...). Mantido para quem personalizou um comando."""
     modelo = cfg.comandos.get(nome)
     if not modelo:
         raise ErroPermanente(f"comando '{nome}' não configurado em config.json")
-    vals = {"python": cfg.python, "scripts": str(cfg.pasta_scripts)}
+    vals = {"python": cfg.python, "scripts": str(cfg.pasta_scripts), "item": ""}
     vals.update({k: str(v) for k, v in valores.items()})
-    saida = []
-    for parte in modelo:
-        try:
-            saida.append(str(parte).format(**vals))
-        except KeyError as e:
-            raise ErroPermanente(f"comando '{nome}' usa {{{e.args[0]}}}, que não "
-                                 f"existe nesta etapa") from e
-    return saida
+    try:
+        return cp.preencher(modelo, **vals)
+    except KeyError as e:
+        raise ErroPermanente(f"comando '{nome}' usa {{{e.args[0]}}}, que não "
+                             f"existe nesta etapa") from e
+
+
+def personalizado(cfg, nome: str) -> bool:
+    """config.json trocou este comando? (então vale montar_comando, não o comandos_pc)"""
+    from .config import COMANDOS_PADRAO
+    return nome in cfg.comandos and cfg.comandos.get(nome) != COMANDOS_PADRAO.get(nome)
 
 
 def _checar(r, o_que: str) -> None:
@@ -119,15 +127,28 @@ def _script(cfg, nome: str) -> Path:
 
 # --- Baixador ---------------------------------------------------------------
 class BaixadorYtdlp:
-    """Usa scripts\\ytdlp.py (o que já existe) ou, se faltar, o yt-dlp do PATH."""
+    """scripts\\ytdlp.py com o argv REAL do baixar.py (comandos_pc.argv_baixar: só o trecho
+    inicio−4..fim+4 quando o pedido traz inicio/fim) ou, se o script faltar, o yt-dlp do PATH."""
 
     def __init__(self, cfg, rodar_fn: Callable = rodar):
         self.cfg = cfg
         self.rodar = rodar_fn
 
-    def comando(self, url: str, destino: Path) -> list[str]:
+    def comando(self, url: str, destino: Path, pedido: dict | None = None) -> list[str]:
+        """Argv puro (não roda). `destino` é a pasta; o arquivo sai como <destino>\\bruto.mp4."""
+        pedido = dict(pedido or {})
+        pedido["video_url"] = url
+        pedido.pop("arquivo", None)          # aqui sempre baixa (o trecho local a esteira já copiou)
+        arquivo = Path(destino) / "bruto.mp4"
         if (Path(self.cfg.pasta_scripts) / "ytdlp.py").exists():
-            return montar_comando(self.cfg, "baixar", url=url, saida=destino)
+            if personalizado(self.cfg, "baixar"):
+                extra = {}
+                if pedido.get("inicio") is not None and pedido.get("fim") is not None:
+                    extra = {"inicio": cp.hms(cp.segundos(pedido["inicio"]) - cp.FOLGA),
+                             "fim": cp.hms(cp.segundos(pedido["fim"]) + cp.FOLGA)}
+                return montar_comando(self.cfg, "baixar", url=url, saida=arquivo, **extra)
+            return cp.argv_baixar(pedido, arquivo, python=self.cfg.python,
+                                  scripts=self.cfg.pasta_scripts)
         exe = shutil.which("yt-dlp")
         if exe:
             return [exe, "--no-playlist", "--no-progress",
@@ -137,9 +158,9 @@ class BaixadorYtdlp:
         raise ErroPermanente("não achei scripts\\ytdlp.py nem o yt-dlp "
                              "(pip install yt-dlp)")
 
-    def baixar(self, url: str, destino: Path) -> Path:
+    def baixar(self, url: str, destino: Path, pedido: dict | None = None) -> Path:
         destino = garantir(Path(destino))
-        cmd = self.comando(url, destino)
+        cmd = self.comando(url, destino, pedido)
         r = self.rodar(cmd, timeout=self.cfg.timeouts.get("baixar", 1800), cwd=destino)
         _checar(r, "download")
         videos = [p for p in Path(destino).rglob("*")
@@ -193,21 +214,55 @@ class LegendadorWhisper:
 
 # --- Dublador ---------------------------------------------------------------
 class DubladorScript:
-    """scripts\\dublar.py (Piper pt-BR, voz gratuita já instalada; nunca clona voz)."""
+    """scripts\\dublar.py REAL (Piper pt-BR, nunca clona voz): dubla um corte JÁ renderizado
+    (`dublar.py <corte> --transcricao <json PT> --inicio --fim [--saida]`). Não aceita --srt nem
+    --texto-arquivo e não gera dublagem.wav avulsa. Na esteira a dublagem do gringo sai pelo
+    cortar.py --dublar (comandos_pc.argv_cortar(dublar=True)); este plugin serve para dublar à
+    parte um final.mp4 pronto (dublar_corte) — se o item ainda não tem corte, erro claro."""
 
     def __init__(self, cfg, rodar_fn: Callable = rodar):
         self.cfg = cfg
         self.rodar = rodar_fn
 
-    def dublar(self, item: Path, legenda: Path, pedido: dict) -> Path:
+    def comando(self, corte: Path, transcricao: Path, inicio, fim, saida=None) -> list[str]:
+        """Argv puro (não roda)."""
+        if personalizado(self.cfg, "dublar"):
+            argv = montar_comando(self.cfg, "dublar", entrada=corte, transcricao=transcricao,
+                                  inicio=inicio, fim=fim, saida=saida or "")
+            return argv + (["--saida", str(saida)] if saida and "--saida" not in argv else [])
+        return cp.argv_dublar_avulso(corte, transcricao, inicio, fim, saida,
+                                     python=self.cfg.python, scripts=self.cfg.pasta_scripts)
+
+    def dublar_corte(self, corte: Path, transcricao: Path, inicio, fim, saida: Path | None = None) -> Path:
         _script(self.cfg, "dublar.py")
-        saida = Path(item) / "dublagem.wav"
-        cmd = montar_comando(self.cfg, "dublar", entrada=legenda, saida=saida, item=item)
-        r = self.rodar(cmd, timeout=self.cfg.timeouts.get("dublar", 1800), cwd=item)
+        corte, transcricao = Path(corte), Path(transcricao)
+        if not transcricao.exists():
+            raise ErroPermanente(f"dublar.py precisa da transcrição em PT (formato 4.5): "
+                                 f"{transcricao.name} não existe")
+        saida = Path(saida) if saida else corte.with_name(f"{corte.stem}_dublado{corte.suffix}")
+        cmd = self.comando(corte, transcricao, inicio, fim, saida)
+        r = self.rodar(cmd, timeout=self.cfg.timeouts.get("dublar", 1800), cwd=corte.parent)
         _checar(r, "dublagem (dublar.py)")
         if not saida.exists():
-            raise ErroEtapa("dublar.py terminou sem gerar dublagem.wav")
+            raise ErroEtapa(f"dublar.py terminou sem gerar {saida.name}")
         return saida
+
+    def dublar(self, item: Path, legenda: Path, pedido: dict) -> Path:
+        """Interface da etapa 03: só funciona se o item já tem um corte renderizado (final.mp4);
+        a transcrição PT é legenda (.json) ou transcricao_pt.json / transcricao.json ao lado."""
+        item = Path(item)
+        corte = item / "final.mp4"
+        if not corte.exists():
+            raise ErroPermanente(
+                "o dublar.py do PC só dubla um corte já renderizado (não gera dublagem.wav): "
+                "na esteira a dublagem do gringo sai pelo cortar.py --dublar; para dublar à parte "
+                "use DubladorScript.dublar_corte(final.mp4, transcricao PT, inicio, fim)")
+        leg = Path(legenda)
+        transcricao = leg if leg.suffix.lower() == ".json" else next(
+            (item / n for n in ("transcricao_pt.json", "transcricao.json") if (item / n).exists()),
+            item / "transcricao_pt.json")
+        jan = cp.janela(pedido) or (0, pedido.get("duracao") or 0)
+        return self.dublar_corte(corte, transcricao, jan[0], jan[1], item / "final_dublado.mp4")
 
 
 # --- Narrador Toque HP -------------------------------------------------------
@@ -227,7 +282,11 @@ class NarradorToqueHP:
         self.sintetizar = sintetizar or self._sintetizar_script
 
     def _sintetizar_script(self, texto: str, saida: Path) -> Path:
-        _script(self.cfg, "dublar.py")
+        if not self.cfg.comandos.get("falar"):
+            raise ErroPermanente(
+                "não há sintetizador de frase avulsa: o dublar.py do PC não tem --texto-arquivo. "
+                "Configure comandos.falar no config.json (ex.: o piper com {entrada} e {saida}) "
+                "ou injete sintetizar= no NarradorToqueHP")
         txt = Path(saida).with_suffix(".txt")
         txt.write_text(texto, encoding="utf-8")
         cmd = montar_comando(self.cfg, "falar", entrada=txt, saida=saida,
@@ -308,16 +367,88 @@ class NarradorToqueHP:
 
 
 # --- Designer -----------------------------------------------------------------
-class DesignerScript:
-    """Estáticos: scripts\\estaticos.py gera as lâminas em arte\\.
+def spec_carrossel_gta(pedido: dict) -> dict:
+    """Spec do estaticos.py carrossel (§4.4) a partir do pedido: capa = título (+ subtítulo/imagem/
+    selo se vierem), lâminas = `laminas` [{titulo, texto, imagem?}], fonte e final opcionais."""
+    if isinstance(pedido.get("spec"), dict):
+        return dict(pedido["spec"])
+    capa = {"titulo": pedido.get("titulo", ""), "subtitulo": pedido.get("subtitulo", ""),
+            "imagem": pedido.get("imagem", "")}
+    if pedido.get("selo"):
+        capa["selo"] = pedido["selo"]
+    laminas = []
+    for i, l in enumerate(pedido.get("laminas") or [], 1):
+        if isinstance(l, dict):
+            lam = {"titulo": l.get("titulo", ""), "texto": l.get("texto", "")}
+            if l.get("imagem"):
+                lam["imagem"] = l["imagem"]
+        else:
+            lam = {"titulo": f"{i}", "texto": str(l)}
+        laminas.append(lam)
+    spec = {"capa": capa, "laminas": laminas}
+    if pedido.get("fonte"):
+        spec["fonte"] = pedido["fonte"]
+    if pedido.get("final"):
+        spec["final"] = pedido["final"]
+    return spec
 
-    Atalhos: threads_texto só grava texto_threads.txt (não tem arte); se o
-    pedido já trouxer imagens prontas em `arquivos`, elas são usadas.
+
+class DesignerScript:
+    """Estáticos com os scripts REAIS: GTA -> scripts\\estaticos.py (`carrossel <spec> <pasta>`,
+    `story <tipo> <saida.jpg> --titulo ...`); canais -> posts_<canal>.py render <spec.json>
+    (o pedido precisa trazer "spec" com o JSON do post, §4.4). Saída em arte\\.
+
+    Atalhos: threads_texto só grava texto_threads.txt (não tem arte); se o pedido já trouxer
+    imagens prontas em `arquivos`, elas são usadas. Campos do pedido que o GTA usa: `laminas`
+    (ou `spec`), `tiktok` (carrossel 1080x1920), `modelo` do story (novo_video | contagem |
+    noticia | interativo; padrão noticia) e `opcoes` {titulo, texto, imagem, video, fonte, data,
+    hoje, selo} (padrão: titulo do pedido e texto).
     """
 
     def __init__(self, cfg, rodar_fn: Callable = rodar):
         self.cfg = cfg
         self.rodar = rodar_fn
+
+    def comando(self, item: Path, pedido: dict, pasta: Path) -> tuple[list[str], str, Path | None]:
+        """(argv puro, nome do script, arquivo-alvo quando o script gera 1 só) — grava só o spec
+        JSON na pasta do item; não roda."""
+        item, pasta = Path(item), Path(pasta)
+        canal, tipo = pedido.get("canal"), pedido["tipo"]
+        py, sc = self.cfg.python, self.cfg.pasta_scripts
+        if canal == "gta":
+            if tipo == "carrossel":
+                spec = escrever_json(item / "spec_carrossel.json", spec_carrossel_gta(pedido))
+                if personalizado(self.cfg, "estaticos_carrossel"):
+                    argv = montar_comando(self.cfg, "estaticos_carrossel", entrada=spec, saida=pasta)
+                    return argv + (["--tiktok"] if pedido.get("tiktok") else []), "estaticos.py", None
+                return cp.argv_estaticos_carrossel(spec, pasta, tiktok=bool(pedido.get("tiktok")),
+                                                   python=py, scripts=sc), "estaticos.py", None
+            if tipo == "story":
+                modelo = pedido.get("modelo") or "noticia"
+                opcoes = dict(pedido.get("opcoes") or {})
+                opcoes.setdefault("titulo", pedido.get("titulo"))
+                if pedido.get("texto") and modelo in ("noticia",):
+                    opcoes.setdefault("texto", pedido["texto"])
+                saida = pasta / "story.jpg"
+                if personalizado(self.cfg, "estaticos_story"):
+                    return montar_comando(self.cfg, "estaticos_story", tipo=modelo, saida=saida), "estaticos.py", saida
+                return cp.argv_estaticos_story(modelo, saida, python=py, scripts=sc, **opcoes), "estaticos.py", saida
+            raise ErroPermanente(f"estaticos.py não tem arte avulsa de feed ({tipo}): no GTA use "
+                                 f"carrossel (capa + lâminas) ou story")
+        if canal not in cp.POSTS_POR_CANAL:
+            raise ErroPermanente(f"não há script de arte para o canal {canal!r}")
+        if not isinstance(pedido.get("spec"), dict):
+            raise ErroPermanente(f"pedido.json precisa de \"spec\" com o JSON do post do "
+                                 f"posts_{canal}.py (§4.4: canal, id, saida, slides[...], story, reel, creditos)")
+        spec = dict(pedido["spec"])
+        spec.setdefault("canal", canal)
+        spec.setdefault("id", pedido.get("id"))
+        spec["saida"] = str(pasta)
+        arq = escrever_json(item / "post_spec.json", spec)
+        script = cp.POSTS_POR_CANAL[canal]
+        if personalizado(self.cfg, "posts_render"):
+            return montar_comando(self.cfg, "posts_render", script=script, entrada=arq), script, None
+        return cp.argv_posts_render(canal, arq, python=py, scripts=sc), script, None
 
     def gerar(self, item: Path, pedido: dict) -> list[Path]:
         item = Path(item)
@@ -336,14 +467,27 @@ class DesignerScript:
                 prontas.append(dst)
         if prontas:
             return prontas
-        _script(self.cfg, "estaticos.py")
-        cmd = montar_comando(self.cfg, "estaticos", entrada=item / "pedido.json",
-                             saida=pasta, item=item)
+        cmd, script, alvo = self.comando(item, pedido, pasta)
+        _script(self.cfg, script)
         r = self.rodar(cmd, timeout=self.cfg.timeouts.get("estaticos", 600), cwd=item)
-        _checar(r, "arte (estaticos.py)")
+        _checar(r, f"arte ({script})")
+        if alvo is not None:
+            if not alvo.exists():
+                raise ErroEtapa(f"{script} terminou sem gerar {alvo.name}")
+            return [alvo]
         imgs = sorted(p for p in pasta.iterdir() if p.suffix.lower() in EXT_IMAGEM)
         if not imgs:
-            raise ErroEtapa("estaticos.py terminou sem gerar imagem em arte\\")
+            raise ErroEtapa(f"{script} terminou sem gerar imagem em arte\\")
+        tipo = pedido["tipo"]
+        sufixo = {"story": "_story", "estatico": "_feed"}.get(tipo)
+        if sufixo and pedido.get("canal") != "gta":
+            so = [p for p in imgs if p.stem.endswith(sufixo)]
+            if so:
+                return so
+        if tipo == "carrossel" and pedido.get("canal") != "gta":
+            so = [p for p in imgs if p.stem[-2:].isdigit()]
+            if so:
+                return so
         return imgs
 
 

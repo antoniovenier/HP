@@ -22,9 +22,11 @@ O `publicador_meta.py` continua o mesmo (não é reescrito); ele só **importa**
 2. `pip install requests` (se já não tiver).
 3. Ele acha a base `hpbase` sozinho em `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\`
    (ou na pasta da variável `HP_APP`).
-4. Tokens: lidos de `H:\HypadoLocal\segredos\meta_tokens.txt` com `IG_<CONTA>_TOKEN` e
-   `IG_<CONTA>_ID` (Threads: `TH_<CONTA>_TOKEN`/`TH_<CONTA>_ID`; se faltar, tenta `IG_TOKEN`
-   e `META_TOKEN`) — **mesmo formato do LEIA do pacote `metricas`**. Nunca impressos.
+4. Tokens: o formato REAL dos segredos (rodada 2, 4.3): linha `IG_<handle>=<token>` ou
+   `TH_<handle>=<token>` em `H:\HypadoLocal\segredos\meta_tokens.txt` (`IG_hpgta6`,
+   `TH_hp.futebol`; aceita `@`, aspas e linhas `#`) e o **id** da conta em
+   `meta_tokens_meta.json` (`contas.<chave>.id`, lido sem regravar). O Instagram fala com
+   `graph.instagram.com` (v21.0) e o Threads com `graph.threads.net` (v1.0). Nunca impressos.
 
 ## Comandos
 
@@ -47,14 +49,20 @@ Log em `H:\HypadoLocal\app\logs\reenvio_seguro_AAAA-MM-DD.log`.
 {
   "id": "20260930-1830-gta-reel",
   "rede": "instagram",
-  "conta": "gta",
+  "conta": "hpgta6",
   "tipo": "reel",
   "legenda": "texto completo da legenda",
-  "tentativa_inicio": "2026-09-30T18:30:05-03:00",
-  "status": "tempo_esgotado",
-  "ig_id": "opcional (senão vem de IG_GTA_ID)"
+  "quando": "2026-09-30 18:30",
+  "tentativa_inicio": "opcional (2026-09-30T18:30:05-03:00); sem ele, o `quando` vale como início",
+  "ultimo_erro": "HTTP 504: tempo esgotado", "tentativas": 2,
+  "ig_id": "opcional (senão vem de meta_tokens_meta.json, contas.IG_hpgta6.id)"
 }
 ```
+
+Em produção o `reenviar` acha o `publicar_item` do `publicador_meta.py` pelo adaptador
+`hpbase.fila_api_pc.publicador_adaptado` (tokens pelo `ler_tokens` dele, lidos na hora;
+`"limite"` vira `LimiteDaConta`; `ErroAPI` vira `ErroPublicador` sem token) e **nunca** chama
+o real com `simular=True` — com `--simular` ele só confere e descreve.
 
 Nomes aceitos também: legenda = `caption`/`texto`/`text`; início = `inicio_tentativa`,
 `tentado_em`, `iniciado_em` ou `agendado_para`. Sem nenhum horário, a conferida olha as

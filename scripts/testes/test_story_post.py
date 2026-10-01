@@ -646,14 +646,28 @@ def item_fila(pid="2026-09-30_gta_trailer3", canal="gta", conta="hpgta6", link=L
     return d
 
 
-def lote_enquete(drive, pergunta="Vai comprar no 1º dia?", opcoes=("Sim", "Não"), **kw):
+def lote_enquete(drive, pergunta="Vai comprar no 1º dia?", opcoes=("Sim", "Não"), formato="real", **kw):
+    """Grava lotes\\2026-09-30_estaticos.json. formato="real" = chave "interativo" do lote de
+    estáticos do GTA (§4.5, rodada 2); formato="antigo" = item "story_enquete" (suposição da rodada 1)."""
     pasta = drive / "lotes"
     pasta.mkdir(parents=True, exist_ok=True)
     (pasta / "arte_enquete_0930.png").write_bytes(b"\x89PNG arte")
-    item = {"tipo": "story_enquete", "canal": "gta", "arquivo": "arte_enquete_0930.png",
-            "pergunta": pergunta, "opcoes": list(opcoes), "caixa_enquete": [540, 1650], **kw}
-    escrever_json(pasta / "2026-09-30_estaticos.json",
-                  {"dia": "2026-09-30", "itens": [{"tipo": "carrossel", "arquivo": "x.png"}, item]})
+    if formato == "antigo":
+        item = {"tipo": "story_enquete", "canal": "gta", "arquivo": "arte_enquete_0930.png",
+                "pergunta": pergunta, "opcoes": list(opcoes), "caixa_enquete": [540, 1650], **kw}
+        escrever_json(pasta / "2026-09-30_estaticos.json",
+                      {"dia": "2026-09-30", "itens": [{"tipo": "carrossel", "arquivo": "x.png"}, item]})
+        return item
+    item = {"arquivo": "arte_enquete_0930.png", "rede": "Instagram @hpgta6 (compartilhar no Facebook)",
+            "horario": "16:00", "figurinha": "enquete", "pergunta": pergunta, "opcoes": list(opcoes),
+            "destaque": "Enquetes", "caixa_enquete": [540, 1650], **kw}
+    escrever_json(pasta / "2026-09-30_estaticos.json", {
+        "data": "2026-09-30", "criado": "2026-09-29 madrugada (hypado-estaticos)",
+        "carrossel": {"tema": "x", "arquivos": "x.png", "horario": "15:00",
+                      "instagram": "na fila da API para 30/09 15:00 — id gta_2026-09-30_ig_carrossel"},
+        "stories": [{"hora": "09:00", "arquivo": "0900_contagem.jpg", "tema": "contagem 50 dias",
+                     "instagram": "na fila da API (publicador_meta) para 30/09 09:00"}],
+        "interativo": item})
     return item
 
 
@@ -1047,13 +1061,59 @@ def test_pergunta_da_enquete_maior_que_25_aborta(_raizes):
     _, drive = _raizes
     ctx, fake, _ = novo()
     lote_enquete(drive, pergunta="Qual vai ser o preço do GTA 6 no Brasil?")
-    with pytest.raises(sp.PerguntaLonga):
+    with pytest.raises(sp.PerguntaLonga, match="pergunta_curta"):   # explica o que gravar no lote
         sp.carregar_enquete(ctx.cfg, "2026-09-30")
     r = sp.rodar_enquete(ctx, "2026-09-30")
-    assert r["codigo"] == sp.ERRO and "25" in r["mensagem"]
+    assert r["codigo"] == sp.ERRO and "25" in r["mensagem"] and "--cortar" in r["mensagem"]
     assert fake.comandos == []
-    cortada = sp.carregar_enquete(ctx.cfg, "2026-09-30", cortar=True)["pergunta"]
-    assert len(cortada) <= 25 and cortada == "Qual vai ser o preço do"
+    # plano B antigo: --cortar corta por palavra
+    d = sp.carregar_enquete(ctx.cfg, "2026-09-30", cortar=True)
+    assert len(d["pergunta"]) <= 25 and d["pergunta"] == "Qual vai ser o preço do"
+    assert d["origem_pergunta"] == "cortada"
+
+
+def test_enquete_lote_real_encurta_sem_cortar_e_le_pergunta_curta(_raizes):
+    """O lote real de 01/10 (tests/fixtures/pc_real): a pergunta de 44 caracteres vira a última
+    oração com "?" sem --cortar; a arte em H:\\HypadoLocal\\... é traduzida para a raiz da máquina."""
+    local, drive = _raizes
+    ctx, fake, _ = novo(ativa="hpgta6")
+    real = json.loads((SCRIPTS.parent / "tests" / "fixtures" / "pc_real" / "lote_estaticos_2026-10-01.json")
+                      .read_text(encoding="utf-8"))
+    (drive / "lotes").mkdir(parents=True, exist_ok=True)
+    escrever_json(drive / "lotes" / "2026-10-01_estaticos.json", real)
+    arte = local / "upload" / "story_interativo_2026-10-01.jpg"
+    arte.parent.mkdir(parents=True, exist_ok=True)
+    arte.write_bytes(b"\xff\xd8 arte")
+    d = sp.carregar_enquete(ctx.cfg, "2026-10-01")
+    assert d["pergunta"] == "O que você faz?" and d["origem_pergunta"] == "ultima_oracao"
+    assert d["opcoes"] == ["Vou ver de perto", "Fujo pro outro lado"]
+    assert d["arte"] == arte and d["handle"] == "hpgta6" and d["destaque"] == "Enquetes"
+    assert d["caixa"] == [540, 1500] and d["horario"] == "16:00"      # caixa do config (o lote não tem)
+    r = sp.rodar_enquete(ctx, "2026-10-01")
+    assert r["ok"], r
+    assert fake.enquete_pronta == {"pergunta": "O que você faz?", "op0": "Vou ver de perto",
+                                   "op1": "Fujo pro outro lado"}
+    assert fake.adicionados == [("hpgta6", "Enquetes")]
+    # pergunta_curta gravada pelo hypado-estaticos vence
+    real["interativo"]["pergunta_curta"] = "Furacão: o que você faz?"
+    escrever_json(drive / "lotes" / "2026-10-01_estaticos.json", real)
+    d = sp.carregar_enquete(ctx.cfg, "2026-10-01")
+    assert d["pergunta"] == "Furacão: o que você faz?" and d["origem_pergunta"] == "pergunta_curta"
+
+
+def test_enquete_formato_antigo_continua_valendo(_raizes):
+    _, drive = _raizes
+    ctx, fake, _ = novo(ativa="hpgta6")
+    lote_enquete(drive, formato="antigo", destaque="GTA 6")
+    d = sp.carregar_enquete(ctx.cfg, "2026-09-30")
+    assert d["pergunta"] == "Vai comprar no 1º dia?" and d["opcoes"] == ["Sim", "Não"]
+    assert d["caixa"] == [540, 1650] and d["handle"] == "hpgta6" and d["destaque"] == "GTA 6"
+    assert d["arte"] == drive / "lotes" / "arte_enquete_0930.png"
+    assert sp.rodar_enquete(ctx, "2026-09-30")["ok"]
+    # lote sem interativo nem story_enquete: erro claro, nada roda
+    escrever_json(drive / "lotes" / "2026-09-30_estaticos.json", {"data": "2026-09-30", "stories": []})
+    r = sp.rodar_enquete(ctx, "2026-09-30")
+    assert r["codigo"] == sp.ERRO and "'interativo'" in r["mensagem"] and "story_enquete" in r["mensagem"]
 
 
 def test_enquete_opcoes_invalidas(_raizes):

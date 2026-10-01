@@ -28,6 +28,7 @@ from .config import (LIMITE_LEGENDA, PREFIXO, Config, arquivo_estado,
                      arquivo_trava, carregar_config, carregar_grupos_permitidos,
                      nfc, pasta_perfil)
 from .fila import Fila, ItemFila
+from .fila_pc import pronta_para_enviar, validar_enviar_apos
 from .montagem import ler_datahora
 from .navegador import (CabecalhoDivergente, NaoEGrupo, Navegador,
                         NavegadorIndisponivel)
@@ -157,9 +158,10 @@ class Enviador:
         self.fila.preparar()
         permitidos = carregar_grupos_permitidos()
         validos = []
+        agora = self.relogio.agora()
         for item in self.fila.pendentes():
             motivos = [item.erro_leitura] if item.erro_leitura else \
-                validar_mensagem(item.dados, permitidos)
+                validar_mensagem(item.dados, permitidos) + validar_enviar_apos(item.dados)
             if not motivos and self.fila.ja_processada(item.id):
                 motivos = [f"id '{item.id}' já foi enviado/processado antes (duplicado)"]
             if motivos:
@@ -167,6 +169,11 @@ class Enviador:
                 self.fila.rejeitar(item, motivo, self._agora_iso())
                 res.rejeitadas += 1
                 self.lg.warning("rejeitada: arquivo=%s motivo=%s", item.caminho.name, motivo)
+                continue
+            # §4.8: `enviar_apos` respeitado e de madrugada (0h-7h30) nada sai — fica na fila
+            if not pronta_para_enviar(item.dados, agora):
+                res.adiadas += 1
+                self.lg.info("adiada: id=%s enviar_apos=%s", item.id, item.dados.get("enviar_apos"))
                 continue
             validos.append(item)
         return validos

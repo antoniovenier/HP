@@ -182,7 +182,7 @@ def test_pasta_fora_do_padrao_ganha_nome(amb):
 
 def test_erro_permanente_vai_para_99(amb):
     class Quebrado:
-        def baixar(self, url, destino):
+        def baixar(self, url, destino, pedido=None):
             raise ErroPermanente("vídeo privado")
     amb.trocar(baixador=Quebrado())
     item = criar_pedido(pedido_reel())
@@ -199,7 +199,7 @@ def test_erro_transitorio_tenta_de_novo_e_depois_99(amb):
     class Instavel:
         n = 0
 
-        def baixar(self, url, destino):
+        def baixar(self, url, destino, pedido=None):
             Instavel.n += 1
             raise ErroEtapa("conexão caiu")
     amb.trocar(baixador=Instavel())
@@ -218,7 +218,7 @@ def test_erro_transitorio_tenta_de_novo_e_depois_99(amb):
 
 def test_reprocessar_tira_de_99(amb):
     class Quebrado:
-        def baixar(self, url, destino):
+        def baixar(self, url, destino, pedido=None):
             raise ErroPermanente("fora do ar")
     amb.trocar(baixador=Quebrado())
     item = criar_pedido(pedido_reel())

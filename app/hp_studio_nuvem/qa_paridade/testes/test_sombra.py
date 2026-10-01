@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from hpbase import ler_json, pasta_app
+from hpbase import ler_json, pasta_paridade
 from qa_paridade.sombra import calcular_status, listar_tarefas, registrar, status_tarefa
 
 from .apoio import dia, relatorio_falso
@@ -99,7 +99,7 @@ def test_depois_de_liberada_so_reprovado_tira():
 
 def test_arquivos_e_resumo():
     res = registrar("editor reel/v2", OK, id="post 123", quando=dia(3))
-    pasta = pasta_app() / "paridade" / "editor_reel_v2"
+    pasta = pasta_paridade() / "editor_reel_v2"
     assert res["json"] == pasta / "2026-09-03_post_123.json"
     assert res["md"].exists() and res["md"].read_text(encoding="utf-8").startswith("# Paridade")
     dados = ler_json(res["json"])
@@ -123,7 +123,7 @@ def test_tarefa_sem_registro():
 
 def test_arquivo_estranho_na_pasta_nao_conta():
     registrar("t", OK, id="a", quando=dia(1))
-    pasta = pasta_app() / "paridade" / "t"
+    pasta = pasta_paridade() / "t"
     (pasta / "2026-09-02_lixo.json").write_text("{nao é json", encoding="utf-8")
     (pasta / "anotacao.json").write_text("{}", encoding="utf-8")
     assert status_tarefa("t", hoje=date(2026, 9, 2))["comparacoes"] == 1

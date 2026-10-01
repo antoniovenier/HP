@@ -11,6 +11,10 @@ from pathlib import Path
 
 PADRAO_LOCAL = r"H:\HypadoLocal"
 PADRAO_DRIVE = r"G:\Meu Drive\Hypado"
+# O PC já usa H:\HypadoLocal\esteira e H:\HypadoLocal\app\paridade com OUTRO conteúdo (etapa 3 do
+# PC). A esteira e a paridade da nuvem moram ao lado, com estes nomes (ajuste de 30/09, §3.2):
+PADRAO_ESTEIRA_NOME = "esteira_sombra"     # variável HP_ESTEIRA_NOME
+PADRAO_PARIDADE_NOME = "paridade_nuvem"    # variável HP_PARIDADE_NOME
 
 
 def raiz_local() -> Path:
@@ -19,6 +23,16 @@ def raiz_local() -> Path:
 
 def raiz_drive() -> Path:
     return Path(os.environ.get("HP_DRIVE", PADRAO_DRIVE))
+
+
+def pasta_esteira() -> Path:
+    """H:\\HypadoLocal\\esteira_sombra (HP_ESTEIRA_NOME muda só o nome da pasta)."""
+    return raiz_local() / os.environ.get("HP_ESTEIRA_NOME", PADRAO_ESTEIRA_NOME)
+
+
+def pasta_paridade() -> Path:
+    """H:\\HypadoLocal\\app\\paridade_nuvem (HP_PARIDADE_NOME muda só o nome da pasta)."""
+    return pasta_app() / os.environ.get("HP_PARIDADE_NOME", PADRAO_PARIDADE_NOME)
 
 
 def garantir(p: Path) -> Path:

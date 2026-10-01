@@ -90,7 +90,8 @@ class TrabalhoBaixar(Trabalho):
             tmp = item / "_baixando"
             if tmp.exists():
                 shutil.rmtree(tmp)
-            baixado = Path(self.p.baixador.baixar(pedido["fonte_url"], tmp))
+            # o pedido vai junto: o Baixador real baixa só o trecho (inicio/fim, §4.4)
+            baixado = Path(self.p.baixador.baixar(pedido["fonte_url"], tmp, pedido=pedido))
             destino = self._trocar_bruto(item, baixado)
             shutil.rmtree(tmp, ignore_errors=True)
         if destino is None:

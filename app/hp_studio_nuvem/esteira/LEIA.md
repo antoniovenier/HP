@@ -6,7 +6,9 @@ só no julgamento: escolher o pedido, revisar (notas) e agendar o TikTok pelo Ch
 
 ## 1. Como funciona
 
-Tudo mora em `H:\HypadoLocal\esteira\` (`raiz_local()\esteira`). **Cada item é
+Tudo mora em `H:\HypadoLocal\esteira_sombra\` (`hpbase.pasta_esteira()`; a variável
+`HP_ESTEIRA_NOME` muda o nome — `H:\HypadoLocal\esteira\` é a esteira do PC, com outro
+conteúdo, e não é tocada). **Cada item é
 uma pasta** com tudo dentro (`pedido.json`, bruto, transcrição, legenda,
 dublagem, final, capa, `post.json`, `historico.log`, `estado.json`).
 
@@ -133,14 +135,14 @@ Regras que o app **recusa** (erro na hora, nada é criado):
 
 ## 6. Modo sombra (padrão) e modo real
 
-`config.json` (em `H:\HypadoLocal\esteira\`):
+`config.json` (em `H:\HypadoLocal\esteira_sombra\`):
 
 | Chave | Padrão | Efeito |
 |---|---|---|
-| `modo` | `"sombra"` | sombra: o Agendador grava em `esteira\sombra\fila_api\` (o publicador nunca lê) e confirma na hora como "sombra"; **nada vai ao ar**. `"real"`: grava em `H:\HypadoLocal\fila_api\` |
+| `modo` | `"sombra"` | sombra: o Agendador grava em `esteira_sombra\sombra\fila_api\` (o publicador nunca lê) e confirma na hora como "sombra"; **nada vai ao ar**. `"real"`: grava em `H:\HypadoLocal\fila_api\` no formato real (`hpbase\fila_api_pc.py`) e **recusa** rede fora de instagram/threads |
 | `aviso_no_ar_habilitado` | `false` | só com `modo: "real"` **e** `true` o aviso vai para `H:\HypadoLocal\whatsapp_fila\`; senão vai para `esteira\sombra\whatsapp_fila\` (para comparar com o que o plantão mandou) |
 | `max_voltas` / `max_tentativas` | 2 / 3 | revisão / erros passageiros |
-| `comandos` | ver abaixo | linha de comando dos scripts (ajuste sem mexer no código) |
+| `comandos` | os modelos reais de `esteira/comandos_pc.py` (§4.4) | linha de comando dos scripts; sobreponha um modelo só se o script mudar (item 10.3) |
 | `editor` | 1080x1920, 30 fps, crf 20, −14 LUFS, TP −1,5, fundo desfocado | |
 | `redes_api` / `redes_manuais` | IG, Threads, FB, YT / TikTok, Pinterest | |
 | `arquivar_postados_dias` | 7 | limpa `07_postados` |
@@ -189,24 +191,44 @@ monta o aviso é o `whatsapp_local` (a partir do `agendados.json` + `AVISO.md`).
 
 ## 10. Suposições da nuvem (conferir no PC antes de ligar)
 
-1. **Formato da fila da API** (`agendador.py`, suposto — `publicador_meta.py` não
-   estava disponível e **não foi reescrito**): 1 JSON por post e por rede,
-   `fila_api\<item>__<rede>.json` com `id, origem, rede, conta, canal, tipo,
-   midia[], capa, legenda, titulo, agendar_para, status:"pendente", criado_em`;
-   mídia copiada para `fila_api\midia\<item>\`. Confirmação suposta: o publicador
-   muda `status` para `publicado`/`agendado`/`ok` com `permalink`/`link`, ou move
-   o arquivo para `fila_api\feitos\` (`publicados\`, `enviados\`, `ok\`);
-   `status: "erro"` → item vai para `99_erros`. Para casar com o real, mude **só**
-   `montar_registro_fila()` e `ler_confirmacao()` em `agendador.py`.
+1. **Formato da fila da API** — desde a rodada 2 é o formato REAL (Seção 4.1),
+   implementado em `hpbase\fila_api_pc.py` e usado pelo `agendador.py`: 1 JSON por
+   post e por rede, `fila_api\<id>.json` com `id, conta (handle), rede, tipo,
+   arquivos[], legenda, quando ("AAAA-MM-DD HH:MM"), canal, grupo_whatsapp, titulo,
+   capa`; ids `gta_<data>_<ig|th>_<tipo>_<HHMM>` (GTA) e
+   `<canal>_<data>_<HHMM>_<slug>_<ig|th>_<tipo>` (canais); mídia copiada para
+   `fila_api\midia\<item>\`. Confirmação: o publicador move para `fila_api\feitos\`
+   (`status: "no_ar"` + `resultado{media_id, permalink, publicado_em}`) ou
+   `fila_api\erros\` (`erro` ou `ultimo_erro`+`tentativas`) → item vai para `99_erros`.
+   Só instagram e threads entram por essa fila. O que ainda é suposição está no
+   `LEIA_fila_api_pc.md` do `hpbase` (texto exato de duas mensagens de erro).
 2. Facebook e YouTube estão em `redes_api` (etapa 4 em andamento no PC). Se a fila
    ainda não publica neles, passe-os para `redes_manuais` no `config.json` (aí
    esperam `facebook_ok.json`/`youtube_ok.json`, gravados por `confirmar`).
-3. **Parâmetros dos scripts** (`config.json` → `comandos`, marcadores `{python}
-   {scripts} {url} {entrada} {saida} {item}`):
-   - `ytdlp.py {url} --saida <pasta>` (o app pega o maior vídeo da pasta);
-   - `dublar.py --srt legenda.srt --saida dublagem.wav` (dublagem) e
-     `dublar.py --texto-arquivo frase.txt --saida frase.wav` (narração, frase a frase);
-   - `estaticos.py --pedido pedido.json --saida arte\` (o app pega as imagens da pasta).
+3. **Parâmetros dos scripts** — desde a rodada 2 NÃO são mais suposição: `esteira/comandos_pc.py`
+   monta o argv REAL de cada script (§4.4) e `config.json` → `comandos` só sobrepõe um modelo
+   (lista com marcadores `{python} {scripts} {url} {entrada} {saida} {inicio} {fim} {gancho}
+   {streamer} {transcricao} {tipo} {script} {subcomando} {acao}`; `python -m esteira iniciar` grava
+   todos no `config.json`). O que o app roda:
+   - Baixador: `ytdlp.py -f "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]/b"
+     --merge-output-format mp4 -o <item>\_baixando\bruto.mp4 --no-playlist --no-warnings
+     --download-sections "*INI-FIM" --force-keyframes-at-cuts <url>` com INI = inicio − 4 s e
+     FIM = fim + 4 s quando o pedido traz `inicio`/`fim` (formato do lote: "MM:SS"); sem eles, o
+     vídeo inteiro. **`--saida` não existe.**
+   - Dublador: o `dublar.py` do PC dubla um corte JÁ renderizado (`dublar.py <corte> --transcricao
+     <json PT> --inicio --fim [--saida]`); **não tem `--srt` nem `--texto-arquivo`**. Na esteira a
+     dublagem do gringo sai pelo `cortar.py --dublar` (`argv_cortar(dublar=True)`); o plugin
+     `DubladorScript.dublar_corte()` dubla à parte um `final.mp4` pronto.
+   - Narrador Toque HP: precisa de um sintetizador de frase (`comandos.falar` no `config.json`
+     ou `sintetizar=` injetado) — o `dublar.py` não faz isso.
+   - Designer: GTA → `estaticos.py carrossel <spec.json> <pasta> [--tiktok]` (spec montado de
+     `laminas`/`spec` do pedido) e `estaticos.py story <modelo> <saida.jpg> --titulo ...`
+     (`modelo`: novo_video | contagem | noticia | interativo; `opcoes` no pedido); canais →
+     `posts_<canal>.py render <spec.json>` (o pedido precisa de `"spec"` com o JSON do post).
+     **`--pedido` não existe.**
+   - Suposições que sobraram estão no docstring do `comandos_pc.py` (transcrever com o positional
+     antes de `--id-streamer`; `--selo` como bandeira quando `true`; sem `corte` a janela é
+     `[4, 4 + (fim − inicio)]`; emenda gera `<bruto>_ed<n>.mkv`/`.json` com n = número do item).
 4. Aviso "no ar": texto simples montado aqui (`aviso.py`); o modelo oficial está em
    `06 Projeto\AVISO.md` — ajustar `montar_aviso()` quando o enviador (módulo E) ficar pronto.
 5. Critérios da revisão e o mapa critério → etapa são uma proposta até o manual 09 fechar.
@@ -215,8 +237,8 @@ monta o aviso é o `whatsapp_local` (a partir do `agendados.json` + `AVISO.md`).
 
 1. Copiar o pacote e rodar `python -m esteira iniciar` e os testes.
 2. `pip install faster-whisper` (primeira execução baixa o modelo `small`).
-3. Conferir os parâmetros reais de `ytdlp.py`, `dublar.py`, `estaticos.py` e ajustar
-   `comandos` no `config.json`.
+3. Conferir no PC as 4 suposições do `comandos_pc.py` (item 10.3) e, se algum script mudar,
+   sobrepor só aquele modelo em `comandos` no `config.json`.
 4. Ler `publicador_meta.py` e ajustar as 2 funções do `agendador.py` (item 10.1).
 5. Registrar o gancho no motor (ou a tarefa do vigia) em modo sombra.
 6. 7 dias de sombra comparando com o `qa_paridade`; então `"modo": "real"`.

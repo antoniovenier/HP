@@ -157,24 +157,36 @@ def _lista_bonita(itens: list[str]) -> str:
 
 
 def normalizar_post(p) -> dict | None:
+    """Post da rodada 1 (canal/horario/links) OU item real do agendados.json (§4.5: id, titulo,
+    data_post, redes, links, status, grupo_whatsapp, tipo, arquivo). No formato real o canal vem
+    do prefixo do id / do grupo_whatsapp (fila_pc.canal_do_item), "formato" fica "pc" e o item cru
+    fica em "item" (o aviso literal de §4.8 é montado por fila_pc.montar_aviso_no_ar)."""
     if not isinstance(p, dict):
         return None
+    from .fila_pc import canal_do_item    # import local: fila_pc importa config/fila, não montagem
+    real = "data_post" in p or "grupo_whatsapp" in p
+    canal = p.get("canal") or p.get("conta") or ""
+    if real and not canal:
+        canal = canal_do_item(p) or ""
     return {
         "id": p.get("id") or p.get("post_id"),
-        "canal": nome_canal(p.get("canal") or p.get("conta") or ""),
+        "canal": nome_canal(canal),
         "titulo": nfc(p.get("titulo") or p.get("título") or p.get("title") or ""),
         "horario": ler_datahora(p.get("horario") or p.get("horário") or p.get("publicado_em")
-                                or p.get("quando") or p.get("data_hora")),
+                                or p.get("quando") or p.get("data_hora") or p.get("data_post")),
         "links": normalizar_links(p.get("links") or p.get("urls") or {}),
-        "grupo": p.get("grupo"),
+        "grupo": p.get("grupo") or p.get("grupo_whatsapp"),
         "status": nfc(p.get("status") or "").lower(),
+        "formato": "pc" if real else "rodada1",
+        "item": dict(p) if real else None,
     }
 
 
 def carregar_agendados(caminho: Path) -> list[dict]:
+    """Lista solta, {"posts": [...]} (rodada 1) ou {"itens": [...]} (o agendados.json real)."""
     dados = ler_json(Path(caminho), [])
     if isinstance(dados, dict):
-        dados = dados.get("posts") or dados.get("agendados") or []
+        dados = dados.get("itens") or dados.get("posts") or dados.get("agendados") or []
     return [p for p in (normalizar_post(x) for x in (dados or [])) if p]
 
 

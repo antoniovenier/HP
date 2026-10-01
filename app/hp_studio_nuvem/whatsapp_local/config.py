@@ -46,6 +46,21 @@ NOMES_CANAIS = {
 }
 ORDEM_CANAIS = list(NOMES_CANAIS.values())
 
+# Os 6 grupos reais (§4.8): a Comissão (só o Antônio) e os 5 da lista "HP | Grupos".
+# Nomes EXATOS, com emoji; a comparação é sempre em NFC (ver nfc()).
+GRUPOS_CANAIS = {
+    "gta": GRUPO_COMISSAO,
+    "futebol": "HP | Futebol ⚽",
+    "filmes": "HP | Filmes 🎬",
+    "receitas": "HP | Receitas 🍔",
+    "carros": "HP | Carros 🏎️",
+    "destinos": "HP | Destinos ✈️",
+}
+GRUPOS_REAIS = tuple(GRUPOS_CANAIS.values())
+# Pasta de cada canal dentro de <Drive>\07 Canais\ (GTA mora em 06 Projeto\)
+PASTAS_CANAIS_DRIVE = {"gta": None, "futebol": "Futebol", "filmes": "Filmes e Series",
+                       "receitas": "Gastronomia", "carros": "Carros", "destinos": "Viagens"}
+
 
 def nfc(texto) -> str:
     """Normaliza Unicode (NFC) e tira espaço das pontas.
@@ -126,15 +141,33 @@ def candidatos_metricas() -> list[Path]:
     ]
 
 
+def arquivo_fila_pc() -> Path:
+    """A fila real do plantão de hoje (§4.8): H:\\HypadoLocal\\temp\\whatsapp_fila.json."""
+    return raiz_local() / "temp" / "whatsapp_fila.json"
+
+
+def arquivos_agendados_pc() -> list[Path]:
+    """Os 6 agendados.json reais (§4.5), na ordem dos canais: GTA em 06 Projeto\\ e os 5 canais
+    em 07 Canais\\<Pasta>\\. Todos têm o formato {"itens": [...]}."""
+    saida = []
+    for canal in NOMES_CANAIS:
+        pasta = PASTAS_CANAIS_DRIVE.get(canal)
+        base = raiz_drive() / "06 Projeto" if pasta is None else raiz_drive() / "07 Canais" / pasta
+        saida.append(base / "agendados.json")
+    return saida
+
+
 def candidatos_agendados() -> list[Path]:
-    """Onde procurar o agendados.json do plantão (o primeiro que existir vale)."""
-    return [
+    """Onde procurar o agendados.json: primeiro os 6 lugares reais do PC (todos os que existirem
+    são lidos pelo vigia), depois os lugares da rodada 1 (plantão antigo)."""
+    reais = arquivos_agendados_pc()
+    antigos = [
         raiz_local() / "agendados.json",
         raiz_local() / "app" / "agendados.json",
-        raiz_drive() / "06 Projeto" / "agendados.json",
         raiz_drive() / "06 Projeto" / "app" / "agendados.json",
         raiz_drive() / "agendados.json",
     ]
+    return reais + [p for p in antigos if p not in reais]
 
 
 # ------------------------------------------------------------ configuração

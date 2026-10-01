@@ -1,0 +1,43 @@
+{
+ "canal": "gta",
+ "verificado_em": "2026-10-01T01:59:45-03:00",
+ "rss": [
+  {
+   "nome": "Take-Two Interactive (press releases)",
+   "url": "https://ir.take2games.com/rss/news-releases.xml",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T01:59:45-03:00",
+   "evidencia": "https://www.take2games.com/ir/press-releases (sala de imprensa do RI da Take-Two, servida por ir.take2games.com; o feed padrão /rss/news-releases.xml responde com 'Take-Two Interactive Software, Inc. News Releases')",
+   "verificado_por": "rss"
+  }
+ ],
+ "youtube": [
+  {
+   "nome": "Rockstar Games",
+   "url": "https://www.youtube.com/@RockstarGames",
+   "channel_id": "UC6VcWc1rAoWdBCM0JxrRQ3A",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T01:59:45-03:00",
+   "evidencia": "https://www.youtube.com/@RockstarGames (a página do canal declara externalId UC6VcWc1rAoWdBCM0JxrRQ3A e o título 'Rockstar Games')",
+   "verificado_por": "pagina_canal",
+   "ja_existe": true
+  }
+ ],
+ "descartadas": [
+  {
+   "nome": "Take-Two (RSS, caminhos alternativos)",
+   "url": "https://www.take2games.com/ir/rss/news-releases.xml",
+   "motivo": "HTTP 404 (e https://ir.take2games.com/rss/pressrelease.aspx também 404); o feed que vale é https://ir.take2games.com/rss/news-releases.xml"
+  },
+  {
+   "nome": "Rockstar Newswire (RSS)",
+   "url": "https://www.rockstargames.com/newswire",
+   "motivo": "não testado de propósito: o radar já tem coletor próprio (rockstar_newswire: true)"
+  }
+ ]
+}

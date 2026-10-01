@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 
 from .cliente import ErroAPI, ErroNaoAutorizado
-from .config import chaves
+from .config import GRUPOS, chaves
 from .modelos import SemToken, ler_data, novo_post, numero
 
 API = "https://www.googleapis.com/youtube/v3"
@@ -27,9 +27,12 @@ def duracao_seg(iso_dur) -> int | None:
 
 
 def _token_oauth(cliente, cred, k) -> str | None:
-    refresh = cred.obter("youtube", *k["refresh"])
-    cid = cred.obter("youtube", *k["client_id"])
-    csec = cred.obter("youtube", *k["client_secret"])
+    """refresh token + client_id + client_secret: youtube.json (oauth/...) primeiro, depois o
+    youtube_tokens.txt antigo (YT_<CONTA>_REFRESH_TOKEN...)."""
+    g = GRUPOS["youtube"]
+    refresh = cred.obter(g["refresh"], *k["refresh"])
+    cid = cred.obter(g["client_id"], *k["client_id"])
+    csec = cred.obter(g["client_secret"], *k["client_secret"])
     if not (refresh and cid and csec) or not hasattr(cliente, "post"):
         return None
     resp = cliente.post(URL_TOKEN, {"client_id": cid, "client_secret": csec,
@@ -64,8 +67,10 @@ def coletar(cliente, conta: str, cfg_rede: dict, cred, ctx) -> dict:
     if not cfg_rede.get("autorizado", False):
         raise ErroNaoAutorizado('YouTube ainda não autorizado (contas.json: "autorizado": false)')
     k = chaves("youtube", conta, cfg_rede)
-    canal = cfg_rede.get("id") or cred.obter("youtube", *k["canal"])
-    chave_api = cred.obter("youtube", *k["chave_api"])
+    g = GRUPOS["youtube"]
+    # id do canal: youtube.json (canais/<canal>), youtube_canais.json (<canal>/id), antigo YT_<CONTA>_CANAL
+    canal = cfg_rede.get("id") or cred.obter(g["canal"], *k["canal"])
+    chave_api = cred.obter(g["chave_api"], *k["chave_api"])
     avisos = []
     oauth = None
     try:
@@ -73,9 +78,11 @@ def coletar(cliente, conta: str, cfg_rede: dict, cred, ctx) -> dict:
     except ErroAPI as e:
         avisos.append(f"analytics nao_autorizado: {e}")
     if not canal:
-        raise SemToken(f"youtube/{conta}: falta o id do canal ({k['canal'][1]})")
+        raise SemToken(f"youtube/{conta}: falta o id do canal ({k['canal'][0]} em youtube.json "
+                       f"ou {k['canal'][1]} em youtube_canais.json)")
     if not (chave_api or oauth):
-        raise SemToken(f"youtube/{conta}: falta YT_API_KEY (ou refresh token OAuth)")
+        raise SemToken(f"youtube/{conta}: falta {k['refresh'][0]} (+ oauth/client_id e "
+                       f"oauth/client_secret) em youtube.json, ou api_key")
     auth = {"key": chave_api} if chave_api else {"access_token": oauth}
 
     ch = cliente.get(f"{API}/channels",

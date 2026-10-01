@@ -283,12 +283,14 @@ chama o script (só mostra que chamaria).
 
 ## Estilo do canal (cores, fonte, áudio)
 
-Padrão embutido (verde escuro + amarelo HP, marca "FUTEBOL | HP"). Para mudar
-sem código, crie `H:\HypadoLocal\canais\futebol\estilo_reel.json` só com o que
-quiser trocar, por exemplo:
+Padrão embutido: a paleta da marca única (`hpbase/marca.py`, canal `futebol`):
+fundo `#0A100C`, destaque **verde HP `#1ED760`** (o amarelo `#FFD23F` da rodada 1
+não vale mais — pedido do Antônio em 28/09) e verde escuro `#12A850` nos detalhes.
+Para mudar sem código, crie `H:\HypadoLocal\canais\futebol\estilo_reel.json`
+só com o que quiser trocar, por exemplo:
 
 ```json
-{"cores": {"fundo": "#06170F", "fundo2": "#0F3B26", "destaque": "#FFD23F", "texto": "#FFFFFF"},
+{"cores": {"fundo": "#0A100C", "fundo2": "#0C361D", "destaque": "#1ED760", "texto": "#FFFFFF"},
  "caixa_opacidade": 0.62, "fonte": "C:\\Windows\\Fonts\\arialbd.ttf",
  "alvo_lufs": -14.0, "true_peak": -1.5, "musica_db_relativo": -20.0,
  "video": {"preset": "veryfast", "crf": 20}, "duracao_max_s": 90, "limite_render_s": 600}

@@ -1,7 +1,9 @@
 """Modo sombra: registro das comparações e a regra dos 7 dias.
 
 Cada comparação de uma tarefa vira um arquivo
-    H:\\HypadoLocal\\app\\paridade\\<tarefa>\\AAAA-MM-DD_<id>.json  (+ .md)
+    H:\\HypadoLocal\\app\\paridade_nuvem\\<tarefa>\\AAAA-MM-DD_<id>.json  (+ .md)
+(a pasta vem de `hpbase.pasta_paridade()`, variável HP_PARIDADE_NOME, porque
+H:\\HypadoLocal\\app\\paridade já é a paridade do PC, com outro conteúdo)
 e o `resumo.json` da tarefa é refeito a cada registro.
 
 Regra (limites.json, bloco "sombra"): a tarefa só é LIBERADA PARA O APP
@@ -20,17 +22,14 @@ import re
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from hpbase import agora, agora_iso, escrever_json, garantir, ler_json, obter_logger, pasta_app
+from hpbase import agora, agora_iso, escrever_json, garantir, ler_json, obter_logger
+from hpbase import pasta_paridade  # H:\HypadoLocal\app\paridade_nuvem (HP_PARIDADE_NOME)
 
 from . import relatorio
 from .limites import carregar_limites
 from .util import br
 
 _RX_ARQ = re.compile(r"^(\d{4}-\d{2}-\d{2})_(.+)\.json$")
-
-
-def pasta_paridade() -> Path:
-    return pasta_app() / "paridade"
 
 
 def nome_seguro(txt: str) -> str:

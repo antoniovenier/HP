@@ -1,0 +1,538 @@
+{
+ "canal": "carros",
+ "verificado_em": "2026-10-01T02:00:18-03:00",
+ "rss": [
+  {
+   "nome": "Volkswagen Newsroom",
+   "url": "https://www.volkswagen-newsroom.com/en/feeds/press-releases",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.volkswagen-newsroom.com/en (<link rel=alternate type=application/rss+xml href=/en/feeds/press-releases>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Audi Media Center",
+   "url": "https://www.audi-mediacenter.com/en/feeds/press-releases",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.audi-mediacenter.com/en (<link rel=alternate type=application/rss+xml href=/en/feeds/press-releases>; o mesmo feed responde em https://www.audi.com/en/feeds/press-releases)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "BMW Group PressClub Brazil",
+   "url": "https://www.press.bmwgroup.com/pressclub/p/br/rss.html?locale=pt&outputChannelId=43",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.press.bmwgroup.com/brazil/info/rss (página 'RSS' da sala de imprensa BR; filtrar=true porque mistura BMW, MINI e BMW Motorrad)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Nissan Global Newsroom",
+   "url": "https://global.nissannews.com/en/rss",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://global.nissannews.com/en (sala de imprensa global, plataforma Wieck; o HTML linka um /rss de staging, o de produção é /en/rss)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Hyundai CSA News (Brasil)",
+   "url": "https://hyundai-csa-news.com/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.hyundai.com.br/imprensa redireciona para https://hyundai-csa-news.com/ (<link rel=alternate type=application/rss+xml href=https://hyundai-csa-news.com/feed/>)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Toyota Comunica (Brasil)",
+   "url": "https://www.toyotacomunica.com.br/feed/",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.toyotacomunica.com.br/ (WordPress; /feed/ responde application/rss+xml; a home só abre com User-Agent completo de navegador)",
+   "verificado_por": "rss"
+  }
+ ],
+ "youtube": [
+  {
+   "nome": "Ram Trucks",
+   "url": "https://www.youtube.com/@RamTrucks",
+   "channel_id": "UCNfZNOb3jq-iWdL0d9OMf9Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@RamTrucks (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Ram Trucks', 163 mil inscritos; media.stellantis.com responde 403)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Nissan",
+   "url": "https://www.youtube.com/@Nissan",
+   "channel_id": "UCIpK0Bh0wFnC-QqgJs6hx5w",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@Nissan (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Nissan': canal verificado com o título exato 'Nissan')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Peugeot",
+   "url": "https://www.youtube.com/@Peugeot",
+   "channel_id": "UC1VOZroPEnEaDDEqnMtdgiw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@Peugeot (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Peugeot')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Citroën",
+   "url": "https://www.youtube.com/@theofficialcitroen",
+   "channel_id": "UCg3Rudz_2uKktAfTywXsIvQ",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@theofficialcitroen (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Citroën', título 'Citroën')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Honda",
+   "url": "https://www.youtube.com/@Honda",
+   "channel_id": "UC22zQ9nBEk6KOjUWqR5XXZg",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@Honda (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Honda': canal global verificado, 677 mil inscritos; a tabela só tinha 'Honda Automóveis', que é o BR)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Chevrolet",
+   "url": "https://www.youtube.com/@Chevrolet",
+   "channel_id": "UCSVpCNZzOeMekuMiFze3fnQ",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@Chevrolet (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Chevrolet': canal global verificado, 787 mil; a tabela só tinha 'Chevrolet Brasil')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Jeep",
+   "url": "https://www.youtube.com/@Jeep",
+   "channel_id": "UCMWLdSdAyDcCy_OVzONKm0w",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@Jeep (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Jeep': canal global verificado; a tabela só tinha 'Jeep Brasil')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "BYD Global",
+   "url": "https://www.youtube.com/@BYDGlobal",
+   "channel_id": "UCHlKiZpRUfYpxgiNrFzpjbA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@BYDGlobal (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'BYD'; a tabela só tinha 'BYD Brasil')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "GWM Global",
+   "url": "https://www.youtube.com/@greatwallmotor1853",
+   "channel_id": "UCs5oqkMf9GqH4Lui1rbM-HA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.gwm-global.com/ (rodapé linka youtube.com/channel/UCs5oqkMf9GqH4Lui1rbM-HA/featured; a página do canal declara este id, o título 'GWM Global' e o @handle @greatwallmotor1853; a tabela só tinha 'GWM Brasil'). ATENÇÃO: ao rodar 'verificar --gravar', a heurística e_site_noticia de verificar_fontes.py vê 'motor1' dentro de 'greatwallmotor1853' e troca oficial para false com aviso — é falso positivo (ver docs/rodada2/F3.md, seção 8); mantenha oficial: true",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Renault Group",
+   "url": "https://www.youtube.com/@renaultgroup",
+   "channel_id": "UCjpe-FourUgOLzzPu9qV4qg",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.renaultgroup.com/en/ (rodapé linka youtube.com/@renaultgroup e /channel/UCjpe-FourUgOLzzPu9qV4qg; renault.com redireciona para renaultgroup.com; canal corporativo do grupo, com selo verificado)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Mitsubishi Motors (MitsubishiMotorsTV)",
+   "url": "https://www.youtube.com/@MitsubishiMotorsTV",
+   "channel_id": "UCtxwcyCF62zCXPaBj-QybMA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@MitsubishiMotorsTV (página do canal no YouTube declara este externalId e tem o selo de canal verificado; é o único canal global da Mitsubishi Motors com selo na busca 'Mitsubishi Motors'; mitsubishi-motors.com não linka YouTube)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Ram do Brasil",
+   "url": "https://www.youtube.com/@RamdoBrasil",
+   "channel_id": "UCiAZZYxqS0FFshJU0EO5CCw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.ram.com.br/ (rodapé linka youtube.com/user/RAMdoBrasil, que resolve para este id; a página do canal tem selo verificado)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Nissan Brasil",
+   "url": "https://www.youtube.com/@nissanbrasil",
+   "channel_id": "UChpihrq2RRLyzgLtpcoMVbw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@nissanbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Nissan': 'Nissan Brasil' verificado, 1,12 mi de inscritos)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Peugeot Brasil",
+   "url": "https://www.youtube.com/@peugeotbrasil",
+   "channel_id": "UCtDew4iI18GOrvPXrvhXzhw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@peugeotbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; peugeot.com.br responde 403 para robô)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Citroën do Brasil",
+   "url": "https://www.youtube.com/@citroen",
+   "channel_id": "UC8YKpC9NJy3BKPoWYYWc6EA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.citroen.com.br/ (rodapé linka youtube.com/user/citroen, que resolve para este id; o @handle do canal BR é @citroen)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Mitsubishi Motors BR",
+   "url": "https://www.youtube.com/@MitsubishiMotors",
+   "channel_id": "UCEmi0v44ZknNFkzc2_a2Uhw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.mitsubishimotors.com.br/ (rodapé linka youtube.com/user/MitsubishiMotors, que resolve para este id; selo verificado; o @MitsubishiMotorsBR que o site também cita responde 404)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Ford Brasil",
+   "url": "https://www.youtube.com/@fordbrasil",
+   "channel_id": "UCV1aAz5q_yh3jMOnLa-lk7Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@fordbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Ford Brasil', 346 mil; media.ford.com responde 403)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Audi Brasil",
+   "url": "https://www.youtube.com/@AudiBRAudiBrasil",
+   "channel_id": "UCdlSVdgDNGRTRljyk-hhWSQ",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.youtube.com/@AudiBRAudiBrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Audi Brasil'; audi.com.br responde 403)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Hyundai Motor Brasil",
+   "url": "https://www.youtube.com/@hyundaibr",
+   "channel_id": "UCnBYf03jmMPiABvbSYbxMcA",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://hyundai-csa-news.com/ (sala de imprensa BR, destino de hyundai.com.br/imprensa; linka youtube.com/user/hyundaibr, que resolve para este id)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Kia Brasil",
+   "url": "https://www.youtube.com/@KiaBrasilOficial",
+   "channel_id": "UCdYujnKF7ND-7mLhLxsE9uw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.kia.com.br/ (rodapé linka youtube.com/KiaBrasilOficial; selo verificado na página do canal)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Land Rover Brasil",
+   "url": "https://www.youtube.com/@landroverbr",
+   "channel_id": "UCcL1xAFzwrWEMqOzHkoT6Zg",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "evidencia": "https://www.landrover.com.br/ (rodapé linka youtube.com/landroverbr, que resolve para este id)",
+   "verificado_por": "pagina_canal"
+  }
+ ],
+ "descartadas": [
+  {
+   "nome": "Fiat (global)",
+   "url": "https://www.youtube.com/@fiat1253",
+   "motivo": "não achei o canal oficial com certeza: há dois canais verificados com o título 'Fiat' (@fiat1253 = UCpQS0xnrCfJfdLHwTSQxOGA, 721 mil inscritos; @Fiat = UC_nBvBIV0K6P5C3tA27Hwrg, 78,8 mil) e fiat.com e fiat.it respondem 403; Fiat Brasil (@fiatbr) já está na tabela"
+  },
+  {
+   "nome": "Renault (global, @Renault)",
+   "url": "https://www.youtube.com/@Renault",
+   "channel_id": "UC_5f-QXvYZ6_btITN7IpatQ",
+   "motivo": "tem selo mas só 3,69 mil inscritos e renault.com redireciona para renaultgroup.com, que linka @renaultgroup (este entrou como 'Renault Group'); não achei com certeza que é o canal global da marca"
+  },
+  {
+   "nome": "MITSUBISHI MOTORS Global",
+   "url": "https://www.youtube.com/@MitsubishiMotorsGlobal",
+   "channel_id": "UCRFlVtvzVnLEiRk9AScqjpg",
+   "motivo": "sem selo verificado e mitsubishi-motors.com não linka YouTube; entrou o @MitsubishiMotorsTV (verificado) — o Antônio decide se quer os dois"
+  },
+  {
+   "nome": "CAOA Chery",
+   "url": "https://www.youtube.com/@CAOAChery",
+   "channel_id": "UCo3iqVlz3pzmXlSoipcAWEw",
+   "motivo": "não achei o canal oficial com certeza: a página do canal declara este id e o título 'CAOA Chery' (41,6 mil) mas não tem selo, e caoachery.com.br (home e /noticias) não expõe link de YouTube sem JavaScript; basta o Antônio confirmar no site e colar a linha"
+  },
+  {
+   "nome": "BMW Brasil (@BMWTVBrasil)",
+   "url": "https://www.youtube.com/@BMWTVBrasil",
+   "channel_id": "UCNdmMv0UNG470K6YHYznwKA",
+   "motivo": "sem selo; press.bmwgroup.com/brazil linka só o canal global BMW Group (user/BMWGroupView) e bmw.com.br não abre daqui; não achei com certeza"
+  },
+  {
+   "nome": "Mercedes-Benz Brasil (@MercedesBenzBrasil)",
+   "url": "https://www.youtube.com/@MercedesBenzBrasil",
+   "channel_id": "UC1yLUcwlC_f2vaSBoaOLcgg",
+   "motivo": "sem selo e mercedes-benz.com.br não abre daqui (HTTP/2 INTERNAL_ERROR; www2 sem resposta); não verificado (tempo)"
+  },
+  {
+   "nome": "Porsche Brasil (@PorscheBrasilOficial)",
+   "url": "https://www.youtube.com/@PorscheBrasilOficial",
+   "channel_id": "UCBfvceulEkHn9XaFTJ1-ckA",
+   "motivo": "sem selo (5,15 mil) e porsche.com/brazil não linka YouTube; não achei com certeza"
+  },
+  {
+   "nome": "Volvo Car Brasil (@VolvoCarBrasil)",
+   "url": "https://www.youtube.com/@VolvoCarBrasil",
+   "channel_id": "UCeoxJyBwpgNhAB8ZQEhyb9w",
+   "motivo": "sem selo e volvocars.com/br responde 403; não achei com certeza"
+  },
+  {
+   "nome": "Mitsubishi Motors BR (handle citado no site)",
+   "url": "https://www.youtube.com/@MitsubishiMotorsBR",
+   "motivo": "página do canal HTTP 404 (mitsubishimotors.com.br cita @MitsubishiMotorsBR); o canal certo é @MitsubishiMotors (user/MitsubishiMotors), que entrou"
+  },
+  {
+   "nome": "Chery (global)",
+   "url": "https://www.youtube.com/results?search_query=Chery",
+   "motivo": "não verificado (tempo): a busca 'Chery' só mostra canais regionais (Chery UK, Romania, Czech) e nenhum global claro; a tarefa pede Caoa Chery (BR)"
+  },
+  {
+   "nome": "Mercedes-Benz Group Media (global)",
+   "url": "https://group-media.mercedes-benz.com/",
+   "motivo": "HTTP 403 (bloqueio para robô); media.mercedes-benz.com abre (200, linka youtube.com/user/MercedesBenzTV) mas não declara RSS e /rss devolve HTML"
+  },
+  {
+   "nome": "Mercedes-Benz Brasil (imprensa)",
+   "url": "https://www.mercedes-benz.com.br/imprensa",
+   "motivo": "não abre daqui (HTTP/2 INTERNAL_ERROR; www2.mercedes-benz.com.br sem resposta); fica para o PC testar"
+  },
+  {
+   "nome": "Porsche Newsroom (RSS)",
+   "url": "https://newsroom.porsche.com/en.html",
+   "motivo": "a sala abre (200, linka youtube.com/@Porsche) mas não declara feed: /en.rss devolve HTML, /rss/en.xml HTTP 500, /en/rss.xml HTTP 404; não há edição BR (/pt_BR.html HTTP 404)"
+  },
+  {
+   "nome": "Toyota global newsroom (RSS)",
+   "url": "https://global.toyota/en/newsroom/",
+   "motivo": "abre (200) mas não declara feed; /rss/ e /feed/ respondem HTTP 403 (a tabela já tem 'Toyota Pressroom')"
+  },
+  {
+   "nome": "Stellantis media (global: Fiat, Jeep, Ram, Peugeot, Citroën)",
+   "url": "https://www.media.stellantis.com/em-en",
+   "motivo": "HTTP 403 (Akamai bloqueia robô mesmo com User-Agent completo de navegador); fica para o PC testar"
+  },
+  {
+   "nome": "Stellantis media Brasil",
+   "url": "https://www.media.stellantis.com/br-pt",
+   "motivo": "HTTP 403 (idem /br-pt/rss); fica para o PC testar"
+  },
+  {
+   "nome": "Ford Media (global)",
+   "url": "https://media.ford.com/content/fordmedia/fna/us/en.html",
+   "motivo": "HTTP 403 (bloqueio para robô, mesmo com User-Agent completo)"
+  },
+  {
+   "nome": "Ford Media Brasil",
+   "url": "https://media.ford.com/content/fordmedia/fsa/br/pt.html",
+   "motivo": "HTTP 403 (bloqueio para robô)"
+  },
+  {
+   "nome": "GM Newsroom (Chevrolet global, RSS)",
+   "url": "https://news.gm.com/",
+   "motivo": "a home abre (200) mas não declara feed; /rss e /home.rss respondem HTTP 403"
+  },
+  {
+   "nome": "GM/Chevrolet Brasil (imprensa)",
+   "url": "https://media.gm.com/media/br/pt/chevrolet/home.html",
+   "motivo": "HTTP 403; chevrolet.com.br/imprensa HTTP 404 (a página só confirma o link youtube.com/chevroletbrasil, já na tabela)"
+  },
+  {
+   "nome": "Kia Newscenter (global)",
+   "url": "https://www.kianewscenter.com/",
+   "motivo": "não abre daqui: erro de certificado no proxy da nuvem ('unable to get local issuer certificate'); não desliguei a verificação TLS; fica para o PC testar"
+  },
+  {
+   "nome": "Kia Brasil (área de imprensa)",
+   "url": "https://www.kia.com.br/areaimprensa",
+   "motivo": "abre (200) mas é só lista de kits .zip, sem feed; /imprensa e /noticias respondem 404; /kianews não testado (tempo)"
+  },
+  {
+   "nome": "Honda global newsroom (RSS)",
+   "url": "https://global.honda/en/newsroom/",
+   "motivo": "abre (200) mas não declara feed; /rss/ e /feed/ respondem HTTP 404"
+  },
+  {
+   "nome": "Honda News Brasil",
+   "url": "https://www.hondanews.com.br/",
+   "motivo": "não abre daqui (proxy: 'CONNECT tunnel failed, response 502', duas tentativas); fica para o PC testar"
+  },
+  {
+   "nome": "Nissan Global Newsroom (RSS en-US)",
+   "url": "https://global.nissannews.com/en-US/rss",
+   "motivo": "HTTP 404 (o feed válido é https://global.nissannews.com/en/rss, que entrou)"
+  },
+  {
+   "nome": "Nissan Brasil newsroom",
+   "url": "https://brasil.nissannews.com/pt-BR",
+   "motivo": "redireciona em laço (303 para /en/en/en/…); nissannews.com/pt-BR cai na página global de regiões; fica para o PC testar"
+  },
+  {
+   "nome": "Renault Group media (RSS)",
+   "url": "https://media.renaultgroup.com/en/",
+   "motivo": "abre (200, WordPress) mas /en/feed/ e /feed/?lang=eng respondem HTTP 403"
+  },
+  {
+   "nome": "Renault Brasil imprensa",
+   "url": "https://imprensa.renault.com.br/",
+   "motivo": "abre (200) mas é aplicação JavaScript; /feed e /rss devolvem HTML; renault.com.br/imprensa.html HTTP 404"
+  },
+  {
+   "nome": "BYD (global, sala de imprensa)",
+   "url": "https://www.byd.com/",
+   "motivo": "sem sala de imprensa com feed: byd.com/eu/news HTTP 404 e byd.com redireciona para /us sem RSS"
+  },
+  {
+   "nome": "BYD Brasil (sala de imprensa)",
+   "url": "https://www.byd.com.br/",
+   "motivo": "página só JavaScript (298 bytes); /feed/ HTTP 404"
+  },
+  {
+   "nome": "GWM global news (RSS)",
+   "url": "https://www.gwm-global.com/news/",
+   "motivo": "conexão reiniciada em /news/ (connection reset); a home abre e linka o YouTube, mas não declara feed"
+  },
+  {
+   "nome": "GWM Brasil (sala de imprensa)",
+   "url": "https://www.gwmmotors.com.br/pt",
+   "motivo": "abre (200) mas não declara feed nem página de imprensa (só confirma o link youtube.com/channel/UClEDz-QJFtkZJ5dKEAEW7zg, já na tabela como GWM Brasil)"
+  },
+  {
+   "nome": "CAOA Chery (notícias, RSS)",
+   "url": "https://caoachery.com.br/noticias",
+   "motivo": "abre (200) mas sem feed: /noticias/feed HTTP 404; a home responde 403 sem User-Agent completo"
+  },
+  {
+   "nome": "Mitsubishi Motors global newsroom (RSS)",
+   "url": "https://www.mitsubishi-motors.com/en/newsroom/newsrelease/index.html",
+   "motivo": "abre (200) mas não declara feed"
+  },
+  {
+   "nome": "Mitsubishi Motors Brasil (imprensa, RSS)",
+   "url": "https://www.mitsubishimotors.com.br/imprensa",
+   "motivo": "abre (200) mas sem feed: /feed/ HTTP 404 e /imprensa/feed devolve HTML"
+  },
+  {
+   "nome": "Volvo Cars media (global e BR)",
+   "url": "https://www.volvocars.com/intl/media/",
+   "motivo": "HTTP 403 (media.volvocars.com redireciona para cá; volvocars.com/br também 403)"
+  },
+  {
+   "nome": "JLR News Feed - Corporate",
+   "url": "https://media.jlr.com/corporate/en/feed/news/corporate",
+   "motivo": "feed sem itens (XML válido com 0 itens; media.jaguarlandrover.com redireciona para media.jlr.com/corporate/)"
+  },
+  {
+   "nome": "JLR News Feed - Land Rover",
+   "url": "https://media.jlr.com/corporate/en/feed/news/landrover",
+   "motivo": "feed sem itens (XML válido com 0 itens; achado em https://media.jlr.com/landrover/)"
+  },
+  {
+   "nome": "Ferrari media centre (RSS)",
+   "url": "https://www.ferrari.com/en-US/media-centre",
+   "motivo": "abre (200; o /en-EN/media do SKILL responde 404 e media.ferrari.com redireciona para cá; linka youtube.com/user/ferrariworld, já na tabela) mas não declara feed"
+  },
+  {
+   "nome": "Lamborghini media (RSS)",
+   "url": "https://media.lamborghini.com/",
+   "motivo": "HTTP 202 com desafio anti-robô (página de 2 KB); não abre daqui"
+  },
+  {
+   "nome": "McLaren press (RSS)",
+   "url": "https://cars.mclaren.press/",
+   "motivo": "HTTP 404 (também /en); o endereço do SKILL parece desativado — não verificado (tempo)"
+  },
+  {
+   "nome": "Tesla blog (RSS)",
+   "url": "https://www.tesla.com/blog",
+   "motivo": "HTTP 403 (bloqueio para robô); /blog/feed idem"
+  },
+  {
+   "nome": "Volkswagen News Brasil (RSS)",
+   "url": "https://www.vwnews.com.br/",
+   "motivo": "abre (200) mas é aplicação JavaScript (4,6 KB); /feed/ devolve HTML"
+  },
+  {
+   "nome": "Audi Brasil (site/imprensa)",
+   "url": "https://www.audi.com.br/",
+   "motivo": "HTTP 403 (bloqueio para robô); fica para o PC testar"
+  },
+  {
+   "nome": "Hyundai Motor Brasil (imprensa, URL do enunciado)",
+   "url": "https://www.hyundai-motor.com.br/imprensa",
+   "motivo": "redireciona para a home hyundai.com.br; a sala certa é https://www.hyundai.com.br/imprensa → hyundai-csa-news.com, cujo feed entrou"
+  },
+  {
+   "nome": "BMW Group PressClub Brazil (YouTube)",
+   "url": "https://www.press.bmwgroup.com/brazil",
+   "motivo": "a sala BR só linka o canal global youtube.com/user/BMWGroupView (BMW já está na tabela); não há canal BR com prova"
+  }
+ ]
+}

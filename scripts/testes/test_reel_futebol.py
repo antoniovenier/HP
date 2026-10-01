@@ -402,3 +402,25 @@ def test_exemplos_sao_marcados_como_modelo(raizes_do_teste):
         assert "MODELO" in roteiro["_aviso"] and "MODELO" in roteiro["marca_dagua"]
     assert "NÃO PUBLICAR" in (pasta / "LEIA_MODELOS.txt").read_text("utf-8")
     assert not (local / "app" / "pesado.lock").exists()
+
+
+def test_paleta_do_reel_vem_da_marca_unica():
+    """Rodada 2 (A5): o estilo padrão não duplica cor — vem de hpbase.marca.CANAIS["futebol"]:
+    verde #1ED760 como destaque (não o amarelo #FFD23F da rodada 1), fundo #0A100C e o
+    verde escuro #12A850 só como tom do degradê (fundo2), com o texto branco ainda legível."""
+    from hpbase import marca
+    fut = marca.CANAIS["futebol"]
+    cores = ESTILO_PADRAO["cores"]
+    assert cores["destaque"] == fut["destaque"] == "#1ED760"
+    assert cores["destaque"] != marca.FUTEBOL_AMARELO_RODADA1
+    assert cores["fundo"] == fut["fundo"] == "#0A100C"
+    assert cores["verde_escuro"] == fut["extras"]["verde_escuro"] == "#12A850"
+    assert cores["fundo2"] == marca.hex_de(marca.misturar("#0A100C", "#12A850", 0.25))
+    assert cores["escuro"] == fut["extras"]["preto"]
+    assert ESTILO_PADRAO["arroba"] == fut["handle"] == "@hp.futebol"
+    assert marca.contraste("#FFFFFF", cores["fundo"]) >= 4.5
+    assert marca.contraste("#FFFFFF", cores["fundo2"]) >= 4.5
+    assert marca.contraste(cores["escuro"], cores["destaque"]) >= 4.5    # texto escuro na pílula verde
+    # carregar_estilo mantém a paleta da marca quando o canal não sobrescreve nada
+    est = carregar_estilo(None)
+    assert est["cores"]["destaque"] == "#1ED760" and est["cores"]["fundo"] == "#0A100C"

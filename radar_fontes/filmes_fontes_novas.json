@@ -1,0 +1,404 @@
+{
+ "canal": "filmes",
+ "verificado_em": "2026-10-01T02:00:00-03:00",
+ "rss": [
+  {
+   "nome": "Marvel",
+   "url": "https://www.marvel.com/rss/feed",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.marvel.com/articles/ (marvel.com/news redireciona para cá; o HTML linka https://www.marvel.com/rss/feed; feed cobre quadrinhos e games também, por isso filtrar: true)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Apple TV Press",
+   "url": "https://www.apple.com/tv-pr/news-feed.xml",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.apple.com/tv-pr/ (<link rel=alternate type=application/rss+xml title=\"Apple TV News RSS feed\">; sala de imprensa do Apple TV+, em inglês)",
+   "verificado_por": "atom"
+  },
+  {
+   "nome": "Apple Newsroom Brasil",
+   "url": "https://www.apple.com/br/newsroom/rss-feed.rss",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.0,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.apple.com/br/newsroom/ (caminho padrão rss-feed.rss do Apple Newsroom; feed Atom em português, cobre toda a Apple — por isso filtrar: true)",
+   "verificado_por": "atom"
+  },
+  {
+   "nome": "The Walt Disney Company",
+   "url": "https://thewaltdisneycompany.com/feed/",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.0,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://thewaltdisneycompany.com/feed/ (site WordPress da Disney corporativa; feed padrão /feed/, em inglês, cobre parques/ESPN também — filtrar: true; press.disneyplus.com não tem RSS)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Amazon News",
+   "url": "https://www.aboutamazon.com/rss/feed.rss",
+   "oficial": true,
+   "filtrar": true,
+   "peso": 1.0,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.aboutamazon.com/news/entertainment (<link rel=alternate type=application/rss+xml>; feed de toda a Amazon, em inglês — filtrar: true; press.amazonstudios.com não abre daqui)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "Omelete (via Google News)",
+   "url": "https://news.google.com/rss/search?q=site:omelete.com.br&hl=pt-BR&gl=BR&ceid=BR:pt-419",
+   "oficial": false,
+   "filtrar": true,
+   "peso": 1.0,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.omelete.com.br/ (o site não tem RSS: /rss, /feed, /rss.xml respondem 404 e o HTML não declara feed; oferece só sitemap-news.xml; este é o RSS do Google Notícias restrito ao domínio)",
+   "verificado_por": "rss"
+  },
+  {
+   "nome": "AdoroCinema (via Google News)",
+   "url": "https://news.google.com/rss/search?q=site:adorocinema.com&hl=pt-BR&gl=BR&ceid=BR:pt-419",
+   "oficial": false,
+   "filtrar": true,
+   "peso": 1.0,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.adorocinema.com/ (o site não tem RSS: /rss/, /rss.xml, /rss/noticias/ respondem 404 e o HTML não declara feed; este é o RSS do Google Notícias restrito ao domínio)",
+   "verificado_por": "rss"
+  }
+ ],
+ "youtube": [
+  {
+   "nome": "Paramount+ Brasil",
+   "url": "https://www.youtube.com/@ParamountPlusBR",
+   "channel_id": "UCAnCxJ1Weh2pUAKJW0bro0Q",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (canal com selo verificado; a página @ParamountPlusBR declara externalId UCAnCxJ1Weh2pUAKJW0bro0Q e título 'Paramount+ Brasil')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Walt Disney Studios BR",
+   "url": "https://www.youtube.com/@WaltDisneyStudiosBR",
+   "channel_id": "UCP6nJ-Elnfnpjv6HQRsv1Cw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Walt+Disney+Studios+Brasil+oficial (selo verificado; a página do canal declara o id e o título 'Walt Disney Studios BR')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Netflix",
+   "url": "https://www.youtube.com/@Netflix",
+   "channel_id": "UCWOA1ZGywLbqmigxE4Qlvuw",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@Netflix (página do canal declara externalId UCWOA1ZGywLbqmigxE4Qlvuw e título 'Netflix'; canal global em inglês — a tabela já tem Netflix Brasil)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Prime Video",
+   "url": "https://www.youtube.com/@PrimeVideo",
+   "channel_id": "UCQJWtTnAHhEG5w4uN0udnUQ",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@PrimeVideo (página do canal declara o id e o título 'Prime Video'; canal global — a tabela já tem Prime Video Brasil)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "HBO Max",
+   "url": "https://www.youtube.com/@hbomax",
+   "channel_id": "UCx-KWLTKlB83hDI6UKECtJQ",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@hbomax (página do canal declara o id e o título 'HBO Max'; canal global — a tabela já tem HBO Max Brasil)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Disney Plus",
+   "url": "https://www.youtube.com/@DisneyPlus",
+   "channel_id": "UCIrgJInjLS2BhlHOMDW7v0g",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://press.disneyplus.com/ (rodapé linka youtube.com/@disneyplus; a página do canal declara o id e o título 'Disney Plus')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Paramount Plus",
+   "url": "https://www.youtube.com/@paramountplus",
+   "channel_id": "UCrRttZIypNTA1Mrfwo745Sg",
+   "peso": 1.0,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (selo verificado; a página @paramountplus declara o id e o título 'Paramount Plus'; canal global em inglês)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Apple TV",
+   "url": "https://www.youtube.com/@AppleTV",
+   "channel_id": "UC1Myj674wRVXB9I4c6Hm5zA",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Apple+TV+Brasil+oficial (selo verificado; a página @AppleTV declara o id e o título 'Apple TV'; não existe canal 'Apple TV Brasil' separado)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Universal Pictures",
+   "url": "https://www.youtube.com/@UniversalPictures",
+   "channel_id": "UCq0OueAsdxH6b8nyAspwViw",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.universalpictures.com/ (rodapé linka youtube.com/@UniversalPictures; a página do canal declara o id e o título 'Universal Pictures')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Sony Pictures Entertainment",
+   "url": "https://www.youtube.com/@SonyPictures",
+   "channel_id": "UCz97F7dMxBNOfGYu3rx8aCw",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@SonyPictures (página do canal declara o id e o título 'Sony Pictures Entertainment'; sonypictures.com não expõe o link no HTML)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Paramount Pictures",
+   "url": "https://www.youtube.com/@ParamountPictures",
+   "channel_id": "UCF9imwPMSGz4Vq1NiTWCC7g",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@ParamountPictures (página do canal declara o id e o título 'Paramount Pictures'; paramount.com/press responde 403 ao robô)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Pixar",
+   "url": "https://www.youtube.com/@Pixar",
+   "channel_id": "UC_IRYSp4auq7hKLvziWVH6w",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@Pixar (página do canal declara o id e o título 'Pixar'; pixar.com não expõe o link no HTML)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Star Wars",
+   "url": "https://www.youtube.com/@StarWars",
+   "channel_id": "UCZGYJFUizSax-yElQaFDp5Q",
+   "peso": 1.2,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.starwars.com/news (rodapé linka youtube.com/user/starwars, que resolve para este id; título 'Star Wars'; é o canal principal da Lucasfilm)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Lucasfilm",
+   "url": "https://www.youtube.com/@Lucasfilm",
+   "channel_id": "UCnwY6fAhE3ePu0F2nMP-DLg",
+   "peso": 1.0,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Lucasfilm+oficial (selo verificado; a página @Lucasfilm declara o id e o título 'Lucasfilm')",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Lionsgate Movies",
+   "url": "https://www.youtube.com/@LionsgateMovies",
+   "channel_id": "UCJ6nMHaJPZvsJ-HmUmj1SeA",
+   "peso": 1.0,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@LionsgateMovies (página do canal declara o id e o título 'Lionsgate Movies'; o site da Lionsgate bloqueia o robô — Cloudflare)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "A24",
+   "url": "https://www.youtube.com/@A24",
+   "channel_id": "UCuPivVjnfNo4mb3Oog_frZg",
+   "peso": 1.0,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/@A24 (página do canal declara o id e o título 'A24'; a24films.com não expõe o link no HTML)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "AdoroCinema",
+   "url": "https://www.youtube.com/@AdoroCinemaOficial",
+   "channel_id": "UCsTpk_fb5aBd-tsMyeFAnYQ",
+   "peso": 1.0,
+   "oficial": false,
+   "video_reutilizavel": false,
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=AdoroCinema (selo verificado; a página @AdoroCinemaOficial declara o id e o título 'AdoroCinema'; site de notícia: oficial false)",
+   "verificado_por": "pagina_canal"
+  },
+  {
+   "nome": "Paramount Brasil",
+   "url": "https://www.youtube.com/@ParamountBrasil",
+   "channel_id": "UCgqD3GdUEfupsdY1kmFLIrw",
+   "peso": 1.5,
+   "oficial": true,
+   "video_reutilizavel": true,
+   "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
+   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (selo verificado; a página @ParamountBrasil declara o id e o título 'Paramount Brasil'; provavelmente é o 'Paramount Pictures Brasil' da tabela de 4.10 — conferir o id)",
+   "verificado_por": "pagina_canal",
+   "ja_existe": true,
+   "nota_conferir": "a tabela de 4.10 já tem 'Paramount Pictures Brasil'; se o id de lá for UCgqD3GdUEfupsdY1kmFLIrw, é o mesmo canal (renomeado 'Paramount Brasil') — não duplicar"
+  }
+ ],
+ "descartadas": [
+  {
+   "nome": "Netflix Brasil (sala de imprensa, RSS)",
+   "url": "https://about.netflix.com/pt_br/feed.xml",
+   "motivo": "feed existe, é declarado em about.netflix.com/pt_br/newsroom (<link rel=alternate type=application/rss+xml>) e está ativo (itens de 30/09/2026), mas o <pubDate> vem por extenso ('30 de setembro de 2026'; em /en/feed.xml '01 October 2026'), fora do RFC 2822 — verificar_fontes.analisar_data() não lê e a ferramenta responde 'nenhum item com data'. Entra quando a ferramenta aceitar esse formato (ver relatório F2)"
+  },
+  {
+   "nome": "Warner Bros. Discovery (sala de imprensa)",
+   "url": "https://press.wbd.com/us",
+   "motivo": "sem RSS: o HTML não declara feed; /us/rss e /us/feed respondem 404 (página HTML); wbd.com/newsroom também não declara feed"
+  },
+  {
+   "nome": "Disney+ (sala de imprensa)",
+   "url": "https://press.disneyplus.com/",
+   "motivo": "sem RSS: o HTML não declara feed (só sitemap.xml); /rss responde 404. Vale o feed corporativo thewaltdisneycompany.com/feed/ (entrou)"
+  },
+  {
+   "nome": "Paramount+ (sala de imprensa)",
+   "url": "https://press.paramountplus.com/",
+   "motivo": "não verificado: o proxy da nuvem responde 502 ao CONNECT (2 tentativas; bloqueio de política ou falha do host) — o PC testa"
+  },
+  {
+   "nome": "Amazon Studios / Prime Video (sala de imprensa)",
+   "url": "https://press.amazonstudios.com/",
+   "motivo": "não verificado: o proxy da nuvem responde 502 ao CONNECT (2 tentativas) — o PC testa. Vale o feed corporativo aboutamazon.com/rss/feed.rss (entrou)"
+  },
+  {
+   "nome": "Amazon (RI, press releases)",
+   "url": "https://ir.aboutamazon.com/rss/news-releases.xml",
+   "motivo": "HTTP 403 (desafio Cloudflare 'Just a moment'); press.aboutamazon.com/rss/news-releases.xml responde 404"
+  },
+  {
+   "nome": "Paramount Global (sala de imprensa)",
+   "url": "https://www.paramount.com/press",
+   "motivo": "HTTP 403 (bloqueio de robô); a Paramount Press Express exige login (não tentei: nunca fazer login)"
+  },
+  {
+   "nome": "Sony Pictures (sala de imprensa)",
+   "url": "https://www.sonypictures.com/corp/press.html",
+   "motivo": "sem RSS: o HTML não declara feed; a página oferece só uma lista HTML de press releases (/corp/press_releases/..., último de 31/08/2026)"
+  },
+  {
+   "nome": "Lionsgate (RI, press releases)",
+   "url": "https://investors.lionsgate.com/rss/news-releases.xml",
+   "motivo": "HTTP 403 (desafio Cloudflare 'Just a moment')"
+  },
+  {
+   "nome": "A24 (site)",
+   "url": "https://a24films.com/",
+   "motivo": "sem RSS nem sala de imprensa: o HTML não declara feed"
+  },
+  {
+   "nome": "Pixar (site)",
+   "url": "https://www.pixar.com/",
+   "motivo": "sem RSS nem sala de imprensa: o HTML não declara feed (notícias da Pixar saem pela Disney)"
+  },
+  {
+   "nome": "Lucasfilm / Star Wars (notícias)",
+   "url": "https://www.starwars.com/news",
+   "motivo": "sem RSS: starwars.com/news não declara feed e /news/feed responde 404; lucasfilm.com/news/ responde 404 (redireciona para who-we-are/community)"
+  },
+  {
+   "nome": "Universal Pictures / NBCUniversal (notícias)",
+   "url": "https://www.nbcuniversal.com/newsroom",
+   "motivo": "sem RSS: universalpictures.com não tem sala de imprensa e nbcuniversal.com/newsroom não declara feed"
+  },
+  {
+   "nome": "Omelete (RSS do site)",
+   "url": "https://www.omelete.com.br/rss",
+   "motivo": "HTTP 404 (também /feed e /rss.xml); o HTML não declara feed. O que a página oferece: sitemap-news.xml (1000 URLs com news:publication_date, mais novo 30/09/2026) — o radar não lê sitemap; entrou a alternativa via Google News"
+  },
+  {
+   "nome": "AdoroCinema (RSS do site)",
+   "url": "https://www.adorocinema.com/rss/",
+   "motivo": "HTTP 404 (também /rss.xml e /rss/noticias/); o HTML não declara feed nem sitemap; entrou a alternativa via Google News"
+  },
+  {
+   "nome": "Paramount+ Brasil (handle errado)",
+   "url": "https://www.youtube.com/@ParamountPlusBrasil",
+   "motivo": "página do canal: HTTP 404 (o handle certo é @ParamountPlusBR)"
+  },
+  {
+   "nome": "AdoroCinema (handle errado)",
+   "url": "https://www.youtube.com/@AdoroCinema",
+   "motivo": "página do canal: HTTP 404 (o handle certo é @AdoroCinemaOficial)"
+  },
+  {
+   "nome": "Apple Brasil",
+   "url": "https://www.youtube.com/@AppleBrasil",
+   "channel_id": "UCcj-jHbPUgQqpfTJRGpByRA",
+   "motivo": "fora do assunto: é o canal geral da Apple no Brasil (não do Apple TV); apareceu na busca com selo verificado, não verificado pela CLI"
+  },
+  {
+   "nome": "Walt Disney Studios PT",
+   "url": "https://www.youtube.com/@WaltDisneyStudiosPT",
+   "channel_id": "UCiAqMiyIxSiGCM52iLnylGw",
+   "motivo": "fora do escopo: canal de Portugal; não verificado pela CLI"
+  },
+  {
+   "nome": "Apple TV Brasil (canal próprio)",
+   "url": "https://www.youtube.com/results?search_query=Apple+TV+Brasil+oficial",
+   "motivo": "não existe canal separado: a busca só devolve @AppleTV (global) e @AppleBrasil"
+  },
+  {
+   "nome": "Lionsgate Brasil, A24 Brasil, Pixar Brasil, Lucasfilm Brasil (canais BR)",
+   "url": "https://www.youtube.com/",
+   "motivo": "não verificado (tempo): não procurei canais brasileiros separados dessas marcas; os globais entraram"
+  }
+ ]
+}

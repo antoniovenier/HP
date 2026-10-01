@@ -16,6 +16,7 @@ from pathlib import Path
 
 from hpbase import FUSO, agora_iso, escrever_json, garantir, ler_json, obter_logger
 
+from . import pedido_pc
 from .constantes import (ARQ_PEDIDO, CANAIS, CANAIS_COM_VOZ, CANAIS_PINTEREST,
                          PEDIDOS, PRIORIDADES, REDES, TIPOS, TIPOS_ESTATICOS)
 from .erros import PedidoInvalido
@@ -52,8 +53,16 @@ def eh_estatico(p: dict) -> bool:
     return p.get("tipo") in TIPOS_ESTATICOS
 
 
-def normalizar_pedido(dados: dict) -> dict:
-    """Preenche padrões e arruma formatos, sem inventar conteúdo."""
+def normalizar_pedido(dados: dict, config_json: dict | None = None) -> dict:
+    """Preenche padrões e arruma formatos, sem inventar conteúdo.
+
+    Pedido no formato REAL do PC (§4.5: "tipo": "corte"/"texto", "data" AAAA-MM-DDTHH:MM ou
+    prioridade inteira, sem horario_alvo) passa antes por pedido_pc.para_esteira, que converte e
+    recusa com ErroParametro (Flow Games, criador não autorizado, vazamento, data inválida).
+    `config_json` = dict do config.json do PC (None = lê <Drive>\\06 Projeto\\config.json).
+    """
+    if pedido_pc.eh_pedido_pc(dados):
+        dados = pedido_pc.para_esteira(dados, config=config_json)
     p = dict(dados)
     pri = p.get("prioridade", "P1")
     if isinstance(pri, int) and not isinstance(pri, bool):

@@ -50,8 +50,14 @@ def enfileirar_no_ar(agendados: Path, cfg: Config, agora: datetime, *,
     saida = []
     for post in posts_prontos(carregar_agendados(agendados), agora, janela):
         g = grupo_do_post(post, cfg, grupo)
-        msg = mensagem_fila("no_ar", g, montar_no_ar(post, texto_modelo),
-                            id_mensagem("no_ar", chave_post(post), g), agora)
+        if post.get("formato") == "pc":        # item real do agendados.json: texto literal de §4.8
+            from .fila_pc import enviar_apos_padrao, montar_aviso_no_ar
+            texto = montar_aviso_no_ar(post)
+        else:
+            texto = montar_no_ar(post, texto_modelo)
+        msg = mensagem_fila("no_ar", g, texto, id_mensagem("no_ar", chave_post(post), g), agora)
+        if post.get("formato") == "pc":
+            msg["enviar_apos"] = enviar_apos_padrao(agora)   # madrugada: fica na fila até 07:30
         saida.append(_entregar(msg, fila, so_mostrar))
     return saida
 
@@ -99,6 +105,16 @@ def resolver_agendados(cfg: Config) -> Path | None:
     return next((p for p in cands if p.is_file()), None)
 
 
+def resolver_agendados_todos(cfg: Config) -> list[Path]:
+    """Como resolver_agendados, mas devolve TODOS os que existem: com "auto" são os 6 agendados.json
+    reais (GTA + 5 canais) e os lugares antigos; com caminho, só ele."""
+    valor = cfg.arquivo_agendados
+    if not valor:
+        return []
+    cands = candidatos_agendados() if str(valor).lower() == "auto" else [Path(valor)]
+    return [p for p in cands if p.is_file()]
+
+
 def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) -> int:
     """O que o vigia monta sozinho, se estiver ligado na config.json:
     - arquivo_agendados → aviso "no ar" dos posts que entraram no ar;
@@ -110,8 +126,7 @@ def tarefas_automaticas(cfg: Config, agora: datetime, fila: Fila | None = None) 
     lg = obter_logger("whatsapp")
     hhmm = agora.strftime("%H:%M")
     try:
-        arq = resolver_agendados(cfg)
-        if arq:
+        for arq in resolver_agendados_todos(cfg):      # os 6 agendados.json reais + os antigos
             novas += sum(1 for m in enfileirar_no_ar(arq, cfg, agora, fila=fila)
                          if m["_situacao"] == "enfileirada")
         if cfg.hora_resumo_dia and hhmm >= cfg.hora_resumo_dia:

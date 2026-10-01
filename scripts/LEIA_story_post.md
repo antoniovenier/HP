@@ -9,7 +9,7 @@ Ticket: `20260930-124527-emulador-android…` (módulo F do HP Studio).
 | `fila` | Pega cada post da `H:\HypadoLocal\emulador\fila_story\` que **já foi publicado** e ainda não tem story. Para cada um: liga o emulador, abre o Instagram, troca para a conta certa, abre o post, Enviar → Adicionar ao story → Seu story, põe no destaque (se o JSON pedir), avisa o `story_clicavel.py feito` e, no fim, desliga o emulador. |
 | `fila --uma-vez` | O mesmo, mas faz no máximo 1 story e sai. |
 | `post <post_id>` | Faz o story de um post só (o arquivo `fila_story\<post_id>.json`). |
-| `enquete --dia 2026-09-30` | Story interativo das 16h do GTA: manda a arte para a galeria do emulador, cria o story com a figurinha de enquete (pergunta + opções), arrasta a figurinha para a caixa da arte, publica e põe no destaque "Enquetes". `--dia hoje` também vale. |
+| `enquete --dia 2026-09-30` | Story interativo das 16h do GTA: manda a arte para a galeria do emulador, cria o story com a figurinha de enquete (pergunta + opções), arrasta a figurinha para a caixa da arte, publica e põe no destaque "Enquetes". `--dia hoje` também vale. Lê a chave `interativo` do lote real (`lotes\AAAA-MM-DD_estaticos.json`) pelo `story_post_lote.py`: a pergunta de ~46 caracteres vira a última oração com "?" (ou `pergunta_curta`, se o lote tiver); se nada couber em 25, não sai e explica (veja `LEIA_story_post_lote.md`). |
 | `contagem` | Story com a figurinha de contagem regressiva do lançamento do GTA 6 (19/11/2026). |
 | `status` | Mostra se está PARADO, quando foi o último story, quanto falta para o próximo e o que está na fila. |
 | `config` | Cria o arquivo de configuração com os valores padrão. |
@@ -50,7 +50,7 @@ Usa a base `hpbase` do app (`G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\
 
 ## Instalação, passo a passo (uma vez só)
 
-1. Copie `story_post.py` e `story_post_seletores.py` para `G:\Meu Drive\Hypado\scripts\`.
+1. Copie `story_post.py`, `story_post_seletores.py` e `story_post_lote.py` para `G:\Meu Drive\Hypado\scripts\`.
 2. Copie `test_story_post.py` para `G:\Meu Drive\Hypado\scripts\testes\`.
 3. Abra o PowerShell e vá até a pasta da Hypado:
    `cd "G:\Meu Drive\Hypado"`

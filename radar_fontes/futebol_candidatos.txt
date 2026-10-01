@@ -1,0 +1,60 @@
+# Candidatos verificados pela tarefa F1 (rodada 2, 01/10/2026) — canal futebol (+ a confirmação do GTA no fim).
+# Uma linha por candidato: tipo|nome|url|oficial|reutilizavel|resultado
+# ATENÇÃO: a 6ª coluna aqui é o RESULTADO da pesquisa (formato pedido na tarefa F1); no comando
+# "verificar_fontes.py candidatos" a 6ª coluna é o channel_id, então este arquivo é documentação,
+# não entrada da CLI. O JSON final é radar_fontes/futebol_fontes_novas.json (provado com "verificar", saída 0).
+# Resultados: ENTROU · ENTROU (ja_existe) · DESCARTADA · NAO VERIFICADO · JA NA TABELA · CONFIRMADO · NAO EXISTE
+#
+# --- YouTube: clubes da Série A 2026 que faltavam na tabela de 4.10 ---
+youtube|Athletico Paranaense|https://www.youtube.com/@AthleticoParanaense|true|true|ENTROU id UCUN1ASH969TSwnuUUU56TmA (pagina_canal; athletico.com.br linka youtube.com/athleticoparanaense, que resolve para este id)
+youtube|Red Bull Bragantino|https://www.youtube.com/@MassaBrutaTV|true|true|ENTROU id UC0x9Ypk2Z1lUdR4a88jMC2Q (redbullbragantino.com linka youtube.com/redbullbragantinotvoficial; selo verificado na busca)
+youtube|Chapecoense (ChapeTV)|https://www.youtube.com/@ChapeTv|true|true|ENTROU id UC5of5voGUqec9K9JqL9al4Q (chapecoense.com linka /channel/UC5of5voGUqec9K9JqL9al4Q e /c/ChapeTvOficial; título do canal é "ChapeTv")
+youtube|Coritiba|https://www.youtube.com/@coritibaoficial|true|true|ENTROU id UCbCD35_3aBxTYcpm8M2LviA (título "TV Coxa | Coritiba"; links da página do canal: coritiba.com.br e sociocoxa.com.br; o site coritiba.com.br não renderiza sem JS)
+youtube|Mirassol|https://www.youtube.com/@CanalMirassolFC|true|true|ENTROU id UCiz7EFM1alBWxE2hM8k4f4Q (mirassolfc.com.br linka @CanalMirassolFC)
+youtube|Remo|https://www.youtube.com/@RemoTV|true|true|ENTROU id UCsLGx5V5iv-JHbG10oDZOcw (clubedoremo.com.br linka @RemotV; handle canônico @RemoTV; título "Remo TV")
+youtube|Vitória|https://www.youtube.com/@tvvitoria1899|true|true|ENTROU id UCT2ACrmb364amkLW8L8IhBA (ecvitoria.com.br linka @tvvitoria1899; título "TV Vitória")
+# --- YouTube: CONMEBOL, FIFA, CBF ---
+youtube|CONMEBOL|https://www.youtube.com/@conmebol|true|true|ENTROU id UCzU8-lZlRfkV3nj0RzAZdrQ (conmebol.com linka youtube.com/c/conmebol, que resolve para este id)
+youtube|CONMEBOL Sudamericana|https://www.youtube.com/@Sudamericana|true|true|ENTROU id UCw7eDYHnA-2PIr-qIldYeBQ (gol.conmebol.com/sudamericana/es linka @Sudamericana; selo verificado na busca)
+youtube|CONMEBOL Sudamericana BR|https://www.youtube.com/@SudamericanaBR|true|true|ENTROU id UCFHE5FRBeksxt7YoFPGeKPw (canal em português; selo verificado na busca; links da página do canal: conmebolsudamericana.com)
+youtube|FIFA|https://www.youtube.com/@FIFA|true|true|ENTROU id UCpcTrCXblq78GZrTUTLWeBw (selo verificado na busca, 35,8 mi de inscritos; fifa.com não expõe o link sem JS)
+youtube|CBF (Confederação Brasileira de Futebol)|https://www.youtube.com/@brasil|true|true|ENTROU (ja_existe) id UCdQuDaRww5NkKpQQ1BJBWww (selo verificado; links da página: cbf.com.br; provavelmente é a entrada "CBF TV" da tabela — conferir o id)
+youtube|CONMEBOL Libertadores BR|https://www.youtube.com/@LibertadoresBR|true|true|ENTROU (ja_existe) id UCyuLjFPzlkMSYJpIpY8M6qA (canal em português; a tabela já tem "CONMEBOL Libertadores" — conferir se o id lá é este ou o do canal em espanhol)
+youtube|CONMEBOL Sudamericana (handle errado)|https://www.youtube.com/@CONMEBOLSudamericana|true|true|DESCARTADA: página do canal HTTP 404 (o handle certo é @Sudamericana)
+youtube|Seleção Brasileira (canal próprio)|https://www.youtube.com/results?search_query=Sele%C3%A7%C3%A3o+Brasileira+CBF|true|true|NAO EXISTE canal separado: a busca só devolve o canal da CBF (@brasil); a seleção está lá
+# --- YouTube: já na tabela de 4.10 (vistos de passagem nos sites/busca; NÃO verificados pela CLI, sem fetch extra) ---
+youtube|Santos (SantosTV)|https://www.youtube.com/@santosfc|true|true|JA NA TABELA — santosfc.com.br linka /c/santosfc e /user/santostvoficial; a busca mostra id UC0uRT_armQXqds_rjTjqJ0g (não verificado pela CLI)
+youtube|Botafogo TV|https://www.youtube.com/@BotafogoTV|true|true|JA NA TABELA — botafogo.com.br linka @BotafogoTV; a busca mostra id UCFxjZDrLCOCHkUCu632AmMQ (não verificado pela CLI)
+youtube|Bahia (TV Bahêa)|https://www.youtube.com/@TvBahea|true|true|JA NA TABELA — esporteclubebahia.com.br linka @TvBahea (não verificado pela CLI)
+youtube|Corinthians TV|https://www.youtube.com/@corinthians|true|true|JA NA TABELA — corinthians.com.br linka @corinthians; a busca mostra id UCqRraVICLr0asn90cAvkIZQ (não verificado pela CLI)
+youtube|Fluminense|https://www.youtube.com/fluminensefc|true|true|JA NA TABELA — fluminense.com.br linka youtube.com/fluminensefc (não verificado pela CLI)
+# --- RSS: páginas de notícias oficiais dos clubes (os 20), CBF, CONMEBOL, FIFA ---
+rss|Atlético-MG|https://atletico.com.br/feed/|true|false|ENTROU (rss, 50 itens, mais novo 2026-09-30)
+rss|Bahia|https://www.esporteclubebahia.com.br/feed/|true|false|ENTROU (rss, 10 itens, mais novo 2026-09-30; declarado no HTML da home)
+rss|Chapecoense|https://chapecoense.com/feed/|true|false|ENTROU (rss, 10 itens, mais novo 2026-09-29; declarado no HTML da home)
+rss|Santos|https://www.santosfc.com.br/feed/|true|false|ENTROU (rss, 10 itens, mais novo 2026-09-29; declarado no HTML da home)
+rss|São Paulo FC|https://www.saopaulofc.net/feed/|true|false|ENTROU (rss, 10 itens, mais novo 2026-09-30; declarado no HTML da home)
+rss|Vitória|https://ecvitoria.com.br/feed/|true|false|ENTROU (rss, 10 itens, mais novo 2026-10-01; declarado no HTML da home)
+rss|CONMEBOL|https://www.conmebol.com/feed/|true|false|ENTROU (rss, 6 itens, mais novo 2026-09-30; em espanhol e de todas as competições — filtrar: true)
+rss|Palmeiras|https://www.palmeiras.com.br/feed/|true|false|DESCARTADA: sem item nos últimos 30 dias (mais novo 2009-11-03) — feed WordPress abandonado
+rss|Athletico Paranaense|https://www.athletico.com.br/feed/|true|false|DESCARTADA: feed sem itens
+rss|Corinthians|https://www.corinthians.com.br/feed/|true|false|DESCARTADA: feed sem itens (o site declara o feed, mas vem vazio)
+rss|Flamengo|https://www.flamengo.com.br/feed/|true|false|DESCARTADA: connection reset (urllib) e HTTP 403 (curl); o site não declara feed
+rss|Fluminense|https://www.fluminense.com.br/feed/|true|false|DESCARTADA: veio HTML em /feed/ e em /rss; o site não declara feed
+rss|Internacional|https://www.internacional.com.br/feed/|true|false|DESCARTADA: HTTP 404 em /feed/ e /rss; o site não declara feed
+rss|Botafogo|https://www.botafogo.com.br/feed/|true|false|DESCARTADA: HTTP 404 em /feed/ e /rss; o site não declara feed
+rss|Vasco|https://vasco.com.br/feed/|true|false|DESCARTADA: HTTP 404 (a home responde 403 daqui)
+rss|Grêmio|https://gremio.net/|true|false|DESCARTADA: não verificado — gremio.net responde 200 com corpo vazio daqui (com e sem --compressed)
+rss|Cruzeiro|https://www.cruzeiro.com.br/feed/|true|false|DESCARTADA: veio HTML (site é app React, sem feed)
+rss|Coritiba|https://www.coritiba.com.br/feed/|true|false|DESCARTADA: veio HTML (site só renderiza com JS, sem feed declarado)
+rss|Remo|https://clubedoremo.com.br/feed/|true|false|DESCARTADA: HTTP 404; o site não declara feed
+rss|Mirassol|https://mirassolfc.com.br/feed/|true|false|DESCARTADA: HTTP 404; o site não declara feed
+rss|Red Bull Bragantino|https://www.redbullbragantino.com/br-pt/feed|true|false|DESCARTADA: veio HTML em /br-pt/feed e /br-pt/rss; o site não declara feed
+rss|CONMEBOL Sudamericana|https://www.conmebol.com/sudamericana/feed/|true|false|DESCARTADA: feed sem itens (só comentários); /libertadores/feed/ idem — vale o feed geral conmebol.com/feed/
+rss|CBF|https://www.cbf.com.br/|true|false|NAO VERIFICADO: cbf.com.br não abre daqui (erro de certificado no proxy, curl e urllib) — o PC testa
+rss|FIFA|https://www.fifa.com/|true|false|NAO VERIFICADO (tempo): fifa.com não expõe RSS/Atom no HTML
+rss|ge|https://ge.globo.com/|false|false|JA NA TABELA — não repetido
+# --- GTA (só oficiais) ---
+youtube|Rockstar Games|https://www.youtube.com/@RockstarGames|true|true|CONFIRMADO id UC6VcWc1rAoWdBCM0JxrRQ3A (pagina_canal; gravado em gta_fontes_novas.json com ja_existe: true)
+rss|Take-Two Interactive (press releases)|https://ir.take2games.com/rss/news-releases.xml|true|false|ENTROU (gta_fontes_novas.json; rss, 10 itens, mais novo 2026-09-10; caminho padrão do RI hospedado em ir.take2games.com)
+rss|Take-Two (caminhos alternativos)|https://www.take2games.com/ir/rss/news-releases.xml|true|false|DESCARTADA: HTTP 404 (e ir.take2games.com/rss/pressrelease.aspx 404)

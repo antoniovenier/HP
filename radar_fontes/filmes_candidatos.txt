@@ -1,0 +1,65 @@
+# Candidatos verificados pela tarefa F2 (rodada 2, 01/10/2026) — canal filmes (Filmes e Séries).
+# Uma linha por candidato: tipo|nome|url|oficial|reutilizavel|resultado
+# ATENÇÃO: a 6ª coluna aqui é o RESULTADO da pesquisa (formato pedido na tarefa F2); no comando
+# "verificar_fontes.py candidatos" a 6ª coluna é o channel_id, então este arquivo é documentação,
+# não entrada da CLI. O JSON final é radar_fontes/filmes_fontes_novas.json (provado com "verificar", saída 0).
+# Resultados: ENTROU · ENTROU (ja_existe) · DESCARTADA · NAO VERIFICADO · NAO EXISTE · JA NA TABELA
+#
+# --- YouTube: streamings (Brasil e global) ---
+youtube|Paramount+ Brasil|https://www.youtube.com/@ParamountPlusBR|true|true|ENTROU id UCAnCxJ1Weh2pUAKJW0bro0Q (pagina_canal; selo verificado na busca "Paramount Plus Brasil oficial")
+youtube|Paramount Plus|https://www.youtube.com/@paramountplus|true|true|ENTROU id UCrRttZIypNTA1Mrfwo745Sg (pagina_canal; global, inglês; selo verificado na busca)
+youtube|Apple TV|https://www.youtube.com/@AppleTV|true|true|ENTROU id UC1Myj674wRVXB9I4c6Hm5zA (pagina_canal; selo verificado na busca "Apple TV Brasil oficial"; não existe canal BR separado)
+youtube|Netflix|https://www.youtube.com/@Netflix|true|true|ENTROU id UCWOA1ZGywLbqmigxE4Qlvuw (pagina_canal; global — Netflix Brasil já está na tabela)
+youtube|Prime Video|https://www.youtube.com/@PrimeVideo|true|true|ENTROU id UCQJWtTnAHhEG5w4uN0udnUQ (pagina_canal; global — Prime Video Brasil já está na tabela)
+youtube|HBO Max|https://www.youtube.com/@hbomax|true|true|ENTROU id UCx-KWLTKlB83hDI6UKECtJQ (pagina_canal; global — HBO Max Brasil já está na tabela)
+youtube|Disney Plus|https://www.youtube.com/@DisneyPlus|true|true|ENTROU id UCIrgJInjLS2BhlHOMDW7v0g (pagina_canal; press.disneyplus.com linka youtube.com/@disneyplus — Disney+ Brasil já está na tabela)
+# --- YouTube: estúdios ---
+youtube|Walt Disney Studios BR|https://www.youtube.com/@WaltDisneyStudiosBR|true|true|ENTROU id UCP6nJ-Elnfnpjv6HQRsv1Cw (pagina_canal; selo verificado na busca "Walt Disney Studios Brasil oficial")
+youtube|Universal Pictures|https://www.youtube.com/@UniversalPictures|true|true|ENTROU id UCq0OueAsdxH6b8nyAspwViw (pagina_canal; universalpictures.com linka youtube.com/@UniversalPictures)
+youtube|Sony Pictures Entertainment|https://www.youtube.com/@SonyPictures|true|true|ENTROU id UCz97F7dMxBNOfGYu3rx8aCw (pagina_canal; sonypictures.com não expõe o link no HTML)
+youtube|Paramount Pictures|https://www.youtube.com/@ParamountPictures|true|true|ENTROU id UCF9imwPMSGz4Vq1NiTWCC7g (pagina_canal)
+youtube|Pixar|https://www.youtube.com/@Pixar|true|true|ENTROU id UC_IRYSp4auq7hKLvziWVH6w (pagina_canal; pixar.com não expõe o link no HTML)
+youtube|Star Wars|https://www.youtube.com/@StarWars|true|true|ENTROU id UCZGYJFUizSax-yElQaFDp5Q (pagina_canal; starwars.com/news linka youtube.com/user/starwars, que resolve para este id — canal principal da Lucasfilm)
+youtube|Lucasfilm|https://www.youtube.com/@Lucasfilm|true|true|ENTROU id UCnwY6fAhE3ePu0F2nMP-DLg (pagina_canal; selo verificado na busca "Lucasfilm oficial")
+youtube|Lionsgate Movies|https://www.youtube.com/@LionsgateMovies|true|true|ENTROU id UCJ6nMHaJPZvsJ-HmUmj1SeA (pagina_canal; o site da Lionsgate bloqueia o robô)
+youtube|A24|https://www.youtube.com/@A24|true|true|ENTROU id UCuPivVjnfNo4mb3Oog_frZg (pagina_canal; a24films.com não expõe o link no HTML)
+youtube|Paramount Brasil|https://www.youtube.com/@ParamountBrasil|true|true|ENTROU (ja_existe) id UCgqD3GdUEfupsdY1kmFLIrw (pagina_canal; selo verificado; provavelmente é o "Paramount Pictures Brasil" da tabela de 4.10 — conferir o id)
+# --- YouTube: sites de notícia (oficial false, vídeo não reutilizável) ---
+youtube|AdoroCinema|https://www.youtube.com/@AdoroCinemaOficial|false|false|ENTROU id UCsTpk_fb5aBd-tsMyeFAnYQ (pagina_canal; selo verificado na busca "AdoroCinema")
+# --- YouTube: descartados / não verificados ---
+youtube|Paramount+ Brasil (handle errado)|https://www.youtube.com/@ParamountPlusBrasil|true|true|DESCARTADA: página do canal HTTP 404 (o handle certo é @ParamountPlusBR)
+youtube|AdoroCinema (handle errado)|https://www.youtube.com/@AdoroCinema|false|false|DESCARTADA: página do canal HTTP 404 (o handle certo é @AdoroCinemaOficial)
+youtube|Apple Brasil|https://www.youtube.com/@AppleBrasil|true|false|DESCARTADA: fora do assunto (canal geral da Apple, não do Apple TV); id UCcj-jHbPUgQqpfTJRGpByRA visto na busca, não verificado pela CLI
+youtube|Walt Disney Studios PT|https://www.youtube.com/@WaltDisneyStudiosPT|true|false|DESCARTADA: fora do escopo (Portugal); id UCiAqMiyIxSiGCM52iLnylGw visto na busca, não verificado pela CLI
+youtube|Apple TV Brasil (canal próprio)|https://www.youtube.com/results?search_query=Apple+TV+Brasil+oficial|true|true|NAO EXISTE canal separado: a busca só devolve @AppleTV (global) e @AppleBrasil
+youtube|Lionsgate Brasil / A24 Brasil / Pixar Brasil / Lucasfilm Brasil|https://www.youtube.com/|true|true|NAO VERIFICADO (tempo): não procurei canais brasileiros separados dessas marcas; os globais entraram
+# --- YouTube: já na tabela de 4.10 (vistos de passagem; NÃO reverificados, sem fetch extra) ---
+youtube|Marvel Entertainment|https://www.youtube.com/channel/UCvC4D8onUfXzvjTOM-dBfEA|true|true|JA NA TABELA — marvel.com linka /channel/UCvC4D8onUfXzvjTOM-dBfEA (não verificado pela CLI)
+youtube|Omelete|https://www.youtube.com/@omeleteve|false|false|JA NA TABELA — omelete.com.br linka @omeleteve (não verificado pela CLI)
+# --- RSS: salas de imprensa dos estúdios e streamings ---
+rss|Marvel|https://www.marvel.com/rss/feed|true|false|ENTROU (rss, 15 itens, mais novo 2026-09-30; marvel.com/news redireciona para /articles/, que linka o feed; cobre quadrinhos/games — filtrar: true)
+rss|Apple TV Press|https://www.apple.com/tv-pr/news-feed.xml|true|false|ENTROU (atom, 10 itens, mais novo 2026-09-30; declarado em apple.com/tv-pr com <link rel=alternate type=application/rss+xml>)
+rss|Apple Newsroom Brasil|https://www.apple.com/br/newsroom/rss-feed.rss|true|false|ENTROU (atom, 20 itens, mais novo 2026-09-29; em português, toda a Apple — filtrar: true)
+rss|The Walt Disney Company|https://thewaltdisneycompany.com/feed/|true|false|ENTROU (rss, 100 itens, mais novo 2026-09-30; feed WordPress padrão da Disney corporativa, inglês — filtrar: true)
+rss|Amazon News|https://www.aboutamazon.com/rss/feed.rss|true|false|ENTROU (rss, 10 itens, mais novo 2026-09-30; declarado em aboutamazon.com/news/entertainment; toda a Amazon — filtrar: true)
+rss|Omelete (via Google News)|https://news.google.com/rss/search?q=site:omelete.com.br&hl=pt-BR&gl=BR&ceid=BR:pt-419|false|false|ENTROU (rss, 100 itens, mais novo 2026-10-01; alternativa porque o site não tem RSS)
+rss|AdoroCinema (via Google News)|https://news.google.com/rss/search?q=site:adorocinema.com&hl=pt-BR&gl=BR&ceid=BR:pt-419|false|false|ENTROU (rss, 100 itens, mais novo 2026-10-01; alternativa porque o site não tem RSS)
+rss|Netflix Brasil (sala de imprensa)|https://about.netflix.com/pt_br/feed.xml|true|false|DESCARTADA: feed existe, é declarado em about.netflix.com/pt_br/newsroom e tem itens de 30/09/2026, mas <pubDate> vem por extenso ("30 de setembro de 2026"; /en/feed.xml "01 October 2026") — a ferramenta responde "nenhum item com data"
+rss|Netflix (sala de imprensa, inglês)|https://about.netflix.com/en/feed.xml|true|false|DESCARTADA: mesmo problema de data ("01 October 2026", fora do RFC 2822)
+rss|Warner Bros. Discovery (press.wbd.com)|https://press.wbd.com/us|true|false|DESCARTADA: sem RSS declarado; /us/rss e /us/feed 404 (HTML)
+rss|Warner Bros. (warnerbros.com/news)|https://www.wbd.com/newsroom|true|false|DESCARTADA: redireciona para wbd.com/newsroom, sem RSS declarado
+rss|Disney+ (press.disneyplus.com)|https://press.disneyplus.com/|true|false|DESCARTADA: sem RSS declarado (só sitemap.xml); /rss 404
+rss|Paramount+ (press.paramountplus.com)|https://press.paramountplus.com/|true|false|NAO VERIFICADO: proxy da nuvem responde 502 ao CONNECT (2 tentativas) — o PC testa
+rss|Amazon Studios (press.amazonstudios.com)|https://press.amazonstudios.com/|true|false|NAO VERIFICADO: proxy da nuvem responde 502 ao CONNECT (2 tentativas) — o PC testa
+rss|Amazon RI (press releases)|https://ir.aboutamazon.com/rss/news-releases.xml|true|false|DESCARTADA: HTTP 403 (Cloudflare); press.aboutamazon.com/rss/news-releases.xml 404
+rss|Paramount Global (paramount.com/press)|https://www.paramount.com/press|true|false|DESCARTADA: HTTP 403 (bloqueio de robô)
+rss|Sony Pictures (sonypictures.com/corp/press.html)|https://www.sonypictures.com/corp/press.html|true|false|DESCARTADA: sem RSS; a página oferece só lista HTML de press releases (último 2026-08-31)
+rss|Lionsgate RI (press releases)|https://investors.lionsgate.com/rss/news-releases.xml|true|false|DESCARTADA: HTTP 403 (Cloudflare "Just a moment")
+rss|A24 (a24films.com)|https://a24films.com/|true|false|DESCARTADA: sem feed nem sala de imprensa
+rss|Pixar (pixar.com)|https://www.pixar.com/|true|false|DESCARTADA: sem feed nem sala de imprensa
+rss|Lucasfilm / Star Wars (news)|https://www.starwars.com/news|true|false|DESCARTADA: sem RSS declarado; /news/feed 404; lucasfilm.com/news/ 404
+rss|Universal / NBCUniversal (newsroom)|https://www.nbcuniversal.com/newsroom|true|false|DESCARTADA: sem RSS declarado; universalpictures.com não tem sala de imprensa
+rss|Omelete (RSS do site)|https://www.omelete.com.br/rss|false|false|DESCARTADA: 404 (também /feed e /rss.xml); HTML não declara feed; o site oferece sitemap-news.xml (1000 URLs, news:publication_date 2026-09-30) — o radar não lê sitemap
+rss|AdoroCinema (RSS do site)|https://www.adorocinema.com/rss/|false|false|DESCARTADA: 404 (também /rss.xml e /rss/noticias/); HTML não declara feed nem sitemap
+# --- RSS: já na tabela de 4.10 (não repetidos, não verificados) ---
+rss|Deadline, Variety, Cinepop, Legião dos Heróis|-|false|false|JA NA TABELA — não repetidos

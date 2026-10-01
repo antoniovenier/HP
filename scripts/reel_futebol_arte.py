@@ -20,20 +20,28 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 from reel_futebol_base import (ALTURA, LARGURA, MARGEM, ZONA_Y0, ZONA_Y1,
                                ErroReel, ler_json, raiz_local)
+from hpbase import marca   # o reel_futebol_base já pôs o hpbase no sys.path
 
 # ------------------------------------------------------------------ estilo
+# A paleta vem da marca única (hpbase/marca.py, Seção 4.6): verde #1ED760 do
+# posts_futebol.py como destaque (o amarelo #FFD23F da rodada 1 não vale mais),
+# fundo (10,16,12) e verde escuro #12A850 só como tom do degradê do fundo
+# (misturado 25 % no fundo, para o texto branco continuar legível).
+_FUTEBOL = marca.CANAIS["futebol"]
 ESTILO_PADRAO: dict = {
     "marca": "FUTEBOL | HP",
-    "arroba": "@hp.futebol",
+    "arroba": _FUTEBOL["handle"],
     "cores": {
-        "fundo": "#06170F",       # verde quase preto
-        "fundo2": "#0F3B26",      # verde gramado escuro
+        "fundo": _FUTEBOL["fundo"],                       # #0A100C verde quase preto
+        "fundo2": marca.hex_de(marca.misturar(_FUTEBOL["fundo"],
+                                              _FUTEBOL["extras"]["verde_escuro"], 0.25)),
         "linhas": "#FFFFFF",      # linhas do campo (bem transparentes)
-        "destaque": "#FFD23F",    # amarelo HP
+        "destaque": _FUTEBOL["destaque"],                 # #1ED760 verde HP
+        "verde_escuro": _FUTEBOL["extras"]["verde_escuro"],   # #12A850 moldura/aspas/faixas
         "texto": "#FFFFFF",
         "texto2": "#BFD8CB",
-        "escuro": "#0B0B0B",
-        "caixa": "#000000",       # caixa de legenda (semitransparente)
+        "escuro": _FUTEBOL["extras"]["preto"],            # #08090B
+        "caixa": _FUTEBOL["extras"]["caixa"],             # caixa de legenda (semitransparente)
         "positivo": "#22C55E",
         "negativo": "#EF4444",
         "neutro": "#3B82F6",

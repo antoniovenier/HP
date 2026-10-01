@@ -1,7 +1,8 @@
 """Testes do reenvio_seguro (dormir falso, nada de rede)."""
 import json
 import sys
-from datetime import datetime
+import types
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -16,7 +17,9 @@ from hpbase import FUSO  # noqa: E402  (o reenvio_seguro já pôs o hp_studio no
 INICIO = datetime(2026, 9, 30, 18, 30, tzinfo=FUSO)
 LEGENDA = ("GTA 6: o trailer 3 chegou ❤️🔥  tudo o que sabemos até agora sobre o mapa, "
            "os carros e a data de lançamento #gta6 #rockstar")
-TOKEN = "EAABtokenDoTesteReenvio0123456789abcdef"
+TOKEN = "FAKE_NAO_E_TOKEN_1"
+TOKEN_TH = "FAKE_NAO_E_TOKEN_2"
+ID_ITEM = "gta_2026-09-30_ig_reel_1830"      # convenção real (4.1): gta_<data>_<ig|th>_<tipo>_<HHMM>
 
 
 @pytest.fixture(autouse=True)
@@ -204,14 +207,40 @@ def test_ja_publicado_no_threads_usa_text():
 
 # ------------------------------------------------------------ reenviar (fila)
 def _item_na_fila(local, **extra):
+    """Item no formato REAL da fila (4.1), em erros\\ depois de 2 tempos esgotados."""
     fila = local / "fila_api" / "erros"
     fila.mkdir(parents=True)
-    item = {"id": "20260930-1830-gta-reel", "rede": "instagram", "conta": "gta", "tipo": "reel",
-            "legenda": LEGENDA, "tentativa_inicio": INICIO.isoformat(), "status": "tempo_esgotado",
-            "ig_id": "1784IG", **extra}
+    item = {"id": ID_ITEM, "conta": "hpgta6", "rede": "instagram", "tipo": "reel",
+            "arquivos": ["H:\\HypadoLocal\\upload\\30_09_2026_18h30_trailer_3.mp4"],
+            "legenda": LEGENDA, "quando": "2026-09-30 18:30", "canal": "gta",
+            "grupo_whatsapp": "HP | Comissão 🚀", "ultimo_erro": "HTTP 504: tempo esgotado",
+            "tentativas": 2, "ig_id": "1784IG", **extra}
     arq = fila / f"{item['id']}.json"
     arq.write_text(json.dumps(item, ensure_ascii=False), encoding="utf-8")
     return item, arq
+
+
+def _segredos(local, meta=True):
+    seg = local / "segredos"
+    seg.mkdir(exist_ok=True)
+    (seg / "meta_tokens.txt").write_text(
+        f"# tokens (4.3)\nIG_hpgta6={TOKEN}\nTH_@hpgta6 = \"{TOKEN_TH}\"\nIG_hp.carros=\n",
+        encoding="utf-8")
+    if meta:
+        (seg / "meta_tokens_meta.json").write_text(json.dumps({"contas": {
+            "IG_hpgta6": {"id": "1784IG", "username": "hpgta6"},
+            "TH_hpgta6": {"id": "26TH", "username": "hpgta6"}}}), encoding="utf-8")
+    return seg
+
+
+def test_inicio_do_item_usa_quando_da_fila_real():
+    assert rs.inicio_do_item({"quando": "2026-09-30 18:30"}) == INICIO
+    assert rs.inicio_do_item({"quando": "2026-09-30T18:30"}) == INICIO
+    preciso = {"quando": "2026-09-30 18:30", "tentativa_inicio": "2026-09-30T18:31:05-03:00"}
+    assert rs.inicio_do_item(preciso) == datetime(2026, 9, 30, 18, 31, 5, tzinfo=FUSO)
+    agora = datetime(2026, 10, 1, 12, 0, tzinfo=FUSO)
+    assert rs.inicio_do_item({"quando": "ontem"}, agora) == agora - timedelta(hours=24)
+    assert rs.inicio_do_item({}, agora) == agora - timedelta(hours=24)
 
 
 def test_reenviar_simular_so_diz_o_que_faria(local_temporario):
@@ -252,13 +281,14 @@ def test_reenviar_quando_ja_saiu_nao_publica(local_temporario):
     assert gravado["media_id"] == "JA" and gravado["reenvio"]["ja_tinha_saido"] is True
 
 
-def test_cliente_da_fila_le_token_do_segredo_e_nunca_mostra(local_temporario):
-    seg = local_temporario / "segredos"
-    seg.mkdir()
-    (seg / "meta_tokens.txt").write_text(f"IG_GTA_TOKEN={TOKEN}\nIG_GTA_ID=1784IG\n",
-                                         encoding="utf-8")
-    cliente, ident = rs.cliente_e_id({"rede": "instagram", "conta": "gta"})
-    assert ident == "1784IG"
+def test_cliente_da_fila_le_token_do_segredo_e_nunca_mostra(local_temporario, capsys):
+    _segredos(local_temporario)
+    cliente, ident = rs.cliente_e_id({"rede": "instagram", "conta": "hpgta6"})
+    assert ident == "1784IG"                                     # id vem do meta_tokens_meta.json
+    assert cliente.host == "https://graph.instagram.com" and cliente.versao == "v21.0"
+    cliente_th, ident_th = rs.cliente_e_id({"rede": "threads", "canal": "gta"})   # canal -> handle
+    assert ident_th == "26TH" and cliente_th.host == "https://graph.threads.net"
+    assert cliente_th.versao == "v1.0" and cliente_th._token == TOKEN_TH
 
     class Sessao:
         def __init__(self):
@@ -274,14 +304,75 @@ def test_cliente_da_fila_le_token_do_segredo_e_nunca_mostra(local_temporario):
     assert cliente._sessao.params["access_token"] == TOKEN  # o token vai para a API...
     assert TOKEN not in str(e.value) and "***" in str(e.value)  # ...mas nunca para o erro
     assert TOKEN not in repr(vars(e.value))
+    assert cliente._sessao.params["access_token"] == TOKEN
 
-    with pytest.raises(rs.SegredoAusente):
-        rs.cliente_e_id({"rede": "threads", "conta": "gta"})
+    with pytest.raises(rs.SegredoAusente) as e:                  # linha vazia = sem token
+        rs.cliente_e_id({"rede": "instagram", "conta": "hp.carros"})
+    assert "IG_hp.carros" in str(e.value)
+    with pytest.raises(rs.SegredoAusente, match="meta_tokens_meta"):   # token sem id
+        rs.cliente_e_id({"rede": "threads", "conta": "hpgta6"}, meta={"contas": {}})
+    assert rs.cliente_e_id({"rede": "threads", "conta": "hpgta6", "ig_id": "X"}, meta={})[1] == "X"
+    with pytest.raises(ValueError, match="instagram ou threads"):
+        rs.cliente_e_id({"rede": "facebook", "conta": "hpgta6"})
+    saida = capsys.readouterr()
+    assert TOKEN not in saida.out + saida.err and TOKEN_TH not in saida.out + saida.err
+
+
+def _publicador_meta_falso(monkeypatch, chamadas, resultado=None, erro=None):
+    """Um publicador_meta.py de mentira em sys.modules (o real só existe no PC)."""
+    mod = types.ModuleType("publicador_meta")
+
+    class ErroAPI(Exception):
+        pass
+
+    def publicar_item(item, toks, meta, simular=False):
+        chamadas.append({"id": item["id"], "toks": toks, "meta": meta, "simular": simular})
+        if erro:
+            raise ErroAPI(erro)
+        return resultado or {"media_id": "181", "permalink": "https://www.instagram.com/p/N/",
+                             "publicado_em": "2026-09-30 18:35"}
+    mod.ErroAPI, mod.publicar_item = ErroAPI, publicar_item
+    mod.ler_tokens = lambda: {"IG_hpgta6": TOKEN}
+    monkeypatch.setitem(sys.modules, "publicador_meta", mod)
+    return mod
+
+
+def test_achar_publicador_usa_o_adaptador(local_temporario, monkeypatch):
+    _segredos(local_temporario)
+    chamadas = []
+    _publicador_meta_falso(monkeypatch, chamadas)
+    item, _ = _item_na_fila(local_temporario)
+    publicar = rs.achar_publicador()
+    assert publicar(item) == {"media_id": "181", "permalink": "https://www.instagram.com/p/N/",
+                              "publicado_em": "2026-09-30 18:35"}
+    assert chamadas == [{"id": ID_ITEM, "toks": {"IG_hpgta6": TOKEN}, "simular": False,
+                         "meta": {"contas": {"IG_hpgta6": {"id": "1784IG", "username": "hpgta6"},
+                                             "TH_hpgta6": {"id": "26TH", "username": "hpgta6"}}}}]
+    # simular: o real NUNCA é chamado (no PC o simular dele ainda sobe o arquivo)
+    assert rs.achar_publicador(simular=True)(item)["media_id"] == "SIMULADO"
+    assert len(chamadas) == 1
+    # ErroAPI do publicador vira ErroPublicador sem token
+    _publicador_meta_falso(monkeypatch, chamadas, erro=f"HTTP 400: access_token={TOKEN} vencido")
+    with pytest.raises(rs.fa.ErroPublicador) as e:
+        rs.achar_publicador()(item)
+    assert TOKEN not in str(e.value) and "HTTP 400" in str(e.value)
+    monkeypatch.setitem(sys.modules, "publicador_meta", types.ModuleType("publicador_meta"))
+    with pytest.raises(RuntimeError, match="publicar_item"):
+        rs.achar_publicador()
+
+
+def test_reenviar_pelo_adaptador_sem_publicar_fn(local_temporario, monkeypatch):
+    chamadas = []
+    _publicador_meta_falso(monkeypatch, chamadas)
+    item, arq = _item_na_fila(local_temporario)
+    r = rs.reenviar(item["id"], cliente=GraphFalso([]), dormir=Dormir(), saida=None)
+    assert r["acao"] == "republicado" and r["id"] == "181" and chamadas[0]["simular"] is False
+    assert json.loads(arq.read_text(encoding="utf-8"))["media_id"] == "181"
 
 
 def test_cli_reenviar_simular_e_item_inexistente(local_temporario, monkeypatch, capsys):
     item, _ = _item_na_fila(local_temporario)
-    monkeypatch.setattr(rs, "cliente_e_id", lambda it: (GraphFalso([]), "1784IG"))
+    monkeypatch.setattr(rs, "cliente_e_id", lambda it, *a, **k: (GraphFalso([]), "1784IG"))
     assert rs.main(["reenviar", item["id"], "--simular"]) == 0
     assert "Republicaria" in capsys.readouterr().out
     assert rs.main(["reenviar", "nao-existe", "--simular"]) == 2

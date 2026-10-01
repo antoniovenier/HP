@@ -18,44 +18,33 @@ Grava uma "foto" por dia e um resumo para o painel. Alimenta o manual 11
    `python -m metricas coletar --simular`. Ele mostra, por conta e rede, se o token e o
    id existem (sem mostrar o valor).
 
-## Segredos (formato esperado — suposição a conferir com o `publicador_meta.py`)
+## Segredos (formato REAL do PC — §4.3 da rodada 2; só os nomes, nunca o valor)
 
-`H:\HypadoLocal\segredos\meta_tokens.txt` — uma linha `CHAVE=valor`, `#` comenta:
+Tudo em `H:\HypadoLocal\segredos\`. O app conhece só o **nome** do arquivo e da chave; o valor é
+lido na hora da chamada e apagado (`***`) de toda mensagem, log e JSON. Conferir o que existe,
+sem mostrar nada: `python -m metricas chaves` (ou `coletar --simular`).
 
-```
-# Instagram (id da conta profissional do IG, começa com 1784...)
-IG_GTA_TOKEN=<token de longa duração>
-IG_GTA_ID=<id do Instagram>
-# Threads (token do Threads, é outro token)
-TH_GTA_TOKEN=<token do Threads>
-TH_GTA_ID=<id do usuário do Threads>
-# Facebook (token DA PÁGINA e id da Página)
-FB_GTA_TOKEN=<token da página>
-FB_GTA_ID=<id da página>
-# ... o mesmo para FUTEBOL, FILMES, RECEITAS, CARROS, DESTINOS
-```
+| Rede | Token (arquivo: chave) | Id da conta (não é segredo) | Host / versão |
+|---|---|---|---|
+| Instagram | `meta_tokens.txt`: `IG_<handle>=` (handle sem `@`, minúsculo, pode ter ponto: `IG_hpgta6`, `IG_hp.futebol`) | `meta_tokens_meta.json` → `contas/IG_<handle>/id` | `graph.instagram.com` / `v21.0` |
+| Threads | `meta_tokens.txt`: `TH_<handle>=` | `meta_tokens_meta.json` → `contas/TH_<handle>/id` | `graph.threads.net` / `v1.0` |
+| Facebook | `facebook_tokens.txt`: `FB_<canal>=` (`canal` = gta, futebol, filmes, receitas, carros, destinos — **não** é handle) | `facebook_paginas.json` → `<canal>/id` | `graph.facebook.com` / `v26.0` |
+| YouTube | `youtube.json` → `oauth/refresh_tokens/<canal>` + `oauth/client_id` + `oauth/client_secret` (ou `api_key`) | `youtube.json` → `canais/<canal>` ou `youtube_canais.json` → `<canal>/id` | `googleapis.com` / `v3` |
 
-Atalhos aceitos: se não houver `IG_<CONTA>_TOKEN`, usa `IG_TOKEN` e depois `META_TOKEN`
-(um token só para todas as contas); `FB_TOKEN`/`META_TOKEN` para o Facebook;
-`TH_TOKEN` para o Threads. O id também pode ficar no `contas.json` (`"id": "..."`,
-id não é segredo). Nomes de chave diferentes: `"chave_token"` / `"chave_id"` no contas.json.
+- O `handle` vem do `contas.json` (`"usuario"`) ou da tabela `hpbase/fila_api_pc.CANAIS`.
+- `meta_tokens.txt` aceita `@` no nome, aspas no valor e linhas `#` (como o `publicador_meta.py`).
+- YouTube só coleta com `"autorizado": true` no `contas.json`; senão a rede sai `nao_autorizado`
+  sem ler nada (só o GTA tem refresh token no PC).
+- **Nomes antigos da rodada 1 continuam valendo, depois dos reais**: `IG_<CONTA>_TOKEN`, `IG_<CONTA>_ID`,
+  `TH_...`, `FB_...` no `meta_tokens.txt`; `IG_TOKEN`/`META_TOKEN` (um token para todas); e
+  `youtube_tokens.txt` com `YT_API_KEY`, `YT_<CONTA>_CANAL`, `YT_CLIENT_ID`, `YT_CLIENT_SECRET`,
+  `YT_<CONTA>_REFRESH_TOKEN`. Nomes diferentes: `"chave_token"` / `"chave_id"` / `"chave_api"` na conta;
+  o id também pode ficar no `contas.json` (`"id": "..."`).
+- Quem decide a ordem e em que arquivo procurar é `metricas/chaves_pc.py` (`nomes_token`, `nomes_id`,
+  `GRUPOS`); `config.Credenciais` só lê o valor. Status quando falta algo: `sem_token` (o nome da chave
+  que falta vem em `detalhe`, nunca o valor).
 
-`H:\HypadoLocal\segredos\youtube_tokens.txt`:
-
-```
-YT_API_KEY=<chave da API do Google>          # Data API (números públicos)
-YT_GTA_CANAL=<id do canal, começa com UC>
-# Só quando o Analytics estiver autorizado (OAuth):
-YT_CLIENT_ID=<...>
-YT_CLIENT_SECRET=<...>
-YT_GTA_REFRESH_TOKEN=<...>
-```
-
-O valor nunca vai para tela, log nem JSON: o cliente troca qualquer token por `***` em
-toda mensagem de erro, e antes de gravar a foto há uma última checagem que apaga
-qualquer valor lido dos arquivos de segredo.
-
-## contas.json
+## O arquivo contas.json
 
 O `contas.json` deste pacote é um **exemplo sem segredo** (6 perfis × 5 redes). Para mudar,
 copie para `H:\HypadoLocal\metricas\contas.json` e edite lá (ele passa a valer).
@@ -72,6 +61,7 @@ que a Meta troca com frequência: `{"nome_na_api": "alcance" | "views"}`).
 | `python -m metricas coletar` | coleta tudo agora e grava |
 | `python -m metricas coletar --conta gta --rede instagram` | só uma conta/rede (mescla na foto do dia) |
 | `python -m metricas coletar --simular` | não chama API nem grava; mostra o plano e se os tokens existem |
+| `python -m metricas chaves [--json]` | quais chaves existem em `segredos\` por conta e rede (nome, arquivo, id, host, versão; nunca o valor) |
 | `python -m metricas resumo [--data 2026-09-30] [--json]` | resumo do dia (seguidores, deltas, status, top 5) |
 | `python -m metricas importar-tiktok arquivo.csv [--conta gta] [--data ...]` | importa o TikTok manual |
 | `python -m metricas agendar-6h` | **imprime** o comando `schtasks` (pythonw, sem console) para colar; não executa |
