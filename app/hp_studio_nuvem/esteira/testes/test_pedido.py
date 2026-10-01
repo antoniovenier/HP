@@ -56,7 +56,8 @@ def test_futebol_nunca_com_voz_sintetica(campo):
 
 
 def test_voz_so_em_destinos_receitas_carros_filmes():
-    assert tem(erros(canal="gta", dublar=True), "só em destinos, receitas, carros e filmes")
+    assert not tem(erros(canal="gta", dublar=True), "voz sintética")  # rodada 2: o GTA dubla gringo
+    assert tem(erros(canal="futebol", dublar=True), "futebol nunca leva voz sintética")
     for canal in ("destinos", "receitas", "carros", "filmes"):
         assert erros(canal=canal, dublar=True) == [], canal
 

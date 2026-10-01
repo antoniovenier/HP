@@ -9,7 +9,7 @@ from esteira.constantes import (AGENDADOS, BAIXADOS, EDICAO, ERROS, LEGENDA,
                                 PEDIDOS, REVISAO)
 from esteira.pastas import ler_estado, salvar_estado
 from esteira.pedido import criar_pedido
-from esteira.testes.conftest import pedido_reel
+from esteira.testes.conftest import envelhecer, pedido_reel
 
 
 def ate(amb, etapa_final):
@@ -128,6 +128,7 @@ def test_json_solto_ja_importado_nao_duplica(amb):
     item = criar_pedido(dados)  # caiu depois de criar a pasta e antes de tirar o .json
     solto = amb.pasta(PEDIDOS) / "solto.json"
     solto.write_text(json.dumps(dados), encoding="utf-8")
+    envelhecer(solto)
     r = amb.ciclo(max_trabalhos=0)
     assert r["importados"] == [item.name]
     assert amb.itens(PEDIDOS) == [item.name] and amb.itens(ERROS) == []

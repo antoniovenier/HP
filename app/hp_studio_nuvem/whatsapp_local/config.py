@@ -2,7 +2,7 @@
 
 Tudo que é "regra da empresa" para o WhatsApp mora aqui, num lugar só:
 - toda mensagem começa com PREFIXO ("*Claude - *");
-- WhatsApp só para 3 coisas (TIPOS_PERMITIDOS);
+- WhatsApp só para 3 coisas + avisos ao Antônio (TIPOS_PERMITIDOS);
 - só o grupo "HP | Comissão 🚀" e os grupos da lista "HP | Grupos"
   (arquivo grupos_permitidos.json, que o Antônio mantém);
 - ritmo baixo: nunca menos de 20 s entre mensagens.
@@ -26,7 +26,9 @@ from pathlib import Path
 from hpbase import escrever_json, garantir, ler_json, raiz_drive, raiz_local
 
 PREFIXO = "*Claude - *"
-TIPOS_PERMITIDOS = ("resumo_dia", "no_ar", "resumo_sabado")
+# rodada 2: "aviso" = avisar o Antônio quando algo precisa dele (4.8: "mais: responder o Antônio e avisar");
+# é o tipo das 2 mensagens reais da fila do PC (fixture whatsapp_fila_real.json)
+TIPOS_PERMITIDOS = ("resumo_dia", "no_ar", "resumo_sabado", "aviso")
 GRUPO_COMISSAO = "HP | Comissão 🚀"
 URL_WHATSAPP = "https://web.whatsapp.com/"
 

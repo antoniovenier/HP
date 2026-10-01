@@ -386,10 +386,7 @@ def test_esteira_simulada_com_o_pedido_real_confere_o_argv_de_cada_etapa(amb, pl
     cfg.timeouts.update(TIMEOUTS_TESTE)
 
     pedido = cp.pedido_de_plano(plano, config_json)
-    # Conflito aberto: o plano real narra o Toque HP no GTA, mas a regra da rodada 1 (CANAIS_COM_VOZ)
-    # só deixa voz sintética em destinos/receitas/carros/filmes. Fica registrado aqui e no relatório.
-    assert any("voz sintética" in e for e in validar_pedido(normalizar_pedido(pedido)))
-    pedido["narrar_toque_hp"] = False
+    # rodada 2: o plano real narra o Toque HP e dubla gringo no GTA; CANAIS_COM_VOZ tem gta.
     assert validar_pedido(normalizar_pedido(pedido)) == []
 
     registro = []

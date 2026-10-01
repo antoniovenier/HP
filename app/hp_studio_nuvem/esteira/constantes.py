@@ -36,7 +36,9 @@ REDES = ("instagram", "facebook", "tiktok", "youtube", "threads", "pinterest")
 PRIORIDADES = ("P0", "P1", "P2")
 
 # voz sintética (Piper, scripts\dublar.py) só nestes canais — nunca no futebol
-CANAIS_COM_VOZ = ("destinos", "receitas", "carros", "filmes")
+# rodada 2: o config.json real do GTA tem "dublagem" (dublado por HP) e 19 criadores "en" que saem
+# dublados; a regra de conteúdo só proíbe voz sintética no futebol.
+CANAIS_COM_VOZ = ("gta", "destinos", "receitas", "carros", "filmes")
 # Pinterest só em Receitas, Carros e Destinos
 CANAIS_PINTEREST = ("receitas", "carros", "destinos")
 

@@ -100,9 +100,10 @@ class Config:
     fila_api: Path | None = None
     whatsapp_fila: Path | None = None
     copiar_midia_para_fila: bool = True
-    redes_api: list = field(default_factory=lambda: ["instagram", "threads",
-                                                     "facebook", "youtube"])
-    redes_manuais: list = field(default_factory=lambda: ["tiktok", "pinterest"])
+    # rodada 2: a fila_api real (publicador_meta.py) só aceita instagram e threads (4.1/4.2);
+    # facebook e youtube ficam manuais (esperam <rede>_ok.json) até o publicar\ do PC ser plugado
+    redes_api: list = field(default_factory=lambda: ["instagram", "threads"])
+    redes_manuais: list = field(default_factory=lambda: ["facebook", "youtube", "tiktok", "pinterest"])
     comandos: dict = field(default_factory=lambda: copy.deepcopy(COMANDOS_PADRAO))
     editor: dict = field(default_factory=lambda: dict(EDITOR_PADRAO))
     legendador: dict = field(default_factory=lambda: dict(LEGENDADOR_PADRAO))

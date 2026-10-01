@@ -24,6 +24,15 @@ from esteira.plugins import Plugins
 TIMEOUTS_TESTE = {"ffmpeg": 90, "ffmpeg_curto": 30, "baixar": 30, "dublar": 30,
                   "falar": 30, "estaticos": 30}
 MANHA = datetime(2026, 9, 30, 10, 0)
+
+
+def envelhecer(*caminhos, seg: float = 5.0) -> None:
+    """Volta o mtime: 4.5 diz que pedido solto só é lido depois de 2 s parado (nada meio gravado)."""
+    import os
+    import time
+    t = time.time() - seg
+    for c in caminhos:
+        os.utime(c, (t, t))
 NOITE = datetime(2026, 9, 30, 19, 0)
 
 

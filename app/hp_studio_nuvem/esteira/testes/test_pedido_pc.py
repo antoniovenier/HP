@@ -4,6 +4,8 @@ ASCII e a leitura do pedido solto só depois de 2 s parado. Sem rede, sem relóg
 from __future__ import annotations
 
 import json
+
+from esteira.testes.conftest import envelhecer
 from datetime import datetime
 from pathlib import Path
 
@@ -356,12 +358,14 @@ def test_normalizar_pedido_reconhece_o_formato_real(config):
     assert p["tipo"] == "reel" and p["prioridade"] == "P0" and p["id"] == "2026-09-30_1830_gta_ola-mundo"
 
 
-def test_gringo_no_gta_esbarra_na_regra_de_voz_da_rodada_1(config):
-    """Conflito em aberto (A2a decisão 1): o PC dubla criador 'en' no GTA, mas CANAIS_COM_VOZ da
-    rodada 1 não tem gta. A conversão sai certa (dublar=True); só a validação reclama disso."""
+def test_gringo_no_gta_dubla_como_o_pc(config):
+    """O PC dubla criador 'en' no GTA (config.json real: "dublagem" + criadores "en"); a esteira
+    da nuvem passou a aceitar (CANAIS_COM_VOZ tem gta desde a rodada 2). Futebol continua proibido."""
     n = normalizar_pedido(corte(streamer="tmartn2"), config_json=config)
     assert n["dublar"] is True
-    assert validar_pedido(n) == ["dublagem/voz sintética só em destinos, receitas, carros e filmes"]
+    assert validar_pedido(n) == []
+    assert any("futebol nunca leva voz sintética" in e
+               for e in validar_pedido({**n, "canal": "futebol", "fonte_oficial": True}))
 
 
 def test_criar_pedido_real_cria_a_pasta_com_o_nome_do_pc(amb, config):
@@ -385,6 +389,8 @@ def test_pedido_solto_real_importado_pelo_motor_e_recusado_quando_ruim(amb, conf
         json.dumps(corte(streamer="flowgames", gancho="flow")), encoding="utf-8")
     (amb.pasta(PEDIDOS) / "texto.json").write_text(
         json.dumps({"tipo": "texto", "data": "2026-10-01T09:00", "texto": "Faltam 49 dias."}), encoding="utf-8")
+    assert amb.ciclo(max_trabalhos=0)["importados"] == []      # < 2 s parado: ainda não lê (4.5)
+    envelhecer(*amb.pasta(PEDIDOS).glob("*.json"))
     r = amb.ciclo(max_trabalhos=0)
     assert sorted(r["importados"]) == ["P2_2026-09-30_1830_gta_gta-6-tem-corrida-de-demolicao",
                                        "P2_2026-10-01_0900_gta_faltam-49-dias"]

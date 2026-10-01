@@ -194,7 +194,7 @@ def validar_pedido(p: dict) -> list[str]:
         e.append("futebol nunca leva voz sintética: dublar e narrar_toque_hp "
                  "têm que ser false (usa o áudio original do vídeo oficial)")
     elif (dublar or narrar) and canal not in CANAIS_COM_VOZ:
-        e.append("dublagem/voz sintética só em destinos, receitas, carros e filmes")
+        e.append("dublagem/voz sintética só em gta, destinos, receitas, carros e filmes")
     if estatico and (dublar or narrar):
         e.append(f"{tipo} é estático: não tem dublagem nem narração")
     if narrar:

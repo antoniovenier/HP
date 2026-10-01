@@ -8,7 +8,7 @@ from esteira.constantes import (AGENDADOS, BAIXADOS, EDICAO, ERROS, LEGENDA,
                                 PEDIDOS, POSTADOS, REVISAO)
 from esteira.erros import ErroEtapa, ErroPermanente
 from esteira.pedido import criar_pedido
-from esteira.testes.conftest import MANHA, pedido_carrossel, pedido_reel
+from esteira.testes.conftest import MANHA, envelhecer, pedido_carrossel, pedido_reel
 
 
 def historico(p):
@@ -161,6 +161,9 @@ def test_pedido_solto_em_01_vira_item(amb):
         json.dumps(pedido_reel(titulo="Solto")), encoding="utf-8")
     (amb.pasta(PEDIDOS) / "ruim.json").write_text(
         json.dumps(pedido_reel(titulo="Ruim", canal="futebol", dublar=True)), encoding="utf-8")
+    # recém-gravado (< 2 s parado): o motor ainda não lê (4.5)
+    assert amb.ciclo(max_trabalhos=0)["importados"] == []
+    envelhecer(amb.pasta(PEDIDOS) / "pedido_do_claude.json", amb.pasta(PEDIDOS) / "ruim.json")
     r = amb.ciclo(max_trabalhos=0)
     assert r["importados"] == ["P1_2026-09-30_1830_gta_solto"]
     item = amb.pasta(PEDIDOS) / "P1_2026-09-30_1830_gta_solto"

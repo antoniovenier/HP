@@ -36,6 +36,7 @@ from .erros import ErroEtapa, ErroPermanente, PedidoInvalido
 from .pastas import (chave_ordem, eh_item, historico, indice_etapa, ler_estado,
                      ler_nome, listar, mover, nome_livre, salvar_estado)
 from .pedido import criar_pedido, ler_pedido, nome_do_item, normalizar_pedido
+from . import pedido_pc
 from .resultado import AGUARDAR, AVANCAR, ERRO, FINAL, Resultado
 from .trabalhos import TODOS
 
@@ -327,7 +328,10 @@ class Esteira:
 
     def _importar_json(self, arq: Path) -> list[str]:
         try:
-            dados = ler_json(arq)
+            # 4.5: pedido solto só é lido depois de 2 s parado (nada meio gravado)
+            dados = pedido_pc.ler_pedido_pc(arq, agora=time.time())
+            if dados is None:
+                return []
             try:
                 novo = criar_pedido(dados, raiz=self.cfg.raiz)
             except PedidoInvalido:
