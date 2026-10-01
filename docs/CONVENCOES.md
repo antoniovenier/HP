@@ -26,3 +26,12 @@ Regras de código:
 - Testes com pytest: `cd app\hp_studio_nuvem && python -m pytest -q <modulo>` e `cd scripts && python -m pytest -q testes` (cada teste de script tem a própria fixture de raízes temporárias). Nenhum teste pode depender de rede, emulador ou WhatsApp reais.
 - ffmpeg está no PATH do ambiente de teste (ffprobe NÃO está: use `achar_ffprobe()` e tenha plano B).
 - LEIA.md curto por módulo: o que faz, instalação (pip), comandos, como ligar o modo sombra, como integrar ao `hp`/motor já existente (que não temos aqui — descrever o gancho: função `executar(trabalho: dict) -> dict`).
+
+## Rodada 2 (01/10/2026): o que mudou nas convenções
+
+- O pacote da nuvem chama-se `app/hp_studio_nuvem/` (no PC: `06 Projeto\app\hp_studio_nuvem\`, pacote irmão do `hp_studio` do PC). Os nomes curtos de import (`hpbase`, `esteira`, `metricas`, `whatsapp_local`, `qa_paridade`, `publicar_extra`) continuam. Nunca importar `hp_studio.esteira` nem `hp_studio.metricas`.
+- `tests/fixtures/pc_real/` guarda os formatos REAIS copiados do PC (Seção 4 do `docs/PROMPT_NUVEM_2.md`); `tests/test_contrato_pc_real.py` passa cada fixture pelo adaptador responsável e é o que o PC roda depois de cada integração. `tests/conftest.py` põe `app/hp_studio_nuvem`, `scripts` e `radar_fontes` no sys.path.
+- Paleta, fontes, tamanhos e zonas seguras vêm SÓ de `hpbase/marca.py` (nenhum módulo duplica cor). Resolvedor `marca.fonte(nome, tamanho)`: `HP_FONTES`/`06 Projeto\marca\fontes` → `C:\Windows\Fonts` → cache `HP_FONTES_CACHE`/`H:\HypadoLocal\fontes` → DejaVu; nunca usa rede (`python -m hpbase.marca baixar-fontes` é o comando explícito).
+- Rede com o PC: `publicar_extra/contrato_pc.py` (cópias de `Resposta`, `ErroRede`, `entrada()` e o `ClienteFalso` dos testes). No PC, importar de `hp_studio.publicar.http`.
+- Formato de entrega: `python docs/compilar_entrega_2.py` gera `ENTREGA_NUVEM_HP_STUDIO_2.md` (só arquivos novos desde a rodada 1 + os 3 documentos de controle + o diff dos alterados) e `python docs/desempacotar_check.py <md> --comparar-com .` prova que desempacota sem arquivo sem bloco nem arquivo falso. Regra: nenhuma linha dentro de um arquivo pode começar com `## nome.ext`; nenhum arquivo com nome de segredo.
+- Relatórios dos agentes da rodada 2 em `docs/rodada2/<TAREFA>.md` (fonte do `ENTREGA.md`, `PATCHES.md` e `PENDENCIAS_PARA_O_DIRETOR.md`).
