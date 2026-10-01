@@ -29,14 +29,14 @@ Cada métrica tem subnotas; a nota da métrica é a **menor subnota**. Todos os 
 1. Python 3.12 já instalado. No PowerShell:
    `& "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe" -m pip install numpy pillow pytest`
 2. ffmpeg no PATH (ou variável `HP_FFMPEG` apontando para o `ffmpeg.exe`; o padrão do PC é `H:\HypadoLocal\ferramentas\ffmpeg\bin`). **Não precisa de ffprobe.**
-3. O pacote fica em `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\qa_paridade\` e usa a base `hpbase` (mesma pasta).
+3. O pacote fica em `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\qa_paridade\` e usa a base `hpbase` (mesma pasta).
 
 ## Comandos
 
-Rodar de dentro de `...\06 Projeto\app\hp_studio`:
+Rodar de dentro de `...\06 Projeto\app\hp_studio_nuvem`:
 
 ```powershell
-cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
 python -m qa_paridade --help
 
 # vídeo (com ou sem legenda em arquivo; se os vídeos tiverem faixa de legenda, ela é usada sozinha)

@@ -21,7 +21,7 @@
 
 ```powershell
 $py      = "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"
-$app     = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+$app     = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
 $est     = "H:\HypadoLocal\estrategia"
 $met     = "H:\HypadoLocal\metricas"
 Set-Location $app
@@ -1170,7 +1170,7 @@ Classificação: **≥ 9 Excelente**; **7 a 8,9 Bom**; **5 a 6,9 Médio** (revis
 | Passo(s) | Ferramenta | Situação |
 |---|---|---|
 | 1–3 | Arquivo `para_estrategista_<semana>.json` do Analista (manual 11) | **(a criar — etapa 6)** |
-| 11–32, 41–52, 63–66, 71–78, 81 | Módulo `estrategista` (`app\hp_studio\estrategista\`): `matriz`, `regras`, `plano`, `validar`, `ajuste`, `calendario` | **(a criar)** |
+| 11–32, 41–52, 63–66, 71–78, 81 | Módulo `estrategista` (`app\hp_studio_nuvem\estrategista\`): `matriz`, `regras`, `plano`, `validar`, `ajuste`, `calendario` | **(a criar)** |
 | 5, 15 | `estrategia\config\capacidade.json`, `pesos.json`, `catalogo_formatos.json` | **(a criar)** |
 | 6, 57, 62 | `estrategia\calendario_eventos.json` | **(a criar)** |
 | 13, 60 | `G:\Meu Drive\Hypado\07 Canais\Futebol\PLANO_CRESCIMENTO.md` | existe |

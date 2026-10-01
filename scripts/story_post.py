@@ -51,8 +51,11 @@ def _achar_hp_studio() -> Path | None:
     cands = []
     env = os.environ.get("HP_APP")
     if env:
-        cands += [Path(env), Path(env) / "hp_studio"]
-    cands += [AQUI.parent / "app" / "hp_studio",                 # repositório
+        cands += [Path(env), Path(env) / "hp_studio_nuvem", Path(env) / "hp_studio"]
+    cands += [AQUI.parent / "app" / "hp_studio_nuvem",           # repositório (rodada 2)
+              AQUI.parent / "06 Projeto" / "app" / "hp_studio_nuvem",  # PC (pacote irmão)
+              Path(r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"),
+              AQUI.parent / "app" / "hp_studio",                 # repositório (rodada 1)
               AQUI.parent / "06 Projeto" / "app" / "hp_studio",  # Drive
               Path(r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio")]
     for c in cands:

@@ -11,13 +11,13 @@ SAIDA = RAIZ / "ENTREGA_NUVEM_HP_STUDIO.md"
 
 # (título, lista de globs relativos à raiz) na ordem do prompt
 SECOES = [
-    ("0. Base comum `hpbase` e convenções", ["docs/CONVENCOES.md", "app/hp_studio/hpbase/**/*"]),
+    ("0. Base comum `hpbase` e convenções", ["docs/CONVENCOES.md", "app/hp_studio_nuvem/hpbase/**/*"]),
     ("A. Manuais 04–13 + índice", ["app/manuais/README.md", "app/manuais/0*.md",
                                    "app/manuais/1*.md"]),
-    ("B. Etapa 3 — esteira P0/P1/P2", ["app/hp_studio/esteira/**/*"]),
-    ("C. Etapa 6 — métricas por API", ["app/hp_studio/metricas/**/*"]),
-    ("D. Teste de qualidade / paridade", ["app/hp_studio/qa_paridade/**/*"]),
-    ("E. Enviador local de WhatsApp", ["app/hp_studio/whatsapp_local/**/*"]),
+    ("B. Etapa 3 — esteira P0/P1/P2", ["app/hp_studio_nuvem/esteira/**/*"]),
+    ("C. Etapa 6 — métricas por API", ["app/hp_studio_nuvem/metricas/**/*"]),
+    ("D. Teste de qualidade / paridade", ["app/hp_studio_nuvem/qa_paridade/**/*"]),
+    ("E. Enviador local de WhatsApp", ["app/hp_studio_nuvem/whatsapp_local/**/*"]),
     ("F. story_post.py — story pelo emulador", ["scripts/LEIA_story_post.md",
                                                "scripts/story_post*.py",
                                                "scripts/testes/test_story_post.py"]),

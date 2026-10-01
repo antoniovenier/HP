@@ -49,7 +49,7 @@ from typing import Any, Callable, Iterable, Iterator
 
 
 # --------------------------------------------------------------------------
-# hpbase: ../app/hp_studio (repositório), ../06 Projeto/app/hp_studio (PC)
+# hpbase: ../app/hp_studio_nuvem (repositório), ../06 Projeto/app/hp_studio_nuvem (PC)
 # ou a pasta indicada em HP_APP.
 # --------------------------------------------------------------------------
 def _preparar_hpbase() -> None:
@@ -57,9 +57,11 @@ def _preparar_hpbase() -> None:
     candidatos: list[Path] = []
     env = os.environ.get("HP_APP")
     if env:
-        candidatos += [Path(env), Path(env) / "hp_studio"]
+        candidatos += [Path(env), Path(env) / "hp_studio_nuvem", Path(env) / "hp_studio"]
     scripts = aqui.parent
-    candidatos += [scripts.parent / "app" / "hp_studio",
+    candidatos += [scripts.parent / "app" / "hp_studio_nuvem",
+                   scripts.parent / "06 Projeto" / "app" / "hp_studio_nuvem",
+                   scripts.parent / "app" / "hp_studio",
                    scripts.parent / "06 Projeto" / "app" / "hp_studio"]
     for c in candidatos:
         if (c / "hpbase" / "__init__.py").exists():

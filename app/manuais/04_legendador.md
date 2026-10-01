@@ -1218,7 +1218,7 @@ Test-Path "$esteira\04_edicao\$(Split-Path $item -Leaf)"
 | `TravaOcupada: horário proibido` | Tentou trabalho pesado entre 18h e 22h30 | Esperar 22h30; fazer só passos leves |
 | `TravaOcupada: pesado.lock com 'esteira:editar'` | Outro trabalho pesado rodando | Esperar 5 min; nunca apagar o `pesado.lock` à mão |
 | `ModuleNotFoundError: No module named 'faster_whisper'` | Motor não instalado nesse Python | Passo 5 |
-| `ModuleNotFoundError: No module named 'hpbase'` | Caminho do app diferente no roteiro | Conferir a linha `sys.path.insert` do roteiro (seção 8.6) com o caminho real de `06 Projeto\app\hp_studio` |
+| `ModuleNotFoundError: No module named 'hpbase'` | Caminho do app diferente no roteiro | Conferir a linha `sys.path.insert` do roteiro (seção 8.6) com o caminho real de `06 Projeto\app\hp_studio_nuvem` |
 | A transcrição baixou o modelo no C: | Faltou `$env:HF_HOME` ou o `download_root` | Passo 6; apagar a cópia do C: (`%USERPROFILE%\.cache\huggingface`) depois de conferir que a do H: existe |
 | Transcrição muito lenta (> 5 min para 30 s) | Modelo `medium`/`large` num PC ocupado, ou outro programa pesado aberto | Usar `small`; conferir no Gerenciador de Tarefas; nunca rodar 2 ao mesmo tempo |
 | `JSON QUEBRADO` depois de editar | Faltou vírgula, aspas ou chave | Desfazer (Ctrl+Z) até voltar a `JSON OK` |
@@ -1327,7 +1327,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio")
+sys.path.insert(0, r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem")
 
 DIC = Path(r"G:\Meu Drive\Hypado\06 Projeto\app\dicionarios")
 MODELOS = Path(r"H:\HypadoLocal\modelos\whisper")

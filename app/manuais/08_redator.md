@@ -1298,10 +1298,10 @@ O Redator é o cargo em que o **julgamento** mais pesa (escolher o gancho, soar 
 | — | `scripts\publicador_meta.py` | sim | `G:\Meu Drive\Hypado\scripts\` | publica no Instagram e Threads o `texto_final` (fila em `H:\HypadoLocal\fila_api\`) |
 | — | Facebook e YouTube pela API | **em andamento no PC (etapa 4 — não mexer)** | — | vão usar `redes.facebook` e `redes.youtube` |
 | 46 | `story_post.py` (robô da enquete no emulador) | **(a criar — módulo F)** | `scripts\` | digita `enquete.pergunta` e `enquete.opcoes` na figurinha |
-| 47 | enviador local de WhatsApp (monta o aviso sem IA) | **(a criar — módulo E)** | `app\hp_studio\whatsapp_local\` | usa `aviso.titulo_curto` + links |
-| 15, 16, 48–55 | trabalho `redator` da esteira (montar por rede, contar, bloquear, conferir) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | fazer sozinho tudo o que é regra |
+| 47 | enviador local de WhatsApp (monta o aviso sem IA) | **(a criar — módulo E)** | `app\hp_studio_nuvem\whatsapp_local\` | usa `aviso.titulo_curto` + links |
+| 15, 16, 48–55 | trabalho `redator` da esteira (montar por rede, contar, bloquear, conferir) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | fazer sozinho tudo o que é regra |
 | 14 | `criadores.json` (tabela de criadores com o @ de cada rede) | **(a criar — etapa 3)** | `H:\HypadoLocal\app\` | crédito automático para criador já usado |
-| paridade | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio\qa_paridade\` | comparar `post_sombra.json` x `post.json` |
+| paridade | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio_nuvem\qa_paridade\` | comparar `post_sombra.json` x `post.json` |
 | — | `scripts\tickets.py` | sim | `G:\Meu Drive\Hypado\scripts\` | abrir ticket quando uma ferramenta falhar |
 | — | `scripts\painel_local.py` e tela `http://127.0.0.1:8770` | sim | — | ver a fila e a prévia |
 

@@ -24,7 +24,8 @@ APP = SCRIPTS.parent / "app"
 # o conftest do app/ não é carregado quando o teste está fora de app/:
 # este arquivo se vira sozinho (sys.path + pastas temporárias), com ou sem
 # um conftest.py em scripts/testes.
-for _p in (SCRIPTS, APP / "hp_studio", SCRIPTS.parent / "06 Projeto" / "app" / "hp_studio"):
+for _p in (SCRIPTS, APP / "hp_studio_nuvem", APP / "hp_studio",
+           SCRIPTS.parent / "06 Projeto" / "app" / "hp_studio_nuvem"):
     if _p.exists() and str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 

@@ -18,8 +18,8 @@ O `montar_painel_publico.py` continua igual (não foi reescrito). Estas peças e
 - Nada para instalar: só Python 3.12 (o `sqlite3` já vem com ele) e o `hpbase` do app.
 - Os scripts acham o `hpbase` sozinhos, nesta ordem:
   1. a variável `HP_APP`;
-  2. `..\app\hp_studio`;
-  3. `..\06 Projeto\app\hp_studio`.
+  2. `..\app\hp_studio_nuvem`;
+  3. `..\06 Projeto\app\hp_studio_nuvem`.
   Se a pasta for outra, defina: `$env:HP_APP = "G:\Meu Drive\Hypado\06 Projeto\app"`.
 - Testes: entre na pasta `app` e rode `python -m pytest -q <scripts>\testes\test_painel_*.py`. O `node` é opcional; sem ele, os testes do JS são pulados.
 - Logs: `H:\HypadoLocal\app\logs\painel_espelho_AAAA-MM-DD.log`. O log registra só contagens, nunca o conteúdo.

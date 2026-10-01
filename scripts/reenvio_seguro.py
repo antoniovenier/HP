@@ -37,7 +37,7 @@ def _por_hp_studio_no_caminho() -> None:
     for c in candidatos:
         if not c:
             continue
-        for p in (Path(c), Path(c) / "hp_studio"):
+        for p in (Path(c), Path(c) / "hp_studio_nuvem", Path(c) / "hp_studio"):
             if (p / "hpbase").is_dir():
                 if str(p) not in sys.path:
                     sys.path.insert(0, str(p))

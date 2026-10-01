@@ -1220,7 +1220,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio")
+sys.path.insert(0, r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem")
 
 LIMITE_DESVIO_MS = 200
 

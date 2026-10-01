@@ -45,7 +45,7 @@ Ticket: `20260930-124527-emulador-android…` (módulo F do HP Studio).
 | Tela do último erro (XML para conferir com o ui.py) | `H:\HypadoLocal\emulador\story_post_erros\` |
 | Log detalhado | `H:\HypadoLocal\app\logs\story_post_<dia>.log` |
 
-Usa a base `hpbase` do app (`G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\hpbase`). Ele acha sozinho. Se mudar de lugar, defina a variável `HP_APP` com o caminho da pasta `hp_studio`.
+Usa a base `hpbase` do app (`G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\hpbase`). Ele acha sozinho. Se mudar de lugar, defina a variável `HP_APP` com o caminho da pasta `hp_studio`.
 **Não precisa instalar nada com pip** (só Python 3.12 e a biblioteca padrão).
 
 ## Instalação, passo a passo (uma vez só)

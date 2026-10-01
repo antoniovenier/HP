@@ -1,8 +1,8 @@
 """Base comum do montador de reels do Futebol | HP (arquivos reel_futebol*.py).
 
 - põe o hpbase no sys.path: primeiro a variável HP_APP (pasta do app ou a
-  própria hp_studio), depois ../app/hp_studio relativo a este arquivo (como no
-  repositório) e ../06 Projeto/app/hp_studio (como no PC do Antônio);
+  própria hp_studio_nuvem), depois ../app/hp_studio_nuvem relativo a este arquivo
+  (como no repositório) e ../06 Projeto/app/hp_studio_nuvem (como no PC do Antônio);
 - constantes do formato de saída (1080x1920, 30 fps, AAC 48 kHz, safe zones);
 - exceções do montador.
 """
@@ -20,8 +20,10 @@ def caminho_hp_studio() -> Path | None:
     cands: list[Path] = []
     env = os.environ.get("HP_APP")
     if env:
-        cands += [Path(env), Path(env) / "hp_studio"]
-    cands += [AQUI.parent / "app" / "hp_studio",
+        cands += [Path(env), Path(env) / "hp_studio_nuvem", Path(env) / "hp_studio"]
+    cands += [AQUI.parent / "app" / "hp_studio_nuvem",
+              AQUI.parent / "06 Projeto" / "app" / "hp_studio_nuvem",
+              AQUI.parent / "app" / "hp_studio",
               AQUI.parent / "06 Projeto" / "app" / "hp_studio"]
     for c in cands:
         if (c / "hpbase" / "__init__.py").exists():

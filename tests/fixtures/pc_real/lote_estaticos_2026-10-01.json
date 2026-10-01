@@ -1,0 +1,42 @@
+{
+ "data": "2026-10-01",
+ "criado": "2026-09-30 madrugada (hypado-estaticos, 03h36)",
+ "revisor": "aprovado 30/09",
+ "pauta": "lotes\\2026-10-01_estaticos_pauta.json",
+ "carrossel": {
+  "tema": "Linha do tempo do GTA 6 — A linha do tempo do GTA 6",
+  "arquivos": "H:\\HypadoLocal\\upload\\carrossel_2026-10-01\\01-09.jpg",
+  "spec": "H:\\HypadoLocal\\upload\\carrossel_spec_2026-10-01.json",
+  "legenda": "1.749 dias. É o tempo entre o anúncio e o lançamento do GTA 6. ⏳\n\n[...]\n\n🔔 Segue o @hpgta6 pra não perder nada do GTA 6\n💾 Salva pra consultar depois e 📤 compartilha com quem está esperando desde 2022\n\n#gta6 #gtavi #rockstargames",
+  "horario": "15:00",
+  "instagram": "na fila da API para 01/10 15:00 — id gta_2026-10-01_ig_carrossel",
+  "facebook": "programado 01/10 15:00 (Planner do Business Suite conferido, so Pagina, 9 imagens)",
+  "tiktok": "pausado (modo recuperação até 02/10)"
+ },
+ "stories": [
+  {"hora": "09:00", "arquivo": "H:\\HypadoLocal\\upload\\stories_2026-10-01\\0900_contagem.jpg", "tema": "contagem 49 dias",
+   "instagram": "na fila da API (publicador_meta) para 01/10 09:00 — id gta_2026-10-01_ig_story_0900",
+   "facebook": "programado 01/10 09:00 (Planner do Business Suite conferido, so Pagina)"},
+  {"hora": "12:10", "arquivo": "H:\\HypadoLocal\\upload\\stories_2026-10-01\\1210_novo_video.jpg", "tema": "vídeo novo: Dá pra ficar GORDO no GTA 6",
+   "instagram": "na fila da API (publicador_meta) para 01/10 12:10 — id gta_2026-10-01_ig_story_1210", "facebook": "programado 01/10 12:10"}
+ ],
+ "interativo": {
+  "arquivo": "H:\\HypadoLocal\\upload\\story_interativo_2026-10-01.jpg",
+  "rede": "Instagram @hpgta6 (compartilhar no Facebook)",
+  "horario": "16:00",
+  "figurinha": "enquete",
+  "pergunta": "Furacão chegando em Leonida. O que você faz?",
+  "opcoes": ["Vou ver de perto", "Fujo pro outro lado"],
+  "destaque": "Enquetes",
+  "quem_manda": "hypado-resumo-7h (item 4) em 01/10"
+ },
+ "threads": [
+  {"hora": "09:00", "texto": "Faltam 49 dias pro GTA 6. 🗓️\n\n[...]\n\nJá decidiu se vai jogar no lançamento ou vai esperar o fim de semana?",
+   "status": "na fila da API para 01/10 09:00 — id gta_2026-10-01_th_texto_0900"}
+ ],
+ "comunidade_youtube": {"horario": "10:00", "tipo": "curiosidade com imagem (capa do carrossel)",
+                        "imagem": "H:\\HypadoLocal\\upload\\carrossel_2026-10-01\\01.jpg", "texto": "A linha do tempo do GTA 6 em 4 datas: [...]",
+                        "status": "programado 01/10 10:00 (aba Posts > Programado do canal conferido, imagem 01.jpg)"},
+ "obs": "IG (carrossel + 9 stories) e Threads (5 textos) pela API da Meta; Facebook e Comunidade do YouTube pelo Chrome.",
+ "fechado": "2026-09-30 04h10"
+}

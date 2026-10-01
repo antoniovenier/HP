@@ -20,7 +20,7 @@ O `publicador_meta.py` continua o mesmo (não é reescrito); ele só **importa**
 
 1. Copie `reenvio_seguro.py` para `G:\Meu Drive\Hypado\scripts\` (ao lado do `publicador_meta.py`).
 2. `pip install requests` (se já não tiver).
-3. Ele acha a base `hpbase` sozinho em `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\`
+3. Ele acha a base `hpbase` sozinho em `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\`
    (ou na pasta da variável `HP_APP`).
 4. Tokens: lidos de `H:\HypadoLocal\segredos\meta_tokens.txt` com `IG_<CONTA>_TOKEN` e
    `IG_<CONTA>_ID` (Threads: `TH_<CONTA>_TOKEN`/`TH_<CONTA>_ID`; se faltar, tenta `IG_TOKEN`

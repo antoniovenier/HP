@@ -1,0 +1,52 @@
+540,1168 | LinearLayout |  |  | action_bar_root | 
+540,1168 | FrameLayout |  |  | content | 
+540,1168 | ViewGroup |  |  | layout_container_parent | 
+540,1232 | FrameLayout |  |  | layout_container_main | 
+540,1232 | FrameLayout |  |  | reel_viewer_root | 
+540,1232 | FrameLayout |  |  | view_pager | 
+540,1232 | LinearLayout |  |  | reel_viewer_content_layout | 
+540,1262 | FrameLayout |  |  | reel_view_group | 
+540,1232 | ViewGroup |  |  | reel_item_toolbar_container | 
+540,2082 | FrameLayout |  |  | story_caption_legibility_background | 
+540,2193 | LinearLayout |  |  | reel_item_toolbar_footer_container | 
+540,2193 | LinearLayout |  |  | viewer_reel_item_toolbar_container | 
+1006,2193 | LinearLayout |  |  | toolbar_buttons_container | 
+1006,2192 | ViewGroup |  |  | toolbar_like_container | 
+540,2190 | LinearLayout |  |  | self_reel_item_toolbar_container | 
+100,2190 | LinearLayout |  |  | viewers_facepile_button | clic
+100,2172 | ImageView |  |  | viewers_facepile | 
+100,2253 | TextView | Activity |  | viewers_facepile_label | 
+688,2190 | LinearLayout |  |  | self_toolbar_button_container | 
+382,2190 | LinearLayout |  | Create a promote for current media | toolbar_promote_button | clic
+381,2253 | TextView | Boost |  | promote_label | 
+530,2190 | LinearLayout |  | Highlight | toolbar_highlights_button | clic
+530,2172 | ImageView |  |  | highlights_status | 
+529,2253 | TextView | Highlight |  | highlights_label | 
+678,2190 | LinearLayout |  | Send story | self_toolbar_reshare_button_container | clic
+677,2253 | TextView | Send |  | self_toolbar_reshare_button_label | 
+826,2190 | LinearLayout |  |  | self_toolbar_mention_button_container | clic
+826,2253 | TextView | Mention |  | self_toolbar_mention_button_label | 
+984,2190 | LinearLayout |  | More options | self_toolbar_menu_button | clic
+974,2172 | ImageView |  |  | self_toolbar_menu_button_icon | 
+974,2253 | TextView | More |  | self_toolbar_menu_button_label | 
+540,1148 | FrameLayout |  |  | reel_viewer_media_layout | 
+540,1148 | FrameLayout |  |  | reel_sticker_overlay_container | 
+540,1148 | FrameLayout |  |  | reel_sticker_accessibility_container | 
+540,1148 | FrameLayout |  |  | reel_viewer_media_container | 
+540,1148 | FrameLayout |  |  | reel_viewer_image_view | 
+540,319 | View |  |  | reel_viewer_top_shadow | 
+540,280 | LinearLayout |  |  | reel_viewer_header_container | 
+540,211 | View |  |  | reel_viewer_progress_bar | 
+540,293 | ViewGroup |  |  | reel_viewer_header | 
+74,305 | FrameLayout |  |  | profile_picture_container | clic
+74,279 | FrameLayout |  |  | reel_viewer_profile_picture | clic
+74,279 | FrameLayout |  | Profile picture |  | 
+74,279 | ImageView |  |  | reel_viewer_front_avatar | 
+598,305 | Button |  | hp.futebol's story, 3 minutes ago | reel_viewer_text_container | clic
+265,279 | LinearLayout |  |  | reel_viewer_title_row | 
+230,279 | TextView | hp.futebol |  | reel_viewer_title | 
+379,279 | TextView | 3m |  | reel_viewer_timestamp | 
+540,1976 | View |  |  | reel_viewer_bottom_shadow | 
+166,2045 | TextView | Say something… |  | add_comment_textview | 
+540,64 | View |  |  | statusBarBackground | 
+540,2368 | View |  |  | navigationBarBackground | 

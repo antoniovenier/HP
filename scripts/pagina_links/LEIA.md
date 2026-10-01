@@ -13,7 +13,7 @@ O Google Sites **não se edita por código**. Por isso, aqui só se **gera as im
 ## Instalação
 
 - Precisa de Python 3.12 e do **Pillow** (`pip install pillow`). É a única dependência.
-- O `hpbase` do app é achado sozinho: variável `HP_APP`, ou `..\app\hp_studio`, ou `..\06 Projeto\app\hp_studio`.
+- O `hpbase` do app é achado sozinho: variável `HP_APP`, ou `..\app\hp_studio_nuvem`, ou `..\06 Projeto\app\hp_studio_nuvem`.
 - A fonte dos botões é achada sozinha. No Windows usa Segoe UI Bold ou Arial Bold; para usar outra, defina `HP_FONTE`.
 
 ## Comandos

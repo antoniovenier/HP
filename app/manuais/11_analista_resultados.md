@@ -22,7 +22,7 @@
 ```powershell
 $py      = "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"
 $scripts = "G:\Meu Drive\Hypado\scripts"
-$app     = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+$app     = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
 $met     = "H:\HypadoLocal\metricas"
 $logs    = "H:\HypadoLocal\app\logs"
 Set-Location $app
@@ -1102,7 +1102,7 @@ Classificação: **≥ 9 Excelente**; **7 a 8,9 Bom**; **5 a 6,9 Médio** (ticke
 |---|---|---|
 | 1–5, 18, 38, 40 | PowerShell (`Get-Content`, `ConvertFrom-Json`, `Select-String`) | existe |
 | 6 | Vigia do app (etapa 1: motor + vigia + fila + `hp` + tela `http://127.0.0.1:8770`) | existe |
-| 7–17, 26, 28, 31–36, 41–58, 61–63, 72–74, 78–82 | Módulo `metricas` (`app\hp_studio\metricas\`): `coletar`, `validar`, `indicadores`, `relatorio`, `anotar` | **(a criar — etapa 6)** |
+| 7–17, 26, 28, 31–36, 41–58, 61–63, 72–74, 78–82 | Módulo `metricas` (`app\hp_studio_nuvem\metricas\`): `coletar`, `validar`, `indicadores`, `relatorio`, `anotar` | **(a criar — etapa 6)** |
 | 8–11, 17, 86 | Tokens em `H:\HypadoLocal\segredos\meta_tokens.txt`; `ler_segredo` da `hpbase` | existe |
 | todos | `hpbase`: `obter_logger`, `mascarar`, `ler_json`, `escrever_json`, `agora_iso`, `raiz_local` | existe |
 | 10, 11 | Acesso da etapa 4 (Facebook, YouTube) e autorização do YouTube | em andamento no PC — não mexer |

@@ -1,0 +1,18 @@
+{
+ "n": 801, "video": "c0Com9SMv1s", "streamer": "tgg", "inicio": "07:02", "fim": "07:48",
+ "gancho": "GTA 6 tem corrida de DEMOLIÇÃO",
+ "titulo": "GTA 6 vai ter corrida de demolição, festa na lama e dunas de motocross #gta6 #shorts",
+ "legenda": "O norte do mapa do GTA 6 é um parque de diversões 🏁 Segundo a Rockstar na Game Informer: [...] O que você faz primeiro? 🎥 Crédito: @TGG_ (dublado por HP) #gta6 #gtavi #rockstargames #vicecity #games",
+ "redes": ["youtube", "facebook"],
+ "data": "2026-10-02T09:00",
+ "toque_hp": {"pergunta_abertura": "O que dá pra fazer no norte do mapa do GTA 6?", "narracao": "Quem descreve é Paul MacPherson, [...]",
+              "fecho": "E você, vai de corrida de demolição ou de pescaria?", "inserir_em": 20.57},
+ "video_url": "https://www.youtube.com/watch?v=c0Com9SMv1s",
+ "corte": [6.08, 46.04],
+ "cobrir": [{"imagem": "H:\\HypadoLocal\\radar\\artes_oficiais\\trailer1_festa_na_lama.jpg", "de": 0.0, "ate": 27.5, "centro": [0.5, 0.55], "zoom": [1.0, 1.12]}],
+ "obs": "texto livre da pauta", "obs_editor": "texto livre", "legenda_status": "texto livre",
+ "arquivo": "2026\\10 Outubro\\02.10.2026 09h00 GTA 6 tem corrida de DEMOLIÇÃO.mp4",
+ "upload": "H:\\HypadoLocal\\upload\\02_10_2026_09h00_gta_6_tem_corrida_de_demolicao.mp4", "upload_mb": 8.9,
+ "duracao_seg": 49.8, "render_status": "ok: 49,8 s (trecho 40,0 + cartela 9,8)...",
+ "agendado": true, "agendado_em": {"youtube": "agendado 2026-10-02 09:00 (https://youtube.com/shorts/<id>)"}, "status": "agendado"
+}

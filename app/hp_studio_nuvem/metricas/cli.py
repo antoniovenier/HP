@@ -14,7 +14,7 @@ from .config import REDES, carregar_config, pasta_metricas
 
 NOME_TAREFA = r"HP\Metricas 6h"
 PYTHONW_PADRAO = r"%LOCALAPPDATA%\Programs\Python\Python312\pythonw.exe"
-AGENDADO_PADRAO = r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\metricas\agendado.py"
+AGENDADO_PADRAO = r"G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\metricas\agendado.py"
 
 
 class _Formatador(argparse.RawDescriptionHelpFormatter):

@@ -38,7 +38,7 @@ arte, legenda queimada, crédito, áudio e loudness saem prontos.
    `H:\HypadoLocal\ferramentas\ffmpeg\bin\ffmpeg.exe`; se estiver em outro lugar,
    rode `setx HP_FFMPEG "caminho\do\ffmpeg.exe"` e abra um PowerShell novo.
    **Não precisa de ffprobe** (duração e tamanho saem do próprio ffmpeg).
-5. O script acha o `hpbase` sozinho em `..\06 Projeto\app\hp_studio`. Se o app
+5. O script acha o `hpbase` sozinho em `..\06 Projeto\app\hp_studio_nuvem`. Se o app
    estiver em outro lugar: `setx HP_APP "G:\Meu Drive\Hypado\06 Projeto\app"`.
 6. Fonte: ele procura **Arial Bold** (`arialbd.ttf`) e depois **Segoe UI Bold**
    em `C:\Windows\Fonts` (no Linux, DejaVuSans-Bold). Para usar outra fonte, ponha

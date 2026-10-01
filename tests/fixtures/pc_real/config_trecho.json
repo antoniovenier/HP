@@ -1,0 +1,28 @@
+{
+ "marca": {"nome": "GTA 6 | HP", "handle": "@hpgta6", "slogan": "Tudo sobre GTA 6, todo dia", "cor_principal": "#FF48A0",
+           "cor_clara": "#FFB054", "cor_escura": "#101234", "cor_texto": "#FFE9F3", "fonte_cartao": "C:/Windows/Fonts/BAUHS93.TTF"},
+ "pastas": {"midia": "H:/HypadoLocal", "brutos": "H:/HypadoLocal/brutos", "cortes": "{HYPADO}/01 Fila para postar",
+            "postados": "{HYPADO}/02 Postados", "transcricoes": "H:/HypadoLocal/transcricoes", "temp": "H:/HypadoLocal/temp"},
+ "video": {"largura": 1080, "altura": 1920, "fps": 30, "duracao_min_seg": 15, "duracao_max_seg": 59,
+           "desfoque_fundo": 34, "escurecer_fundo": -0.26, "saturacao_fundo": 0.7},
+ "legenda": {"fonte": "Segoe UI Black", "tamanho": 76, "cor_base": "#FFFFFF", "cor_destaque": "#FFB054", "contorno": 4,
+             "sombra": 0, "margem_inferior": 560, "distancia_do_video": 36, "max_palavras_por_linha": 4},
+ "dublagem": {"voz": "pt_BR-faber-medium", "modelos": "H:/HypadoLocal/modelos/piper", "pylib": "H:/HypadoLocal/pylib",
+              "volume_original": 0.15, "volume_original_pausa": 0.3, "ritmo_voz": 0.95, "acelerar_max": 1.25,
+              "credito": "dublado por HP", "pronuncia": {"Trevor": "Trévor", "Martin": "Mártin"}},
+ "transcricao": {"modelo": "small", "dispositivo": "cpu", "precisao": "int8", "idioma": "pt",
+                 "vocabulario_base": ["hypado", "GTA 6", "Rockstar", "Leonida"],
+                 "correcoes": {"Selnick": "Zelnick", "Game Former": "Game Informer", "hipado": "hypado"}},
+ "estilo": {"raio_video": 32, "deslocamento_video": -10, "gancho_tamanho": 58, "gancho_cor_texto": "#FFFFFF",
+            "gancho_cor_fundo": "#101234", "gancho_opacidade": 205, "gancho_y": 236, "credito_tamanho": 34,
+            "credito_margem_inferior": 400, "credito_acima_do_video": 18, "marca_tamanho": 34, "marca_opacidade": 195,
+            "marca_y": 96, "cta_segundos": 3.0, "cta_chamada": "GOSTOU? SEGUE A GENTE"},
+ "agendamento": {"timezone": "America/Sao_Paulo", "horarios": ["11:30", "17:30", "21:00"], "fila_minima_dias": 3,
+                 "redes": ["instagram", "tiktok", "youtube", "facebook", "threads"], "rascunho_ate_aprovacao": true},
+ "streamers": [
+  {"id": "davyjones", "nome": "Davy Jones", "credito": "@DavyJonesGTA6", "canal": "https://www.youtube.com/@DavyJonesGTA6",
+   "youtube": "https://www.youtube.com/@Gameplayrj", "autorizado": true, "data_autorizacao": "", "observacao": "texto livre",
+   "vocabulario": ["Davy Jones", "Gameplayrj"]},
+  {"id": "tmartn2", "nome": "TmarTn2", "credito": "@TmarTn2", "idioma": "en", "autorizado": true, "vocabulario": ["TmarTn2"]}
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "canal": "gta",
+ "nome": "GTA 6 | HP",
+ "ativo": true,
+ "google_news_janela": "12h",
+ "google_news": [
+  {"q": "\"GTA 6\" OR \"GTA VI\"", "lingua": "pt"},
+  {"q": "\"GTA 6\" OR \"GTA VI\" OR \"Grand Theft Auto VI\"", "lingua": "en"},
+  {"q": "\"Rockstar Games\" OR \"Take-Two\"", "lingua": "en", "filtrar": true}
+ ],
+ "rss": [
+  {"nome": "IGN", "url": "https://www.ign.com/rss/articles/feed", "oficial": false, "filtrar": true, "peso": 1.0},
+  {"nome": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "oficial": false, "filtrar": true, "peso": 1.0}
+ ],
+ "rockstar_newswire": true,
+ "youtube": [
+  {"nome": "Rockstar Games", "url": "https://www.youtube.com/@RockstarGames", "channel_id": "UC6VcWc1rAoWdBCM0JxrRQ3A", "peso": 1.5, "oficial": true, "video_reutilizavel": true, "nota_uso": "trailer só com comentário nosso; nunca trailer puro"}
+ ],
+ "criadores_do_config": true,
+ "youtube_busca": ["GTA 6", "GTA VI"],
+ "trends": true,
+ "palavras": {"trailer": 6, "trailer 3|terceiro trailer|third trailer": 10, "gameplay oficial|official gameplay": 8, "adiado|adiamento|delayed|delay|postponed": 10, "pre venda|pre order|preorder|pré-venda": 8, "preco|price|valor": 6, "19 de novembro|november 19": 5},
+ "entidades": {"gta 6|gta vi|grand theft auto vi|gta6": 6, "rockstar games|rockstar": 4, "take two|take-two": 3, "jason": 3, "lucia": 3, "leonida": 3, "vice city": 3},
+ "bombasticas": ["trailer 3", "terceiro trailer", "third trailer", "novo trailer", "new trailer", "adiado", "adiamento", "delayed", "pre venda", "pre order", "preco oficial", "data de lancamento", "release date", "gameplay oficial", "official gameplay", "capa oficial", "box art"],
+ "fato_novo": ["confirma", "confirmed", "responde", "anuncia", "announced", "preco", "price", "data", "trailer", "adiado", "delay"],
+ "negativas": ["fan made", "fanmade", "fan trailer", "concept", "conceitual", "feito por ia", "ai generated", "mod", "mods", "remake", "unreal engine", "gta online", "fortnite", "minecraft", "roblox", "roleplay"],
+ "genericas": ["gta", "6", "vi", "grand", "theft", "auto", "rockstar", "games", "game", "jogo", "video", "novo", "nova", "gta6", "oficial", "official"],
+ "dominios_oficiais": ["rockstargames.com", "take2games.com", "x.com/rockstargames"],
+ "limiares": {"P0": 85, "P1": 65, "vph_min": 500, "vph_cheio": 50000, "relevancia_min": 6},
+ "max_alertas_dia": 6, "max_p0_dia": 3,
+ "validade_h": {"P0": 3, "P1": 4},
+ "complemento": {"min_veiculos_novos_2h": 3, "vph_min": 20000, "intervalo_h": 1, "max_partes_dia": 4, "encerrar_sem_calor_h": 6},
+ "yt_html_intervalo_min": 60, "yt_html_intervalo_oficial_min": 20, "yt_refinar_max": 6, "yt_refinar_horas": 6,
+ "dedup": {"prefixos_fila": ["gta_"]},
+ "perguntas": [{"se": ["trailer"], "pergunta": "Ficou top?", "opcoes": ["🔥 Sim", "👎 Não"]}, {"se": ["adiado", "delayed", "delay"], "pergunta": "Vale esperar?", "opcoes": ["Vale", "Não vale"]}],
+ "pergunta_padrao": "Vai bombar?",
+ "interacoes": [{"se": ["adiado", "delayed"], "texto": "O que achou do adiamento?"}],
+ "interacao_padrao": "O que você espera do GTA 6?",
+ "chamadas": {"furo": "NOVIDADE DO GTA 6! Toque 👆", "complemento": "TEM MAIS DO GTA 6! Toque 👆", "fato_novo": "ATUALIZAÇÃO! Toque pra ver 👆"}
+}

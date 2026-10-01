@@ -37,7 +37,7 @@ o Designer só as organiza em `arte\`.
 
 ## 2. Instalação (PC do Antônio)
 
-1. Copie a pasta `esteira` para `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\esteira\`
+1. Copie a pasta `esteira` para `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\esteira\`
    (ao lado de `hpbase`).
 2. Legendador (opcional, mas sem ele os vídeos sem `legenda_manual.srt` vão para
    `99_erros` com a mensagem clara):
@@ -46,7 +46,7 @@ o Designer só as organiza em `arte\`.
    ffprobe é opcional (sem ele o app lê a saída do `ffmpeg -i`).
 4. Criar pastas e `config.json` padrão (modo sombra):
    ```powershell
-   cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+   cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
    python -m esteira iniciar
    ```
 5. Testes (na nuvem: 149 passando): `cd app ; python -m pytest -q hp_studio/esteira`

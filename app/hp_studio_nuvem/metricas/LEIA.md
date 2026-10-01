@@ -10,11 +10,11 @@ Grava uma "foto" por dia e um resumo para o painel. Alimenta o manual 11
 
 ## Instalação
 
-1. Copie a pasta `metricas\` para `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\metricas\`
+1. Copie a pasta `metricas\` para `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\metricas\`
    (do lado da `hpbase\`).
 2. `pip install requests` (se já não estiver instalado).
 3. Crie/complete os arquivos de segredo (abaixo). **Nunca** cole token em outro lugar.
-4. Teste sem chamar nada: `cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"` e
+4. Teste sem chamar nada: `cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"` e
    `python -m metricas coletar --simular`. Ele mostra, por conta e rede, se o token e o
    id existem (sem mostrar o valor).
 
@@ -65,7 +65,7 @@ da API do YouTube terminar — aí a rede sai `nao_autorizado` sem chamar nada),
 `facebook.metricas_post` / `metricas_reel` (nomes das métricas de insights do Facebook,
 que a Meta troca com frequência: `{"nome_na_api": "alcance" | "views"}`).
 
-## Comandos (dentro de `...\app\hp_studio`)
+## Comandos (dentro de `...\app\hp_studio_nuvem`)
 
 | Comando | O que faz |
 |---|---|

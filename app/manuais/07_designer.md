@@ -1347,11 +1347,11 @@ A meta do Antônio é o app **o mais independente possível da IA**. O Designer 
 | 45 | `story_post.py` | **(a criar — módulo F)** | `scripts\` | pegar a arte do dia, subir no emulador, pôr a enquete na caixa |
 | — | `scripts\publicador_meta.py` | sim | `G:\Meu Drive\Hypado\scripts\` | usa `capa.jpg`/lâminas na hora de publicar no Instagram e Threads (o Designer só precisa entregar no nome e formato certos) |
 | — | `scripts\painel_local.py` | sim | `G:\Meu Drive\Hypado\scripts\` | fila local do painel (onde aparece a prévia) |
-| 8–14, 53–55 | esteira de pastas (vigia que move os itens) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | achar item, esperar `post.json`, mover para `05_revisao` |
-| 18–28 | trabalho `designer.capa` (quadros candidatos, nitidez, molde, conferência por coordenadas) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | fazer a capa sozinho |
-| 30–42 | trabalho `designer.carrossel` | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | lâminas + conferências |
-| 23–26, 37, 40 | `checar_arte` (medidas, zona segura, contraste, peso, crédito, rodapé) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | todas as conferências do Designer num comando só, gravando o `design.json` |
-| paridade | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio\qa_paridade\` | comparar peça do app x peça do Claude nos 7 dias de sombra (número e ordem de lâminas, SSIM) |
+| 8–14, 53–55 | esteira de pastas (vigia que move os itens) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | achar item, esperar `post.json`, mover para `05_revisao` |
+| 18–28 | trabalho `designer.capa` (quadros candidatos, nitidez, molde, conferência por coordenadas) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | fazer a capa sozinho |
+| 30–42 | trabalho `designer.carrossel` | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | lâminas + conferências |
+| 23–26, 37, 40 | `checar_arte` (medidas, zona segura, contraste, peso, crédito, rodapé) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | todas as conferências do Designer num comando só, gravando o `design.json` |
+| paridade | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio_nuvem\qa_paridade\` | comparar peça do app x peça do Claude nos 7 dias de sombra (número e ordem de lâminas, SSIM) |
 | 47 | `reel_futebol.py` (cartão de 2 s, modos gol/notícia/debate…) | **(a criar — módulo G)** | `scripts\` | usa os moldes visuais do Futebol definidos aqui |
 
 ---

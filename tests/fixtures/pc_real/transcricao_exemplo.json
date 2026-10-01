@@ -1,0 +1,11 @@
+{
+ "duracao_seg": 60.0,
+ "segmentos": [
+  {"inicio": 4.74, "fim": 7.2, "texto": "Aproveitando Red Dead Redemption,",
+   "palavras": [{"inicio": 4.74, "fim": 5.68, "texto": "Aproveitando"}, {"inicio": 5.68, "fim": 5.97, "texto": "Red"},
+                {"inicio": 5.97, "fim": 6.33, "texto": "Dead"}, {"inicio": 6.33, "fim": 7.2, "texto": "Redemption,"}]},
+  {"inicio": 7.38, "fim": 13.86, "texto": "animais com iridescência, bioluminescência, translucidez,",
+   "palavras": [{"inicio": 7.38, "fim": 7.98, "texto": "animais"}, {"inicio": 7.98, "fim": 8.28, "texto": "com"}]}
+ ],
+ "revisao": "Legendador 30/09: traduzido para PT-BR só dentro dos trechos do plano. Inglês original: tgg_c0Com9SMv1s_883_en_backup.json."
+}

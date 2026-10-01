@@ -248,7 +248,7 @@ Siga **nesta ordem**. A primeira regra que se aplicar decide.
 
 ### 2.9 O esquema JSON completo (`hp.revisao/1`)
 
-Os três arquivos de veredito seguem este esquema (padrão JSON Schema, versão 2020-12). Três campos são **espelhos** (`media_nota`, `criterio_menor_nota`, `revisado_em`): repetem `media`, `criterio_menor` e `data` com os nomes que os manuais 04, 05 e 10 já leem — assim nenhum cargo precisa mudar o que já foi escrito. O app **recusa** gravar ou mover um item cujo veredito não passe por ele **(validação a criar — etapa 3)**. O esquema também fica salvo como arquivo para o app usar: `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio\esteira\esquemas\revisao.schema.json` **(a criar — etapa 3; o conteúdo é exatamente o bloco abaixo)**.
+Os três arquivos de veredito seguem este esquema (padrão JSON Schema, versão 2020-12). Três campos são **espelhos** (`media_nota`, `criterio_menor_nota`, `revisado_em`): repetem `media`, `criterio_menor` e `data` com os nomes que os manuais 04, 05 e 10 já leem — assim nenhum cargo precisa mudar o que já foi escrito. O app **recusa** gravar ou mover um item cujo veredito não passe por ele **(validação a criar — etapa 3)**. O esquema também fica salvo como arquivo para o app usar: `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem\esteira\esquemas\revisao.schema.json` **(a criar — etapa 3; o conteúdo é exatamente o bloco abaixo)**.
 
 ```json
 {
@@ -2163,14 +2163,14 @@ A meta é o Claude gastar **uma imagem (a folha) + os textos** por item, e o app
 | 6–12, 40–58 | PowerShell 5.1 | sim | Windows | ler JSON, calcular, gravar, mover |
 | 20 | `design.json` e `conferencia_*.jpg` do Designer | sim (manual 07) | pasta do item | medidas da arte |
 | 21, 32 | contadores do Redator | sim (manual 08) | — | limites, hashtags, proibidas, crédito, valores |
-| 52 | `hpbase.obter_logger("revisor")` | sim (base pronta) | `app\hp_studio\hpbase\` | log do dia sem segredo |
-| 49 | `hpbase.escrever_json` (JSON atômico) | sim (base pronta) | `app\hp_studio\hpbase\` | gravar o veredito sem arquivo pela metade (uso pelo app) |
-| 51 | `hpbase.anexar_linha` | sim (base pronta) | `app\hp_studio\hpbase\` | linha no `historico.log` com a hora de Brasília |
+| 52 | `hpbase.obter_logger("revisor")` | sim (base pronta) | `app\hp_studio_nuvem\hpbase\` | log do dia sem segredo |
+| 49 | `hpbase.escrever_json` (JSON atômico) | sim (base pronta) | `app\hp_studio_nuvem\hpbase\` | gravar o veredito sem arquivo pela metade (uso pelo app) |
+| 51 | `hpbase.anexar_linha` | sim (base pronta) | `app\hp_studio_nuvem\hpbase\` | linha no `historico.log` com a hora de Brasília |
 | 53 | `descartes.csv` | **(a criar — o app cria na primeira vez)** | `H:\HypadoLocal\esteira\99_erros\` | registro dos descartes |
-| 54 | vigia da esteira (move pelo veredito) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | mover e renomear sozinho |
-| 13–25 | pré-revisão automática (`medidas.json`, folha, notas automáticas) | **(a criar — etapa 3)** | `app\hp_studio\esteira\` | tirar do Claude tudo que é medida |
-| 49–50 | validação no esquema `hp.revisao/1` | **(a criar — etapa 3)** | `app\hp_studio\esteira\esquemas\revisao.schema.json` | recusar veredito inválido |
-| sombra | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio\qa_paridade\` | comparar revisão do app x do Claude; SSIM, LUFS, legenda, lâminas |
+| 54 | vigia da esteira (move pelo veredito) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | mover e renomear sozinho |
+| 13–25 | pré-revisão automática (`medidas.json`, folha, notas automáticas) | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\` | tirar do Claude tudo que é medida |
+| 49–50 | validação no esquema `hp.revisao/1` | **(a criar — etapa 3)** | `app\hp_studio_nuvem\esteira\esquemas\revisao.schema.json` | recusar veredito inválido |
+| sombra | `qa_paridade` | **(a criar — módulo D)** | `app\hp_studio_nuvem\qa_paridade\` | comparar revisão do app x do Claude; SSIM, LUFS, legenda, lâminas |
 | — | `scripts\publicador_meta.py` | sim | `G:\Meu Drive\Hypado\scripts\` | publica o que foi aprovado (fila da API em `H:\HypadoLocal\fila_api\`) |
 | — | `scripts\painel_local.py` e tela `http://127.0.0.1:8770` | sim | — | ver a fila e a prévia |
 | — | `scripts\tickets.py` | sim | `G:\Meu Drive\Hypado\scripts\` | abrir ticket quando uma ferramenta falhar |

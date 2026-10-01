@@ -60,7 +60,7 @@ G:\Meu Drive\Hypado\06 Projeto\AVISO.md   texto-modelo do aviso "no ar"
      ```
 4. Entre na pasta do app:
    ```powershell
-   cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+   cd "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
    ```
 5. Rode o status (cria as pastas e os arquivos de exemplo):
    ```powershell
@@ -151,7 +151,7 @@ atômica (arquivo temporário e troca de nome, como o `hpbase.escrever_json` faz
 
 ## Comandos
 
-Sempre a partir de `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio`
+Sempre a partir de `G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem`
 (`python` = `& "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"`):
 
 | Comando | O que faz |
@@ -180,7 +180,7 @@ confira na primeira vez rodando a tarefa com o PC em uso.
 
 ```powershell
 $py  = "$env:LOCALAPPDATA\Programs\Python\Python312\pythonw.exe"
-$dir = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio"
+$dir = "G:\Meu Drive\Hypado\06 Projeto\app\hp_studio_nuvem"
 $acao = New-ScheduledTaskAction -Execute $py -Argument "-m whatsapp_local vigiar --intervalo 60" -WorkingDirectory $dir
 $gatilho = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 $gatilho.Delay = "PT2M"   # espera 2 min o Google Drive (G:) montar
