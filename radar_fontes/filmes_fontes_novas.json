@@ -1,14 +1,25 @@
 {
  "canal": "filmes",
- "verificado_em": "2026-10-01T02:00:00-03:00",
+ "verificado_em": "2026-10-01T02:38:12-03:00",
  "rss": [
+  {
+   "nome": "Netflix Brasil (sala de imprensa)",
+   "url": "https://about.netflix.com/pt_br/feed.xml",
+   "oficial": true,
+   "filtrar": false,
+   "peso": 1.5,
+   "verificado_em": "2026-10-01T02:38:12-03:00",
+   "evidencia": "https://about.netflix.com/pt_br/newsroom (link rel=alternate type=application/rss+xml)",
+   "verificado_por": "rss",
+   "nota_conferir": "entrou depois da correção de analisar_data (data por extenso), 01/10/2026"
+  },
   {
    "nome": "Marvel",
    "url": "https://www.marvel.com/rss/feed",
    "oficial": true,
    "filtrar": true,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.marvel.com/articles/ (marvel.com/news redireciona para cá; o HTML linka https://www.marvel.com/rss/feed; feed cobre quadrinhos e games também, por isso filtrar: true)",
    "verificado_por": "rss"
   },
@@ -18,7 +29,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.apple.com/tv-pr/ (<link rel=alternate type=application/rss+xml title=\"Apple TV News RSS feed\">; sala de imprensa do Apple TV+, em inglês)",
    "verificado_por": "atom"
   },
@@ -28,7 +39,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.0,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.apple.com/br/newsroom/ (caminho padrão rss-feed.rss do Apple Newsroom; feed Atom em português, cobre toda a Apple — por isso filtrar: true)",
    "verificado_por": "atom"
   },
@@ -38,7 +49,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.0,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://thewaltdisneycompany.com/feed/ (site WordPress da Disney corporativa; feed padrão /feed/, em inglês, cobre parques/ESPN também — filtrar: true; press.disneyplus.com não tem RSS)",
    "verificado_por": "rss"
   },
@@ -48,7 +59,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.0,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.aboutamazon.com/news/entertainment (<link rel=alternate type=application/rss+xml>; feed de toda a Amazon, em inglês — filtrar: true; press.amazonstudios.com não abre daqui)",
    "verificado_por": "rss"
   },
@@ -58,7 +69,7 @@
    "oficial": false,
    "filtrar": true,
    "peso": 1.0,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.omelete.com.br/ (o site não tem RSS: /rss, /feed, /rss.xml respondem 404 e o HTML não declara feed; oferece só sitemap-news.xml; este é o RSS do Google Notícias restrito ao domínio)",
    "verificado_por": "rss"
   },
@@ -68,7 +79,7 @@
    "oficial": false,
    "filtrar": true,
    "peso": 1.0,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.adorocinema.com/ (o site não tem RSS: /rss/, /rss.xml, /rss/noticias/ respondem 404 e o HTML não declara feed; este é o RSS do Google Notícias restrito ao domínio)",
    "verificado_por": "rss"
   }
@@ -82,7 +93,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (canal com selo verificado; a página @ParamountPlusBR declara externalId UCAnCxJ1Weh2pUAKJW0bro0Q e título 'Paramount+ Brasil')",
    "verificado_por": "pagina_canal"
   },
@@ -94,7 +105,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Walt+Disney+Studios+Brasil+oficial (selo verificado; a página do canal declara o id e o título 'Walt Disney Studios BR')",
    "verificado_por": "pagina_canal"
   },
@@ -106,7 +117,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@Netflix (página do canal declara externalId UCWOA1ZGywLbqmigxE4Qlvuw e título 'Netflix'; canal global em inglês — a tabela já tem Netflix Brasil)",
    "verificado_por": "pagina_canal"
   },
@@ -118,7 +129,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@PrimeVideo (página do canal declara o id e o título 'Prime Video'; canal global — a tabela já tem Prime Video Brasil)",
    "verificado_por": "pagina_canal"
   },
@@ -130,7 +141,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@hbomax (página do canal declara o id e o título 'HBO Max'; canal global — a tabela já tem HBO Max Brasil)",
    "verificado_por": "pagina_canal"
   },
@@ -142,7 +153,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://press.disneyplus.com/ (rodapé linka youtube.com/@disneyplus; a página do canal declara o id e o título 'Disney Plus')",
    "verificado_por": "pagina_canal"
   },
@@ -154,7 +165,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (selo verificado; a página @paramountplus declara o id e o título 'Paramount Plus'; canal global em inglês)",
    "verificado_por": "pagina_canal"
   },
@@ -166,7 +177,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Apple+TV+Brasil+oficial (selo verificado; a página @AppleTV declara o id e o título 'Apple TV'; não existe canal 'Apple TV Brasil' separado)",
    "verificado_por": "pagina_canal"
   },
@@ -178,7 +189,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.universalpictures.com/ (rodapé linka youtube.com/@UniversalPictures; a página do canal declara o id e o título 'Universal Pictures')",
    "verificado_por": "pagina_canal"
   },
@@ -190,7 +201,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@SonyPictures (página do canal declara o id e o título 'Sony Pictures Entertainment'; sonypictures.com não expõe o link no HTML)",
    "verificado_por": "pagina_canal"
   },
@@ -202,7 +213,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@ParamountPictures (página do canal declara o id e o título 'Paramount Pictures'; paramount.com/press responde 403 ao robô)",
    "verificado_por": "pagina_canal"
   },
@@ -214,7 +225,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@Pixar (página do canal declara o id e o título 'Pixar'; pixar.com não expõe o link no HTML)",
    "verificado_por": "pagina_canal"
   },
@@ -226,7 +237,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.starwars.com/news (rodapé linka youtube.com/user/starwars, que resolve para este id; título 'Star Wars'; é o canal principal da Lucasfilm)",
    "verificado_por": "pagina_canal"
   },
@@ -238,7 +249,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Lucasfilm+oficial (selo verificado; a página @Lucasfilm declara o id e o título 'Lucasfilm')",
    "verificado_por": "pagina_canal"
   },
@@ -250,7 +261,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@LionsgateMovies (página do canal declara o id e o título 'Lionsgate Movies'; o site da Lionsgate bloqueia o robô — Cloudflare)",
    "verificado_por": "pagina_canal"
   },
@@ -262,7 +273,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/@A24 (página do canal declara o id e o título 'A24'; a24films.com não expõe o link no HTML)",
    "verificado_por": "pagina_canal"
   },
@@ -273,7 +284,7 @@
    "peso": 1.0,
    "oficial": false,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=AdoroCinema (selo verificado; a página @AdoroCinemaOficial declara o id e o título 'AdoroCinema'; site de notícia: oficial false)",
    "verificado_por": "pagina_canal"
   },
@@ -285,7 +296,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer/clipe só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T02:00:00-03:00",
+   "verificado_em": "2026-10-01T02:38:12-03:00",
    "evidencia": "https://www.youtube.com/results?search_query=Paramount+Plus+Brasil+oficial (selo verificado; a página @ParamountBrasil declara o id e o título 'Paramount Brasil'; provavelmente é o 'Paramount Pictures Brasil' da tabela de 4.10 — conferir o id)",
    "verificado_por": "pagina_canal",
    "ja_existe": true,
@@ -293,11 +304,6 @@
   }
  ],
  "descartadas": [
-  {
-   "nome": "Netflix Brasil (sala de imprensa, RSS)",
-   "url": "https://about.netflix.com/pt_br/feed.xml",
-   "motivo": "feed existe, é declarado em about.netflix.com/pt_br/newsroom (<link rel=alternate type=application/rss+xml>) e está ativo (itens de 30/09/2026), mas o <pubDate> vem por extenso ('30 de setembro de 2026'; em /en/feed.xml '01 October 2026'), fora do RFC 2822 — verificar_fontes.analisar_data() não lê e a ferramenta responde 'nenhum item com data'. Entra quando a ferramenta aceitar esse formato (ver relatório F2)"
-  },
   {
    "nome": "Warner Bros. Discovery (sala de imprensa)",
    "url": "https://press.wbd.com/us",

@@ -95,6 +95,7 @@ SITES_NOTICIA = (
     "caranddriver", "autoblog", "flatout", "webmotors", "icarros", "mobiauto", "techtudo",
     "theenemy", "voxel", "gameblast", "canaltech", "tecmundo", "olhardigital", "meusjogos",
 )
+TOKENS_EXATOS = ("motor1",)                       # só casam a chave inteira (F4: "greatwallmotor1853" não é o Motor1)
 PROIBIDOS = ("flowgames", "flowpodcast")        # Flow Games nunca entra (regra 6 do enunciado)
 
 Transporte = Callable[[str], Tuple[int, bytes, dict]]
@@ -139,10 +140,41 @@ def analisar_data(texto: Optional[str]) -> Optional[datetime]:
         try:
             dt = datetime.fromisoformat(iso)
         except ValueError:
-            return None
+            dt = _data_por_extenso(t)
+            if dt is None:
+                return None
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt
+
+
+_MESES = {
+    "janeiro": 1, "fevereiro": 2, "marco": 3, "março": 3, "abril": 4, "maio": 5, "junho": 6, "julho": 7,
+    "agosto": 8, "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12,
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8,
+    "september": 9, "october": 10, "november": 11, "december": 12,
+    "jan": 1, "fev": 2, "feb": 2, "mar": 3, "abr": 4, "apr": 4, "mai": 5, "jun": 6, "jul": 7, "ago": 8,
+    "aug": 8, "set": 9, "sep": 9, "out": 10, "oct": 10, "nov": 11, "dez": 12, "dec": 12,
+}
+_RX_EXTENSO_PT = re.compile(r"(\d{1,2})(?:\s+de)?\s+([a-zç]+)\.?(?:\s+de)?\s+(\d{4})")
+_RX_EXTENSO_EN = re.compile(r"([a-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})")
+
+
+def _data_por_extenso(texto: str) -> Optional[datetime]:
+    """'30 de setembro de 2026', '30 set 2026', 'September 30, 2026' -> datetime UTC (F4, feed da Netflix pt_br)."""
+    t = texto.strip().lower()
+    m = _RX_EXTENSO_PT.search(t)
+    if m and m.group(2) in _MESES:
+        dia, mes, ano = int(m.group(1)), _MESES[m.group(2)], int(m.group(3))
+    else:
+        m = _RX_EXTENSO_EN.search(t)
+        if not (m and m.group(1) in _MESES):
+            return None
+        mes, dia, ano = _MESES[m.group(1)], int(m.group(2)), int(m.group(3))
+    try:
+        return datetime(ano, mes, dia, tzinfo=timezone.utc)
+    except ValueError:
+        return None
 
 
 def _hoje(hoje: Optional[datetime]) -> datetime:
@@ -492,7 +524,7 @@ def e_flow_games(nome: Optional[str], url: Optional[str] = None) -> bool:
 def e_site_noticia(nome: Optional[str], url: Optional[str] = None) -> bool:
     chaves = _chaves(nome, url)
     for token in SITES_NOTICIA:
-        if len(token) <= 5:
+        if len(token) <= 5 or token in TOKENS_EXATOS:
             if any(c == token for c in chaves):
                 return True
         elif any(token in c for c in chaves):
@@ -559,6 +591,15 @@ def _peso(entrada: dict, ofi: bool) -> float:
         return 1.5 if ofi else 1.0
 
 
+MARCAS_HUMANAS = ("ja_existe", "nota_conferir")   # anotações do Antônio: sobrevivem ao --gravar (F4)
+
+
+def _manter_marcas(entrada: dict, saida: dict) -> None:
+    for k in MARCAS_HUMANAS:
+        if k in entrada:
+            saida[k] = entrada[k]
+
+
 def verificar_entrada_rss(entrada: dict, canal: str, transporte: Transporte,
                           hoje: Optional[datetime] = None) -> Tuple[Optional[dict], Optional[dict], List[str]]:
     """-> (entrada verificada | None, descartada | None, avisos)."""
@@ -578,6 +619,7 @@ def verificar_entrada_rss(entrada: dict, canal: str, transporte: Transporte,
         "peso": _peso(entrada, ofi), "verificado_em": r["verificado_em"],
         "evidencia": str(entrada.get("evidencia") or "").strip() or url, "verificado_por": r["verificado_por"],
     }
+    _manter_marcas(entrada, saida)
     return saida, None, cls["avisos"]
 
 
@@ -608,6 +650,7 @@ def verificar_entrada_youtube(entrada: dict, canal: str, transporte: Transporte,
     saida.update(verificado_em=r["verificado_em"],
                  evidencia=str(entrada.get("evidencia") or "").strip() or r["evidencia"],
                  verificado_por=r["verificado_por"])
+    _manter_marcas(entrada, saida)
     return saida, None, cls["avisos"]
 
 

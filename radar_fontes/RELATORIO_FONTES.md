@@ -16,14 +16,14 @@ nome; servem para conferir o id, não para duplicar).
 | Canal | RSS novos | YouTube novos | dos quais `ja_existe` | Descartadas | Arquivo |
 |---|---|---|---|---|---|
 | futebol | 7 | 13 | 2 (CBF, CONMEBOL Libertadores BR) | 18 | `futebol_fontes_novas.json` |
-| filmes | 7 (5 oficiais + 2 Google News) | 18 (17 oficiais + AdoroCinema) | 1 (Paramount Brasil) | 21 | `filmes_fontes_novas.json` |
+| filmes | 8 (6 oficiais + 2 Google News) | 18 (17 oficiais + AdoroCinema) | 1 (Paramount Brasil) | 20 | `filmes_fontes_novas.json` |
 | carros | 6 | 21 | 0 | 46 | `carros_fontes_novas.json` |
 | gta | 1 | 1 (Rockstar, confirmação) | 1 (Rockstar Games) | 2 | `gta_fontes_novas.json` |
-| **total** | **21** | **53** | 4 | **87** | |
+| **total** | **22** | **53** | 4 | **86** | |
 
-Descontando as 4 `ja_existe`, são **49 canais de YouTube novos e 21 feeds novos** (19 oficiais e 2 de
+Descontando as 4 `ja_existe`, são **49 canais de YouTube novos e 22 feeds novos** (20 oficiais e 2 de
 site de notícia via Google Notícias). Todos os 53 canais foram provados pela página do canal
-(`verificado_por: "pagina_canal"`, ver a nota no fim); todos os 21 feeds responderam 200 com XML válido
+(`verificado_por: "pagina_canal"`, ver a nota no fim); todos os 22 feeds responderam 200 com XML válido
 e item dos últimos 30 dias (`verificado_por: "rss"` ou `"atom"`).
 
 ## Canal futebol
@@ -92,7 +92,7 @@ e não foram repetidos.
 | Sala de imprensa / site sem RSS (o HTML não declara feed; `/rss`, `/feed` 404) | 9 | Warner Bros. Discovery, Disney+ (vale o feed corporativo da Disney, que entrou), Sony Pictures (só lista HTML), A24, Pixar, Lucasfilm/Star Wars, Universal/NBCUniversal, Omelete (só `sitemap-news.xml`), AdoroCinema |
 | Bloqueio de robô (HTTP 403 / desafio Cloudflare) | 3 | Amazon RI, Paramount Global (Press Express exige login: não tentado), Lionsgate RI |
 | Não abre desta nuvem (proxy responde 502) | 2 | press.paramountplus.com, press.amazonstudios.com |
-| Feed válido, mas data em formato fora do padrão | 1 | **Netflix Brasil** `about.netflix.com/pt_br/feed.xml` (`<pubDate>30 de setembro de 2026</pubDate>`; a ferramenta só lê RFC 2822 e ISO 8601) — é a melhor fonte em português do canal; entra quando `analisar_data()` aceitar esse formato |
+| ~~Feed válido, mas data em formato fora do padrão~~ **ENTROU em 01/10 (02h38)** | 0 | **Netflix Brasil** `about.netflix.com/pt_br/feed.xml` (`<pubDate>30 de setembro de 2026</pubDate>`): a sessão principal corrigiu `analisar_data()` (data por extenso em português e inglês) e o feed passou a verificar (15 itens, mais novo 30/09/2026) — está em `rss` com `oficial: true`, `filtrar: false`, `peso: 1.5` |
 | @handle errado (página 404; o certo entrou) | 2 | @ParamountPlusBrasil → @ParamountPlusBR; @AdoroCinema → @AdoroCinemaOficial |
 | Fora do assunto / fora do escopo / não existe | 3 | Apple Brasil (canal geral da Apple), Walt Disney Studios PT (Portugal), Apple TV Brasil (não existe canal próprio) |
 | Não verificado por tempo | 1 | canais BR separados de Lionsgate, A24, Pixar e Lucasfilm (os globais entraram) |
@@ -226,22 +226,21 @@ A ferramenta tenta o feed primeiro: no PC as entradas passam para `verificado_po
 Para conferir um canal só: `python radar_fontes\verificar_fontes.py canal @RockstarGames --id UC6VcWc1rAoWdBCM0JxrRQ3A --nome "Rockstar Games"`
 (no PC deve imprimir `verificado_por: feed`).
 
-Duas atenções antes de rodar `--gravar` no PC:
+As duas atenções que o F4 deixou para o `--gravar` no PC **já foram resolvidas pela sessão principal
+(01/10, 02h38)** em `verificar_fontes.py`, com 3 testes novos (38 no total):
 
-1. A ferramenta reconstrói cada entrada só com as chaves de 4.10 + `verificado_em`/`evidencia`/`verificado_por`:
-   as marcas `ja_existe`/`nota_conferir` das 4 entradas (CBF, CONMEBOL Libertadores BR, Paramount
-   Brasil, Rockstar Games) **somem**. Conferir essas 4 no `07 Canais\radar\<canal>.json` antes.
-2. "GWM Global" (@greatwallmotor1853) é canal oficial (gwm-global.com linka o id), mas a heurística de
-   site de notícia da ferramenta casa o pedaço `motor1` (Motor1.com) no @handle e **troca `oficial` para
-   `false`** a cada `--gravar`, com o aviso `GWM Global: site/canal de notícia não é oficial`. Nesta
-   rodada o campo foi devolvido a `true` à mão depois do `--gravar`. A correção de 1 linha em
-   `verificar_fontes.py` (`e_site_noticia`: tratar `motor1` como token exato) está anotada em
-   `docs/rodada2/F4.md`; até ela entrar, repor `oficial: true` nessa entrada depois de regravar.
+1. As marcas `ja_existe`/`nota_conferir` das entradas agora **sobrevivem** ao `--gravar` (`MARCAS_HUMANAS`).
+2. "GWM Global" (@greatwallmotor1853) continua `oficial: true`: `motor1` virou token exato (`TOKENS_EXATOS`),
+   então o @handle não casa mais com o Motor1.com.
+3. `analisar_data()` lê data por extenso ("30 de setembro de 2026", "September 30, 2026") — foi o que fez o
+   feed da Netflix Brasil entrar. Os 4 JSONs foram regravados com a ferramenta corrigida: `gta 1 rss · 1 yt`,
+   `futebol 7 · 13`, `filmes 8 · 18`, `carros 6 · 21`; carimbos `2026-10-01T02:37:56` a `02:38:31-03:00`.
+   No PC basta rodar os 4 comandos da seção "nota do feed" sem nenhuma correção à mão depois.
 
 ## Como foi verificado (resumo)
 
 - Ferramenta: `radar_fontes/verificar_fontes.py` (F0), rede só por `transporte_real` (urllib via proxy da
-  nuvem; `--curl` disponível para o PC). Testes: 35, sem rede e sem relógio real.
+  nuvem; `--curl` disponível para o PC). Testes: 38 (35 da F0 + 3 das correções), sem rede e sem relógio real.
 - Pesquisa (F1 futebol + gta, F2 filmes, F3 carros): só leitura de páginas públicas; nenhum login, nenhum
   clique em Aceitar/Permitir, nenhum id ou URL inventado. Candidatos e resultado linha a linha em
   `radar_fontes/<canal>_candidatos.txt` (futebol 48, filmes 51, carros 87).

@@ -1,6 +1,6 @@
 {
  "canal": "carros",
- "verificado_em": "2026-10-01T02:00:18-03:00",
+ "verificado_em": "2026-10-01T02:38:31-03:00",
  "rss": [
   {
    "nome": "Volkswagen Newsroom",
@@ -8,7 +8,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.volkswagen-newsroom.com/en (<link rel=alternate type=application/rss+xml href=/en/feeds/press-releases>)",
    "verificado_por": "rss"
   },
@@ -18,7 +18,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.audi-mediacenter.com/en (<link rel=alternate type=application/rss+xml href=/en/feeds/press-releases>; o mesmo feed responde em https://www.audi.com/en/feeds/press-releases)",
    "verificado_por": "rss"
   },
@@ -28,7 +28,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.press.bmwgroup.com/brazil/info/rss (página 'RSS' da sala de imprensa BR; filtrar=true porque mistura BMW, MINI e BMW Motorrad)",
    "verificado_por": "rss"
   },
@@ -38,7 +38,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://global.nissannews.com/en (sala de imprensa global, plataforma Wieck; o HTML linka um /rss de staging, o de produção é /en/rss)",
    "verificado_por": "rss"
   },
@@ -48,7 +48,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.hyundai.com.br/imprensa redireciona para https://hyundai-csa-news.com/ (<link rel=alternate type=application/rss+xml href=https://hyundai-csa-news.com/feed/>)",
    "verificado_por": "rss"
   },
@@ -58,7 +58,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.toyotacomunica.com.br/ (WordPress; /feed/ responde application/rss+xml; a home só abre com User-Agent completo de navegador)",
    "verificado_por": "rss"
   }
@@ -71,7 +71,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@RamTrucks (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Ram Trucks', 163 mil inscritos; media.stellantis.com responde 403)",
    "verificado_por": "pagina_canal"
   },
@@ -82,7 +82,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@Nissan (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Nissan': canal verificado com o título exato 'Nissan')",
    "verificado_por": "pagina_canal"
   },
@@ -93,7 +93,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@Peugeot (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Peugeot')",
    "verificado_por": "pagina_canal"
   },
@@ -104,7 +104,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@theofficialcitroen (página do canal no YouTube declara este externalId e tem o selo de canal verificado; 1º resultado da busca 'Citroën', título 'Citroën')",
    "verificado_por": "pagina_canal"
   },
@@ -115,7 +115,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@Honda (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Honda': canal global verificado, 677 mil inscritos; a tabela só tinha 'Honda Automóveis', que é o BR)",
    "verificado_por": "pagina_canal"
   },
@@ -126,7 +126,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@Chevrolet (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Chevrolet': canal global verificado, 787 mil; a tabela só tinha 'Chevrolet Brasil')",
    "verificado_por": "pagina_canal"
   },
@@ -137,7 +137,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@Jeep (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Jeep': canal global verificado; a tabela só tinha 'Jeep Brasil')",
    "verificado_por": "pagina_canal"
   },
@@ -148,7 +148,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@BYDGlobal (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'BYD'; a tabela só tinha 'BYD Brasil')",
    "verificado_por": "pagina_canal"
   },
@@ -159,7 +159,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.gwm-global.com/ (rodapé linka youtube.com/channel/UCs5oqkMf9GqH4Lui1rbM-HA/featured; a página do canal declara este id, o título 'GWM Global' e o @handle @greatwallmotor1853; a tabela só tinha 'GWM Brasil'). ATENÇÃO: ao rodar 'verificar --gravar', a heurística e_site_noticia de verificar_fontes.py vê 'motor1' dentro de 'greatwallmotor1853' e troca oficial para false com aviso — é falso positivo (ver docs/rodada2/F3.md, seção 8); mantenha oficial: true",
    "verificado_por": "pagina_canal"
   },
@@ -170,7 +170,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.renaultgroup.com/en/ (rodapé linka youtube.com/@renaultgroup e /channel/UCjpe-FourUgOLzzPu9qV4qg; renault.com redireciona para renaultgroup.com; canal corporativo do grupo, com selo verificado)",
    "verificado_por": "pagina_canal"
   },
@@ -181,7 +181,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@MitsubishiMotorsTV (página do canal no YouTube declara este externalId e tem o selo de canal verificado; é o único canal global da Mitsubishi Motors com selo na busca 'Mitsubishi Motors'; mitsubishi-motors.com não linka YouTube)",
    "verificado_por": "pagina_canal"
   },
@@ -192,7 +192,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.ram.com.br/ (rodapé linka youtube.com/user/RAMdoBrasil, que resolve para este id; a página do canal tem selo verificado)",
    "verificado_por": "pagina_canal"
   },
@@ -203,7 +203,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@nissanbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Nissan': 'Nissan Brasil' verificado, 1,12 mi de inscritos)",
    "verificado_por": "pagina_canal"
   },
@@ -214,7 +214,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@peugeotbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; peugeot.com.br responde 403 para robô)",
    "verificado_por": "pagina_canal"
   },
@@ -225,7 +225,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.citroen.com.br/ (rodapé linka youtube.com/user/citroen, que resolve para este id; o @handle do canal BR é @citroen)",
    "verificado_por": "pagina_canal"
   },
@@ -236,7 +236,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.mitsubishimotors.com.br/ (rodapé linka youtube.com/user/MitsubishiMotors, que resolve para este id; selo verificado; o @MitsubishiMotorsBR que o site também cita responde 404)",
    "verificado_por": "pagina_canal"
   },
@@ -247,7 +247,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@fordbrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Ford Brasil', 346 mil; media.ford.com responde 403)",
    "verificado_por": "pagina_canal"
   },
@@ -258,7 +258,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.youtube.com/@AudiBRAudiBrasil (página do canal no YouTube declara este externalId e tem o selo de canal verificado; busca 'Audi Brasil'; audi.com.br responde 403)",
    "verificado_por": "pagina_canal"
   },
@@ -269,7 +269,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://hyundai-csa-news.com/ (sala de imprensa BR, destino de hyundai.com.br/imprensa; linka youtube.com/user/hyundaibr, que resolve para este id)",
    "verificado_por": "pagina_canal"
   },
@@ -280,7 +280,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.kia.com.br/ (rodapé linka youtube.com/KiaBrasilOficial; selo verificado na página do canal)",
    "verificado_por": "pagina_canal"
   },
@@ -291,7 +291,7 @@
    "peso": 1.5,
    "oficial": true,
    "video_reutilizavel": false,
-   "verificado_em": "2026-10-01T02:00:18-03:00",
+   "verificado_em": "2026-10-01T02:38:31-03:00",
    "evidencia": "https://www.landrover.com.br/ (rodapé linka youtube.com/landroverbr, que resolve para este id)",
    "verificado_por": "pagina_canal"
   }

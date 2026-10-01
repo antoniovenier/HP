@@ -530,3 +530,48 @@ def test_transporte_curl_e_lista_sem_janela_e_le_o_corpo(monkeypatch):
     assert vf.transporte_curl("https://nao.existe/")[0] == 0 and "resolve" in vf.transporte_curl("https://nao.existe/")[2]["erro"]
     monkeypatch.setattr(subprocess, "run", lambda cmd, **kw: (_ for _ in ()).throw(OSError("curl não encontrado")))
     assert vf.transporte_curl("https://x/")[2]["erro"] == "curl não encontrado"
+
+
+# --- correções pedidas pelo F4 (rodada 2) -------------------------------------------------
+def test_handle_com_motor1_nao_e_site_noticia():
+    """'greatwallmotor1853' contém 'motor1', mas é o canal oficial da GWM; 'Motor1' continua site."""
+    assert vf.e_site_noticia("GWM Global", "https://www.youtube.com/@greatwallmotor1853") is False
+    assert vf.e_site_noticia("Motor1", "https://www.motor1.com/rss") is True
+    assert vf.oficial({"nome": "GWM Global", "url": "https://www.youtube.com/@greatwallmotor1853",
+                       "oficial": True}) is True
+
+
+def test_analisar_data_por_extenso_pt_e_en():
+    """O feed pt_br da Netflix usa '30 de setembro de 2026'."""
+    assert vf.analisar_data("30 de setembro de 2026") == datetime(2026, 9, 30, tzinfo=timezone.utc)
+    assert vf.analisar_data("1 de março de 2026") == datetime(2026, 3, 1, tzinfo=timezone.utc)
+    assert vf.analisar_data("30 set 2026") == datetime(2026, 9, 30, tzinfo=timezone.utc)
+    assert vf.analisar_data("September 30, 2026") == datetime(2026, 9, 30, tzinfo=timezone.utc)
+    assert vf.analisar_data("31 de fevereiro de 2026") is None
+    assert vf.analisar_data("ontem") is None
+    rss = (b'<?xml version="1.0"?><rss version="2.0"><channel><title>Netflix</title>'
+           b'<item><title>Novo</title><link>https://about.netflix.com/1</link>'
+           b'<pubDate>30 de setembro de 2026</pubDate></item></channel></rss>')
+    r = vf.verificar_rss("https://about.netflix.com/pt_br/feed.xml",
+                         transporte_de({"https://about.netflix.com/pt_br/feed.xml": rss}), HOJE)
+    assert r["ok"], r
+
+
+def test_marcas_ja_existe_e_nota_conferir_sobrevivem_ao_gravar(tmp_path: Path):
+    arq = tmp_path / "gta_fontes_novas.json"
+    arq.write_text(json.dumps({
+        "canal": "gta", "verificado_em": "2026-09-01T00:00:00-03:00",
+        "rss": [{"nome": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "oficial": False,
+                 "filtrar": True, "peso": 1.0, "nota_conferir": "conferir o peso"}],
+        "youtube": [{"nome": "Rockstar Games", "url": "https://www.youtube.com/@RockstarGames",
+                     "channel_id": ID_ROCKSTAR, "peso": 1.5, "oficial": True, "video_reutilizavel": True,
+                     "ja_existe": True, "nota_conferir": "mesmo id da fixture"}],
+        "descartadas": [],
+    }, ensure_ascii=False), encoding="utf-8")
+    t = transporte_de({"https://www.gamespot.com/feeds/news/": RSS2, vf.YT_FEED.format(id=ID_ROCKSTAR): feed_yt()})
+    vf.verificar_arquivo(arq, t, HOJE, gravar=True)
+    gravado = json.loads(arq.read_text(encoding="utf-8"))
+    assert gravado["youtube"][0]["ja_existe"] is True
+    assert gravado["youtube"][0]["nota_conferir"] == "mesmo id da fixture"
+    assert gravado["rss"][0]["nota_conferir"] == "conferir o peso"
+    assert "ja_existe" not in gravado["rss"][0]

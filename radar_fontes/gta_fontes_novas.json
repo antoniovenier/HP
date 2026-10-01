@@ -1,6 +1,6 @@
 {
  "canal": "gta",
- "verificado_em": "2026-10-01T01:59:45-03:00",
+ "verificado_em": "2026-10-01T02:37:56-03:00",
  "rss": [
   {
    "nome": "Take-Two Interactive (press releases)",
@@ -8,7 +8,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:45-03:00",
+   "verificado_em": "2026-10-01T02:37:56-03:00",
    "evidencia": "https://www.take2games.com/ir/press-releases (sala de imprensa do RI da Take-Two, servida por ir.take2games.com; o feed padrão /rss/news-releases.xml responde com 'Take-Two Interactive Software, Inc. News Releases')",
    "verificado_por": "rss"
   }
@@ -22,7 +22,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "trailer só com comentário nosso; nunca trailer puro",
-   "verificado_em": "2026-10-01T01:59:45-03:00",
+   "verificado_em": "2026-10-01T02:37:56-03:00",
    "evidencia": "https://www.youtube.com/@RockstarGames (a página do canal declara externalId UC6VcWc1rAoWdBCM0JxrRQ3A e o título 'Rockstar Games')",
    "verificado_por": "pagina_canal",
    "ja_existe": true

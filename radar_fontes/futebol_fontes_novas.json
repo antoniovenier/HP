@@ -1,6 +1,6 @@
 {
  "canal": "futebol",
- "verificado_em": "2026-10-01T01:59:46-03:00",
+ "verificado_em": "2026-10-01T02:37:57-03:00",
  "rss": [
   {
    "nome": "Atlético-MG",
@@ -8,7 +8,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://atletico.com.br/feed/ (feed WordPress do site oficial; a home responde 403 sem cabeçalhos de navegador)",
    "verificado_por": "rss"
   },
@@ -18,7 +18,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.esporteclubebahia.com.br/ (<link rel=alternate type=application/rss+xml>)",
    "verificado_por": "rss"
   },
@@ -28,7 +28,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://chapecoense.com/ (<link rel=alternate type=application/rss+xml>)",
    "verificado_por": "rss"
   },
@@ -38,7 +38,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.santosfc.com.br/ (<link rel=alternate type=application/rss+xml>)",
    "verificado_por": "rss"
   },
@@ -48,7 +48,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.saopaulofc.net/ (<link rel=alternate type=application/rss+xml>)",
    "verificado_por": "rss"
   },
@@ -58,7 +58,7 @@
    "oficial": true,
    "filtrar": false,
    "peso": 1.5,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.ecvitoria.com.br/ (<link rel=alternate type=application/rss+xml>)",
    "verificado_por": "rss"
   },
@@ -68,7 +68,7 @@
    "oficial": true,
    "filtrar": true,
    "peso": 1.2,
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.conmebol.com/ (site WordPress; feed em /feed/, em espanhol e de todas as competições — por isso filtrar: true)",
    "verificado_por": "rss"
   }
@@ -82,7 +82,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.athletico.com.br/ (rodapé linka youtube.com/athleticoparanaense, que resolve para este id)",
    "verificado_por": "pagina_canal"
   },
@@ -94,7 +94,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.redbullbragantino.com/br-pt (rodapé linka youtube.com/redbullbragantinotvoficial, que resolve para este id)",
    "verificado_por": "pagina_canal"
   },
@@ -106,7 +106,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://chapecoense.com/ (rodapé linka youtube.com/channel/UC5of5voGUqec9K9JqL9al4Q e youtube.com/c/ChapeTvOficial)",
    "verificado_por": "pagina_canal"
   },
@@ -118,7 +118,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.youtube.com/@coritibaoficial (links da própria página do canal: coritiba.com.br e sociocoxa.com.br; o site coritiba.com.br não renderiza sem JavaScript)",
    "verificado_por": "pagina_canal"
   },
@@ -130,7 +130,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://mirassolfc.com.br/ (rodapé linka youtube.com/@CanalMirassolFC)",
    "verificado_por": "pagina_canal"
   },
@@ -142,7 +142,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://clubedoremo.com.br/ (rodapé linka youtube.com/@RemotV; a página do canal declara o handle canônico @RemoTV)",
    "verificado_por": "pagina_canal"
   },
@@ -154,7 +154,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.ecvitoria.com.br/ (rodapé linka youtube.com/@tvvitoria1899)",
    "verificado_por": "pagina_canal"
   },
@@ -166,7 +166,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.conmebol.com/ (rodapé linka youtube.com/c/conmebol, que resolve para este id)",
    "verificado_por": "pagina_canal"
   },
@@ -178,7 +178,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://gol.conmebol.com/sudamericana/es (site oficial da Sul-Americana linka youtube.com/@Sudamericana)",
    "verificado_por": "pagina_canal"
   },
@@ -190,7 +190,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.youtube.com/@SudamericanaBR (canal em português com selo verificado na busca do YouTube; links da página do canal: conmebolsudamericana.com)",
    "verificado_por": "pagina_canal"
   },
@@ -202,7 +202,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.youtube.com/@FIFA (selo verificado na busca do YouTube, 35,8 mi de inscritos; fifa.com não expõe o link sem JavaScript)",
    "verificado_por": "pagina_canal"
   },
@@ -214,7 +214,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.youtube.com/@brasil (selo verificado na busca do YouTube; links da página do canal: cbf.com.br; o cbf.com.br não abre daqui por erro de certificado)",
    "verificado_por": "pagina_canal",
    "ja_existe": true,
@@ -228,7 +228,7 @@
    "oficial": true,
    "video_reutilizavel": true,
    "nota_uso": "só vídeo oficial do clube/CBF/liga, com crédito e áudio original; nunca imagem de TV",
-   "verificado_em": "2026-10-01T01:59:46-03:00",
+   "verificado_em": "2026-10-01T02:37:57-03:00",
    "evidencia": "https://www.youtube.com/@LibertadoresBR (canal em português da Libertadores, 1,16 mi de inscritos)",
    "verificado_por": "pagina_canal",
    "ja_existe": true,
