@@ -178,11 +178,11 @@ def main(argv=None) -> int:
     # diff dos alterados (gerado na hora, vai como arquivo de texto)
     diff = gerar_diff(args.base, so_diff + inteiros)
     pasta_patches = RAIZ / "patches"
-    if diff:
+    if diff and not args.so_checar:
         pasta_patches.mkdir(exist_ok=True)
         (pasta_patches / "rodada2_rodada1_alterados.diff").write_text(diff, encoding="utf-8")
-        if "patches/rodada2_rodada1_alterados.diff" not in novos:
-            novos.append("patches/rodada2_rodada1_alterados.diff")
+    if diff and "patches/rodada2_rodada1_alterados.diff" not in novos:
+        novos.append("patches/rodada2_rodada1_alterados.diff")
     por_secao: dict[str, list[str]] = {}
     for rel in sorted(set(novos) | set(inteiros)):
         if rel in CONTROLE:
