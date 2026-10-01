@@ -61,10 +61,24 @@ def git(*a: str) -> str:
                           encoding="utf-8", check=True).stdout
 
 
+RENOME = ("app/hp_studio/", "app/hp_studio_nuvem/")   # a rodada 2 renomeou o pacote
+
+
+def _novo_de(antigo: str) -> str:
+    return antigo.replace(RENOME[0], RENOME[1], 1) if antigo.startswith(RENOME[0]) else antigo
+
+
 def arquivos_desde(base: str) -> tuple[list[str], list[str], dict]:
-    """(novos, alterados, numstat) relativos à raiz, já sem binários/ignorados."""
-    novos, alterados, removidos = [], [], []
-    for linha in git("diff", "--name-status", "-M90%", base).splitlines():
+    """(novos, alterados, numstat) relativos à raiz, já sem binários/ignorados.
+
+    `git diff -M50%` pareia o caminho antigo (app/hp_studio/X) com o novo (app/hp_studio_nuvem/X)
+    enquanto ≥ 50 % do arquivo for igual; abaixo disso o git mostra D + A, e aqui o par é remontado
+    pelo caminho: virou "reescrito" (mais da metade mudou → vem inteiro, copiar por cima no PC).
+    """
+    novos, alterados, removidos, reescritos = [], [], [], []
+    antigo_de: dict[str, str] = {}
+    apagados, adicionados = [], []
+    for linha in git("diff", "--name-status", "-M50%", base).splitlines():
         partes = linha.split("\t")
         st = partes[0]
         if st.startswith("R"):
@@ -76,23 +90,36 @@ def arquivos_desde(base: str) -> tuple[list[str], list[str], dict]:
                 continue                       # só renomeado (hp_studio -> hp_studio_nuvem)
             else:
                 alterados.append(novo)
+                antigo_de[novo] = antigo
         elif st == "A":
-            novos.append(partes[1])
+            adicionados.append(partes[1])
         elif st == "M":
             alterados.append(partes[1])
+            antigo_de[partes[1]] = partes[1]
         elif st == "D":
-            removidos.append(partes[1])
-    arquivos_desde.removidos = removidos
+            apagados.append(partes[1])
+    for antigo in apagados:
+        novo = _novo_de(antigo)
+        if novo in adicionados:                # D + A do mesmo arquivo: reescrito (< 50 % igual)
+            reescritos.append(novo)
+            antigo_de[novo] = antigo
+            adicionados.remove(novo)
+        else:
+            removidos.append(antigo)
+    novos.extend(adicionados)
     for linha in git("ls-files", "--others", "--exclude-standard").splitlines():
         if linha and linha not in novos:
             novos.append(linha)
     numstat = {}
-    for linha in git("diff", "--numstat", "-M90%", base).splitlines():
+    for linha in git("diff", "--numstat", "-M50%", base).splitlines():
         a, r, nome = linha.split("\t")
         if " => " in nome:                       # "app/{hp_studio => hp_studio_nuvem}/x.py"
             m = re.match(r"^(.*)\{(.*) => (.*)\}(.*)$", nome)
             nome = f"{m.group(1)}{m.group(3)}{m.group(4)}" if m else nome.split(" => ")[-1]
         numstat[nome] = (int(a) if a != "-" else 0, int(r) if r != "-" else 0)
+    arquivos_desde.removidos = [_novo_de(r) for r in removidos if r not in CONTROLE and r not in IGNORAR]
+    arquivos_desde.reescritos = reescritos
+    arquivos_desde.antigo_de = antigo_de
 
     def ok(p: str) -> bool:
         return (p not in IGNORAR and Path(p).suffix.lower() not in BINARIO
@@ -146,7 +173,9 @@ def bloco(rel: str, texto: str) -> str:
 def gerar_diff(base: str, alterados: list[str]) -> str:
     if not alterados:
         return ""
-    return git("diff", "-M90%", base, "--", *alterados)
+    antigo_de = getattr(arquivos_desde, "antigo_de", {})
+    caminhos = sorted({c for a in alterados for c in (a, antigo_de.get(a, a))})
+    return git("diff", "-M50%", base, "--", *caminhos)
 
 
 def main(argv=None) -> int:
@@ -157,7 +186,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     novos, alterados, numstat = arquivos_desde(args.base)
-    inteiros = [a for a in alterados if mudou_mais_da_metade(a, numstat)]
+    inteiros = sorted({a for a in alterados if mudou_mais_da_metade(a, numstat)}
+                      | set(getattr(arquivos_desde, "reescritos", [])))
     so_diff = [a for a in alterados if a not in inteiros]
 
     erros: list[str] = []
@@ -170,7 +200,8 @@ def main(argv=None) -> int:
                  f"Primeiro os 3 documentos de controle, depois só o que é NOVO desde a rodada 1 "
                  f"(commit `{args.base}`). Arquivos da rodada 1 que mudaram estão descritos em `PATCHES.md` "
                  f"e no diff `patches/rodada2_rodada1_alterados.diff`"
-                 + (f"; estes mudaram mais da metade e vêm inteiros: {', '.join(inteiros)}" if inteiros else "")
+                 + (f"; estes mudaram MAIS DA METADE e vêm inteiros (copiar por cima no PC): "
+                    f"{', '.join(f'`{i}`' for i in inteiros)}" if inteiros else "")
                  + ".\n")
     partes.append(cabecalho)
     indice = []

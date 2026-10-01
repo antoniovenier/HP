@@ -4,9 +4,9 @@ Regra 5 do enunciado: arquivo da rodada 1 que muda **não é reenviado inteiro**
 com o motivo e o teste que cobre. O diff unificado de TODOS os arquivos alterados está em
 `patches/rodada2_rodada1_alterados.diff` (gerado por `git diff c0aba96..HEAD`): no PC dá para aplicar
 com `git apply` (ou à mão, função por função, seguindo este arquivo). Os únicos arquivos da rodada 1
-que mudaram **mais da metade** e por isso vêm inteiros no compilado: `app/hp_studio_nuvem/hpbase/trava.py`
-e `app/hp_studio_nuvem/esteira/agendador.py` (o compilador decide pelo `git diff --numstat`; a lista
-exata está no cabeçalho do `ENTREGA_NUVEM_HP_STUDIO_2.md`).
+que mudaram **mais da metade** e por isso vêm inteiros no compilado: `app/hp_studio_nuvem/hpbase/trava.py`, `app/hp_studio_nuvem/esteira/agendador.py`, `app/hp_studio_nuvem/esteira/testes/test_agendador_aviso.py` e `app/hp_studio_nuvem/metricas/config.py`
+(o compilador decide pelo `git diff -M50%`: menos de 50 % igual = reescrito; a lista exata está no
+cabeçalho do `ENTREGA_NUVEM_HP_STUDIO_2.md`).
 
 Como ler cada entrada: **arquivo → função → o que muda → por quê → teste que cobre** (antes/depois
 curto quando ajuda). "Sessão" = feito pela sessão principal; A1/A2a/A2b/A3/E2 = agente da rodada 2
@@ -134,10 +134,22 @@ curto quando ajuda). "Sessão" = feito pela sessão principal; A1/A2a/A2b/A3/E2 
 - `carregar_enquete` (≈ linha 1979 aqui; no PC ≈ 1989): `_item_do_lote(cfg, dia, "story_enquete")` + `validar_texto_curto` → `LOTE.ler_interativo(p)` (chave `interativo` real OU item `story_enquete` antigo) + `LOTE.decidir_pergunta(it, limite)` (pergunta_curta → encurtar sem cortar palavra → `PerguntaImpossivel`, que vira `PerguntaLonga` com a dica `--cortar`; com `--cortar` vale o plano B antigo) + `LOTE.opcoes_da_figurinha`; arte por `LOTE.traduzir_caminho_pc`; devolve também `origem_pergunta` e `horario`; `destaque` com `or`.
 - **Teste:** `scripts/testes/test_story_post.py` (45: `lote_enquete` grava o formato real; +2 testes) e `test_story_post_lote.py` (26). `LEIA_story_post.md`: linha do `enquete` e passo 1 da instalação (copiar `story_post_lote.py`).
 
+### `scripts/story_post_seletores.py` — E2
+- Constante nova ao lado de `TIMESTAMP_AGORA`: `TIMESTAMP_RECENTE_MAX_MIN = 5` (o carimbo REAL do story recém-publicado é `3m`; "de agora" = até 5 min, num lugar só; `story_fluxos.eh_timestamp_de_agora` lê daqui). `TIMESTAMP_AGORA` já tinha `agora`, `agora mesmo`, `now`, `just now`. Teste: `test_story_fluxos.py::test_fixture_real_3m_vira_3_minutos_no_story_post_e_no_story_fluxos`.
+
+### `scripts/story_post.py` — E2 (3 trechos, +14/−3 linhas)
+- `CONFIG_PADRAO["recente_max_min"]`: `2` → `5`. Por quê: `minutos_do_timestamp("3m")` já devolvia 3.0, mas `avancar_ate_story_de_agora` só aceitava ≤ 2 min: com o carimbo real `3m` passaria o próprio story e tentaria o seguinte.
+- Função nova `_de_agora(texto, desc, limite_min)` (logo após `minutos_do_timestamp`): usa `story_fluxos.eh_timestamp_de_agora` (texto `^\d+m$` ≤ 5, Now/Just now/agora, e o content-desc `"<conta>'s story, N minutes ago"`); sem o módulo (PC só com a rodada 1) cai no `minutos_do_timestamp` de sempre.
+- `avancar_ate_story_de_agora`: `m = minutos_do_timestamp(ts.texto); if m is not None and m <= lim: return ts` → `cab = ctx.tela.achar(nos=nos, id=["reel_viewer_text_container"]); if _de_agora(ts.texto, cab.desc if cab else "", lim): return ts`.
+- Teste: `test_story_post.py` (45, inalterados e verdes) + o teste acima. O resto da migração do `story_post.py` para o aparelho real (`Dispositivo`/`story_fluxos`) está **descrito linha a linha, não aplicado**, em `docs/rodada2/E2.md` seção 3 "Patch (b)" (tabela "Onde → Hoje → Passa a ser", com os números de linha da versão atual).
+
 ### `scripts/reel_futebol_arte.py::ESTILO_PADRAO` — A3
 - `from hpbase import marca`; `"fundo": "#06170F"` → `marca.CANAIS["futebol"]["fundo"]` (`#0A100C`); `"destaque": "#FFD23F"` → `#1ED760` (verde HP); `fundo2` = `misturar(fundo, verde_escuro #12A850, 0.25)` = `#0C361D`; chave nova `verde_escuro`; `escuro`/`caixa`/`arroba` da marca. Por quê: §4.6 conflito 3 (vale o verde do `posts_futebol.py`). **Teste:** `test_reel_futebol.py::test_paleta_do_reel_vem_da_marca_unica` (+29 antigos). `LEIA_reel_futebol.md`: parágrafo "Padrão embutido" e o `estilo_reel.json` de exemplo.
 
 ### Arquivos de lookup do pacote — sessão (seção 0).
 
-## 7. docs (sessão)
+## 7. publicar_extra (sessão, depois de B e C)
+- `publicar_extra/testes/conftest.py` (novo; igual ao do `metricas`) e `publicar_extra/LEIA.md` (índice do pacote): B e C rodaram em paralelo e não podiam criar os dois. Não é patch de rodada 1.
+
+## 8. docs (sessão)
 - `docs/CONVENCOES.md`: seção "Rodada 2". `docs/compilar_entrega.py` (o da rodada 1): globs `app/hp_studio/` → `app/hp_studio_nuvem/` (ainda compila a rodada 1 inteira, se alguém precisar). `docs/compilar_entrega_2.py` e `docs/desempacotar_check.py` são novos.

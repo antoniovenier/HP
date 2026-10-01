@@ -101,3 +101,77 @@ Feeds e canais novos prontos: radar_fontes\carros_fontes_novas.json (6 rss + 21 
 (futebol 7 + 13, filmes 8 + 18, gta 1 + 1). Antes de mesclar no 07 Canais\radar\<canal>.json, conferir as
 4 entradas marcadas "ja_existe" (CBF @brasil, CONMEBOL Libertadores BR, Paramount Brasil, Rockstar Games).
 ```
+
+## 5. Rotina `youtube_conferir_agenda` (tarefa B) — substitui o "conferir no YouTube Studio pelo Chrome"
+
+Arquivo: `.claude\` (rotina, todo dia 08:40 e 20:40 Brasília). Só vale quando o Google aprovar a auditoria da API;
+até lá o `conferir_lote` é justamente o alarme do "travado como privado". Colar:
+
+```
+Rotina: youtube_conferir_agenda  (todo dia 08:40 e 20:40, Brasília)
+1. Ler os publicar.json dos itens com youtube.status em ("agendado","publicado") dos últimos 3 dias.
+2. Montar esperado = {id: {"status_pedido": "agendado"|"publico", "publicar_em": post.json.data}} e chamar
+   publicar_extra.youtube_extra.conferir_lote(cliente, token_de(canal), esperado, registrar=contador.registrar)
+   (1 unidade a cada 50 vídeos).
+3. Se resumo["travado_privado"] > 0 ou "rejeitado"/"falhou": mandar no WhatsApp do grupo o diagnóstico de cada um
+   (texto já em português) e marcar youtube.status = "pendente_chrome" no publicar.json (o PC solta pelo Studio).
+4. Gravar contador.resumo() em app\logs\youtube_cota_AAAA-MM-DD.json; se "avisar" for true, avisar no WhatsApp.
+Nunca: imprimir token, rodar entre 18h e 22h30 sem ser P0, chamar enviar_legenda sem ligado=True aprovado.
+Lembrete: o balde de 100 envios/dia do YouTube zera à MEIA-NOITE DA CALIFÓRNIA (04h/05h de Brasília), não é
+janela móvel de 24 h; e todo videos.update sem o snippet completo APAGA tags, categoria, descrição,
+selfDeclaredMadeForKids e containsSyntheticMedia (o youtube_extra.atualizar_video manda tudo).
+```
+
+## 6. Rotina `conferente-de-agenda` por API e rotina `comentarios-pagina` (tarefa C)
+
+Arquivo: a rotina `conferente-de-agenda` em `.claude\` (hoje abre o Planner do Business Suite pelo Chrome). Colar no lugar:
+
+```
+# conferente-de-agenda (API)
+Para cada canal com Página no Facebook (facebook_paginas.json): token = token_de(canal);
+itens = facebook_extra.listar_agendados(cliente, token, pagina_id, avisos=avisos);
+rel = facebook_extra.comparar_com_agendados_json(itens, <07 Canais\<Pasta>\agendados.json ou 06 Projeto\agendados.json>).
+Relate rel["resumo"] e liste buracos, duplicados e hora_errada com id, hora do JSON e hora da Página.
+Reagendar/cancelar só com aprovação do Antônio (facebook_extra.reagendar / cancelar_agendado).
+Reels com "confirmar": True precisam de conferência manual no Planner até o Antônio confirmar o endpoint
+(a documentação da Meta não diz como listar reel agendado; ver docs/rodada2/C.md, seção 1.1).
+```
+
+Arquivo: rotina NOVA `comentarios-pagina` em `.claude\` (proposta, nunca envio sem aprovação). Colar:
+
+```
+# comentarios-pagina (proposta, nunca envio)
+Regra do Antônio (30/09, 11:52, vale para todas as contas HP): "antes de responder, veja se precisaria de
+resposta, ou somente a curtida sirva; se for algo ofensivo, não faça nada de curtida nem nada".
+Para cada post nosso das últimas 48 h: lidos = comentarios.ler_comentarios(cliente, token, post_id, desde=48h);
+estado = comentarios.EstadoComentarios(H:\HypadoLocal\app\publicar\comentarios_estado_<canal>.json);
+acoes = comentarios.planejar(lidos, estado.conjunto_tratados(), ConfigComentarios(), posts_nossos, redator=<Claude redige>).
+Mostre a proposta (acao, texto, motivo) e só rode executar(..., enviar=True) com aprovação. Ofensivo: nada.
+Limites (ConfigComentarios): 1 resposta por pessoa, 25 respostas e 60 curtidas por passada, 20 s entre respostas,
+só em post nosso. O que é ofensivo/spam/sarcasmo está em publicar_extra\lexico_comentarios.json: o Antônio revisa.
+Instagram e Threads: comentarios_ig_threads (o Instagram NÃO curte comentário por API; só responde/oculta).
+```
+
+## 7. SKILL curta "story no celular" (tarefa E)
+
+Arquivo: a SKILL/rotina que manda o `story_post` subir stories (ou nova, `.claude\skills\hp-story-celular\SKILL.md`). Colar:
+
+```
+Story no celular (tarefa E, rodada 2): nunca use coordenada fixa; nunca digite senha/PIN; nunca toque em
+Entrar/Aceitar/Permitir. Antes de rodar de verdade, SEMPRE veja o roteiro:
+  python scripts\story_fluxos.py pedido H:\HypadoLocal\emulador\fila_story\<post_id>.json --simular
+Depois: o mesmo comando sem --simular (--emulador ou --celular). Códigos: 2 = bloqueado (trava, intervalo
+de 3 min, já feito, 3 falhas) → tente na próxima rodada; 3 = aviso da Meta/login → PARADO_AVISO_META.json,
+só o Antônio apaga; 4 = o Antônio precisa agir no aparelho. Story "a conferir" = olhe no Instagram, não
+repita. Para confirmar os botões que ainda são palpite: python scripts\story_coletar_telas.py --emulador
+(só lê a tela; quem navega é a pessoa). Acento no celular: o padrão troca ("Você" → "Voce") e avisa no log;
+o modo de acento real fica DESLIGADO (instalar teclado é decisão do Antônio).
+```
+
+## 8. Ordem sugerida para o Diretor
+
+1. Item 1 (CLAUDE.md): 3 linhas, sem risco.
+2. Item 2 (hypado-estaticos): é o que faz a enquete das 16h sair com a pergunta certa sem cortar no escuro.
+3. Item 4 (radar): rodar os 4 comandos uma vez no PC (promove `pagina_canal` → `feed`) e mesclar nos `07 Canais\radar\*.json`.
+4. Itens 6 e 7 (agenda por API, comentários, story no celular): só depois das permissões/coleta de telas que o Antônio faz (lista no `ENTREGA.md`, seção "Depende do Antônio").
+5. Item 5 (YouTube): só depois da auditoria do Google.
