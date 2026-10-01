@@ -101,7 +101,7 @@ CONFIG_PADRAO = {
     "timeout_script_ligar_seg": 150,
     "intervalo_leitura_seg": 1.0,      # entre duas leituras da tela
     "pausa_toque_seg": 0.6,            # depois de cada toque (e depois espera o elemento)
-    "recente_max_min": 2,              # story "de agora" = até 2 min
+    "recente_max_min": 5,              # story "de agora" = até 5 min (o carimbo real é "3m"; §4.7)
     "max_stories_avancar": 40,
     "toque_avancar": [0.92, 0.3],      # onde tocar para passar o story (fração da tela)
     "serial": None,                    # ex.: "emulator-5554" (só se houver 2 aparelhos)
@@ -1072,6 +1072,17 @@ def minutos_do_timestamp(txt) -> float | None:
     return None
 
 
+def _de_agora(texto, desc: str, limite_min: float) -> bool:
+    """Carimbo "de agora": '3m'/'Now'/'agora' e o content-desc "<conta>'s story, N minutes ago" com
+    N <= limite (regra nova do story_fluxos, rodada 2); sem o módulo, só o texto pelo minutos_do_timestamp."""
+    try:
+        from story_fluxos import eh_timestamp_de_agora
+    except ImportError:
+        m = minutos_do_timestamp(texto)
+        return m is not None and m <= float(limite_min)
+    return eh_timestamp_de_agora(texto, desc or "", limite_min)
+
+
 def validar_texto_curto(texto, limite: int, cortar: bool, nome: str) -> str:
     t = re.sub(r"\s+", " ", str(texto or "")).strip()
     if not t:
@@ -1450,8 +1461,8 @@ def avancar_ate_story_de_agora(ctx: Contexto) -> No:
             ctx.relogio.dormir(ctx.tela.intervalo)
             continue
         sumiu = 0
-        m = minutos_do_timestamp(ts.texto)
-        if m is not None and m <= lim:
+        cab = ctx.tela.achar(nos=nos, id=["reel_viewer_text_container"])
+        if _de_agora(ts.texto, cab.desc if cab else "", lim):
             return ts
         w, h = ctx.tela.tamanho(nos)
         fx, fy = ctx.cfg["toque_avancar"]

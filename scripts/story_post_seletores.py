@@ -105,6 +105,10 @@ TEXTOS = {
 
 # Timestamps que contam como "agora" no visualizador de story.
 TIMESTAMP_AGORA = ["agora", "agora mesmo", "now", "just now"]
+# O carimbo REAL do story recém-publicado (dump de 30/09, §4.7) é abreviado: "3m" (e "1h"), com o
+# content-desc "hp.futebol's story, 3 minutes ago". Conta como "de agora" até este limite, em minutos
+# (regra ^\d+m$ <= 5 e "N minutes ago" <= 5: story_fluxos.eh_timestamp_de_agora).
+TIMESTAMP_RECENTE_MAX_MIN = 5
 
 # ---------------------------------------------------------------------------
 # Avisos da Meta: se QUALQUER um aparecer na tela, o story_post para tudo,
