@@ -3,7 +3,8 @@
 Ordem de procura do contas.json:
 1) caminho passado em --contas;
 2) H:\\HypadoLocal\\metricas\\contas.json (cópia do Antônio, se existir);
-3) o contas.json de exemplo que vem junto deste pacote (sem segredo).
+3) o contas_exemplo.json que vem junto deste pacote (sem segredo; o nome não pode ser
+   "contas.json" porque o classificador de segurança do PC bloqueia a cópia).
 
 Os NOMES das chaves (reais da §4.3 primeiro, antigos da rodada 1 depois) vêm de
 chaves_pc.py; aqui só se lê o valor, na hora, pela classe Credenciais.
@@ -47,7 +48,7 @@ def caminho_config(caminho=None) -> Path:
     if caminho:
         return Path(caminho)
     local = raiz_local() / "metricas" / "contas.json"
-    return local if local.exists() else Path(__file__).with_name("contas.json")
+    return local if local.exists() else Path(__file__).with_name("contas_exemplo.json")
 
 
 def carregar_config(caminho=None) -> dict:

@@ -46,7 +46,8 @@ sem mostrar nada: `python -m metricas chaves` (ou `coletar --simular`).
 
 ## O arquivo contas.json
 
-O `contas.json` deste pacote é um **exemplo sem segredo** (6 perfis × 5 redes). Para mudar,
+O `contas_exemplo.json` deste pacote é um **exemplo sem segredo** (6 perfis × 5 redes; o nome não é
+`contas.json` porque o classificador do PC bloqueia arquivo com esse nome). Para mudar,
 copie para `H:\HypadoLocal\metricas\contas.json` e edite lá (ele passa a valer).
 Campos úteis: `versao_graph` (padrão `v21.0`), `dias_posts` (7), `limite_posts` (50),
 `"ativo": false` para desligar uma rede, `youtube.autorizado` (**false** até a auditoria

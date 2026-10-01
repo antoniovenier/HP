@@ -63,24 +63,31 @@ def git(*a: str) -> str:
 
 def arquivos_desde(base: str) -> tuple[list[str], list[str], dict]:
     """(novos, alterados, numstat) relativos à raiz, já sem binários/ignorados."""
-    novos, alterados = [], []
-    for linha in git("diff", "--name-status", "-M90%", base, "HEAD").splitlines():
+    novos, alterados, removidos = [], [], []
+    for linha in git("diff", "--name-status", "-M90%", base).splitlines():
         partes = linha.split("\t")
         st = partes[0]
         if st.startswith("R"):
             antigo, novo = partes[1], partes[2]
-            if st == "R100":
+            if Path(antigo).name != Path(novo).name:
+                novos.append(novo)             # mudou de nome (ex.: contas.json -> contas_exemplo.json): vai inteiro
+                removidos.append(antigo)
+            elif st == "R100":
                 continue                       # só renomeado (hp_studio -> hp_studio_nuvem)
-            alterados.append(novo)
+            else:
+                alterados.append(novo)
         elif st == "A":
             novos.append(partes[1])
         elif st == "M":
             alterados.append(partes[1])
+        elif st == "D":
+            removidos.append(partes[1])
+    arquivos_desde.removidos = removidos
     for linha in git("ls-files", "--others", "--exclude-standard").splitlines():
         if linha and linha not in novos:
             novos.append(linha)
     numstat = {}
-    for linha in git("diff", "--numstat", "-M90%", base, "HEAD").splitlines():
+    for linha in git("diff", "--numstat", "-M90%", base).splitlines():
         a, r, nome = linha.split("\t")
         if " => " in nome:                       # "app/{hp_studio => hp_studio_nuvem}/x.py"
             m = re.match(r"^(.*)\{(.*) => (.*)\}(.*)$", nome)
@@ -139,7 +146,7 @@ def bloco(rel: str, texto: str) -> str:
 def gerar_diff(base: str, alterados: list[str]) -> str:
     if not alterados:
         return ""
-    return git("diff", "-M90%", base, "HEAD", "--", *alterados)
+    return git("diff", "-M90%", base, "--", *alterados)
 
 
 def main(argv=None) -> int:
@@ -181,8 +188,8 @@ def main(argv=None) -> int:
     if diff and not args.so_checar:
         pasta_patches.mkdir(exist_ok=True)
         (pasta_patches / "rodada2_rodada1_alterados.diff").write_text(diff, encoding="utf-8")
-    if diff and "patches/rodada2_rodada1_alterados.diff" not in novos:
-        novos.append("patches/rodada2_rodada1_alterados.diff")
+        if "patches/rodada2_rodada1_alterados.diff" not in novos:
+            novos.append("patches/rodada2_rodada1_alterados.diff")
     por_secao: dict[str, list[str]] = {}
     for rel in sorted(set(novos) | set(inteiros)):
         if rel in CONTROLE:
@@ -213,6 +220,10 @@ def main(argv=None) -> int:
     partes.append("\n## Índice\n\n" + "\n".join(f"- `{r}`" for r in indice) + "\n")
     partes.append(f"\nArquivos da rodada 1 alterados (ver PATCHES.md e o diff): "
                   + (", ".join(f"`{a}`" for a in so_diff) if so_diff else "nenhum") + "\n")
+    rem = getattr(arquivos_desde, "removidos", [])
+    if rem:
+        partes.append("\nArquivos da rodada 1 que saem (apagar no PC; ver PATCHES.md): "
+                      + ", ".join(f"`{a}`" for a in rem) + "\n")
     saida = RAIZ / args.saida
     texto = "".join(partes) + "".join(conteudo)
     if args.so_checar:

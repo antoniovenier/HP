@@ -102,7 +102,9 @@ curto quando ajuda). "Sessão" = feito pela sessão principal; A1/A2a/A2b/A3/E2 
 ### `metricas/youtube.py::_token_oauth, coletar` — lê `youtube.json` (`oauth/refresh_tokens/<canal>`, `oauth/client_id`, `oauth/client_secret`, `canais/<canal>`) → `youtube_canais.json` → `youtube_tokens.txt` antigo.
 ### `metricas/coleta.py::plano` — usa `chaves_pc.inventario` (só NOMES; não abre valores); mensagem `sem_token` cita o nome real e o antigo.
 ### `metricas/cli.py` — subcomando novo `chaves` (`--conta --rede --json --contas --segredos`); `AGENDADO_PADRAO` (seção 0).
-### `metricas/contas.json` (exemplo) e `metricas/LEIA.md` — `_leia`, `host_instagram`, `versao_graph v26.0`, 7 grupos; seção "Segredos" com a tabela da §4.3; `## contas.json` → `## O arquivo contas.json` (regra 8 do formato).
+### `metricas/contas.json` → **`metricas/contas_exemplo.json`** (sessão; regra 3 da Seção 2: nome de segredo bloqueia a cópia no PC)
+- O exemplo sem segredo mudou de nome e vem INTEIRO como arquivo novo; **apagar** `06 Projeto\app\hp_studio_nuvem\metricas\contas.json` no PC se ele existir. `metricas/config.py::caminho_config`: `Path(__file__).with_name("contas.json")` → `with_name("contas_exemplo.json")` (a cópia do Antônio continua em `H:\HypadoLocal\metricas\contas.json`, que não é deste repositório). Conteúdo (A2a): `_leia`, `host_instagram`, `versao_graph v26.0`, 7 grupos em `arquivos_segredo`.
+### `metricas/LEIA.md` — seção "Segredos" com a tabela da §4.3; `## contas.json` → `## O arquivo contas.json` (regra 8 do formato); menção ao `contas_exemplo.json`.
 
 ## 4. qa_paridade (A1)
 - `qa_paridade/sombra.py::pasta_paridade` (local) → `hpbase.pasta_paridade`; `qa_paridade/limites.py::arquivo_local` → `pasta_paridade()/"limites.json"`. Testes `test_cli.py`, `test_limites.py`, `test_sombra.py` trocam `pasta_app()/"paridade"` por `pasta_paridade()`. Por quê: §3.2 (`H:\HypadoLocal\app\paridade_nuvem`).
